@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>収録語録一覧 — 言葉の鏡</title>
+<meta name="description" content="言葉の鏡に収録している語録の一覧です。雨・夜・悲しい・走るなど20語以上の言い換え表現をジャンル別に検索できます。">
+<meta property="og:title" content="収録語録一覧 — 言葉の鏡">
+<meta property="og:description" content="小説・ラノベ作家向け表現辞典「言葉の鏡」の収録語録一覧。雨・夜・悲しい・走るなど20語以上を収録。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://kotoba-kagami.vercel.app/words.html">
+<meta property="og:site_name" content="言葉の鏡">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500;700&family=Zen+Kaku+Gothic+New:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+.words-hero{padding:2.5rem 2rem 2rem;max-width:960px;margin:0 auto}
+.words-hero h1{font-family:'Noto Serif JP',serif;font-size:24px;font-weight:500;margin-bottom:.5rem}
+.words-hero p{font-size:14px;color:var(--ink3);line-height:1.8}
+.words-main{max-width:960px;margin:0 auto;padding:0 2rem 4rem}
+.category-section{margin-bottom:2.5rem}
+.category-title{font-size:11px;font-weight:700;letter-spacing:.14em;color:var(--ink3);margin-bottom:1rem;display:flex;align-items:center;gap:.6rem}
+.category-title::after{content:'';flex:1;height:1px;background:var(--paper3)}
+.word-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
+.word-item{background:#fff;border:1px solid var(--paper3);padding:.85rem 1rem;cursor:pointer;transition:all .15s;text-decoration:none;display:block}
+.word-item:hover{border-color:var(--acc);background:var(--accf)}
+.wi-word{font-family:'Noto Serif JP',serif;font-size:18px;font-weight:500;color:var(--ink);margin-bottom:3px}
+.wi-kana{font-size:11px;color:var(--ink3);letter-spacing:.06em;margin-bottom:6px}
+.wi-count{font-size:11px;color:var(--ink2)}
+.wi-tags{display:flex;gap:3px;flex-wrap:wrap;margin-top:6px}
+</style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="logo">言葉の<span>鏡</span></a>
+  <div class="header-right">
+    <a href="submit.html" class="header-link">＋ 表現を投稿</a>
+  </div>
+</header>
+
+<div class="words-hero">
+  <h1>収録語録一覧</h1>
+  <p>現在 <strong id="totalCount">20</strong> 語を収録しています。クリックすると言い換え表現を検索できます。<br>
+  DB未収録の言葉はAIがリアルタイムで生成します。</p>
+</div>
+
+<div class="words-main">
+
+  <div class="category-section">
+    <div class="category-title">自然・情景</div>
+    <div class="word-grid" id="grid-nature"></div>
+  </div>
+
+  <div class="category-section">
+    <div class="category-title">感情・状態</div>
+    <div class="word-grid" id="grid-emotion"></div>
+  </div>
+
+  <div class="category-section">
+    <div class="category-title">動作・行動</div>
+    <div class="word-grid" id="grid-action"></div>
+  </div>
+
+</div>
+
+<footer style="border-top:1px solid var(--paper3);padding:1.5rem 2rem;text-align:center;font-size:12px;color:var(--ink3)">
+  <div style="display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;margin-bottom:.75rem">
+    <a href="index.html"   style="color:var(--ink3);text-decoration:none">トップ</a>
+    <a href="words.html"   style="color:var(--ink3);text-decoration:none">語録一覧</a>
+    <a href="submit.html"  style="color:var(--ink3);text-decoration:none">表現を投稿</a>
+    <a href="privacy.html" style="color:var(--ink3);text-decoration:none">プライバシーポリシー</a>
+  </div>
+  <div>© 2025 言葉の鏡 — 小説・ラノベ作家のための表現辞典</div>
+</footer>
+
+<script src="js/const.js"></script>
+<script src="js/db.js"></script>
+<script>
+const CATEGORIES = {
+  nature:  ['雨','夜','風','雪','闇','光'],
+  emotion: ['悲しい','嬉しい','切ない','寂しい','苦しい','恥ずかしい','孤独','怒り','恐怖','沈黙'],
+  action:  ['走る','泣く','笑う','叫ぶ'],
+};
+
+const KANA = {
+  雨:'あめ',夜:'よる',風:'かぜ',雪:'ゆき',闇:'やみ',光:'ひかり',
+  悲しい:'かなしい',嬉しい:'うれしい',切ない:'せつない',寂しい:'さびしい',
+  苦しい:'くるしい',恥ずかしい:'はずかしい',孤独:'こどく',怒り:'いかり',
+  恐怖:'きょうふ',沈黙:'ちんもく',走る:'はしる',泣く:'なく',笑う:'わらう',叫ぶ:'さけぶ',
+};
+
+function renderGrid(gridId, words) {
+  const grid = document.getElementById(gridId);
+  grid.innerHTML = words.map(w => {
+    const data = DB[w];
+    const count = data ? data.synonyms.length : '?';
+    const genres = data ? [...new Set(data.synonyms.flatMap(s=>s.genres||[]))].slice(0,2) : [];
+    const genreTags = genres.map(g=>`<span class="tag ${GENREC[g]||'gn'}">${GENRE[g]||g}</span>`).join('');
+    return `
+      <a class="word-item" href="index.html" onclick="localStorage.setItem('searchWord','${w}')">
+        <div class="wi-word">${w}</div>
+        <div class="wi-kana">${KANA[w]||''}</div>
+        <div class="wi-count">言い換え ${count}語</div>
+        <div class="wi-tags">${genreTags}</div>
+      </a>`;
+  }).join('');
+}
+
+renderGrid('grid-nature',  CATEGORIES.nature);
+renderGrid('grid-emotion', CATEGORIES.emotion);
+renderGrid('grid-action',  CATEGORIES.action);
+
+document.getElementById('totalCount').textContent =
+  CATEGORIES.nature.length + CATEGORIES.emotion.length + CATEGORIES.action.length;
+</script>
+
+<script>
+// index.htmlに遷移後に自動検索
+window.addEventListener('load', () => {
+  const w = localStorage.getItem('searchWord');
+  if (w && document.getElementById('si')) {
+    localStorage.removeItem('searchWord');
+    document.getElementById('si').value = w;
+    doSearch();
+  }
+});
+</script>
+</body>
+</html>
