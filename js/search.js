@@ -191,9 +191,9 @@ JSONのみ（マークダウン不要）:
 {"synonyms":[{"word":"語","kana":"読み","nuance":"20字","tone":"poetic","genres":["${gk!=='all'?gk:'romance'}"],"intensity":70,"lyricism":60,"usecases":["シーン1","シーン2"],"desc":"40字","scene":"40字"}],"expressions":["表現1","表現2","表現3","表現4"],"beforeafter":[${sitEx}]}`;
 
   try {
-    const r = await fetch('https://api.anthropic.com/v1/messages', {
+    const r = await fetch('/api/chat', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({model:'claude-sonnet-4-20250514', max_tokens:3000, messages:[{role:'user',content:prompt}]})
+      body: JSON.stringify({max_tokens:3000, messages:[{role:'user',content:prompt}]})
     });
     const j = await r.json();
     if (j.error) throw new Error(j.error.message);
@@ -223,9 +223,9 @@ JSONのみ:
 {"detected":"解釈15字","elements":[{"original":"元の語","synonyms":[{"word":"語","kana":"読み","nuance":"15字","tone":"modern","genres":["${gk!=='all'?gk:'general'}"],"intensity":50,"lyricism":50,"usecases":["シーン"],"desc":"30字","scene":"35字"}],"beforeafter":[${sitEx}]}]}`;
 
   try {
-    const r = await fetch('https://api.anthropic.com/v1/messages', {
+    const r = await fetch('/api/chat', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({model:'claude-sonnet-4-20250514', max_tokens:3000, messages:[{role:'user',content:prompt}]})
+      body: JSON.stringify({max_tokens:3000, messages:[{role:'user',content:prompt}]})
     });
     const j = await r.json();
     if (j.error) throw new Error(j.error.message);
