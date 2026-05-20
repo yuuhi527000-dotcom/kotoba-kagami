@@ -91,6 +91,8 @@ const KANA = {
   恐怖:'きょうふ',沈黙:'ちんもく',走る:'はしる',泣く:'なく',笑う:'わらう',叫ぶ:'さけぶ',
 };
 
+const SLUG_MAP = {"雨": "ame", "夜": "yoru", "風": "kaze", "雪": "yuki", "闇": "yami", "光": "hikari", "悲しい": "kanashii", "嬉しい": "ureshii", "切ない": "setsunai", "寂しい": "sabishii", "苦しい": "kurushii", "恥ずかしい": "hazukashii", "孤独": "kodoku", "怒り": "ikari", "恐怖": "kyoufu", "沈黙": "chinmoku", "走る": "hashiru", "泣く": "naku", "笑う": "warau", "叫ぶ": "sakebu"};
+
 function renderGrid(gridId, words) {
   const grid = document.getElementById(gridId);
   grid.innerHTML = words.map(w => {
@@ -98,8 +100,9 @@ function renderGrid(gridId, words) {
     const count = data ? data.synonyms.length : '?';
     const genres = data ? [...new Set(data.synonyms.flatMap(s=>s.genres||[]))].slice(0,2) : [];
     const genreTags = genres.map(g=>`<span class="tag ${GENREC[g]||'gn'}">${GENRE[g]||g}</span>`).join('');
+    const slug = SLUG_MAP[w] || 'ame';
     return `
-      <a class="word-item" href="index.html" onclick="localStorage.setItem('searchWord','${w}')">
+      <a class="word-item" href="word/${slug}.html">
         <div class="wi-word">${w}</div>
         <div class="wi-kana">${KANA[w]||''}</div>
         <div class="wi-count">言い換え ${count}語</div>
