@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>管理画面 — 言葉の鏡</title>
+<!-- OGP -->
+<meta property="og:title"       content="管理画面 — 言葉の鏡">
+<meta property="og:description" content="投稿管理画面">
+<meta property="og:type"        content="website">
+<meta name="twitter:card"       content="summary">
+<meta property="og:site_name"   content="言葉の鏡">
+<!-- ファビコン -->
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500&family=Zen Kaku Gothic New:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="logo">言葉の<span>鏡</span></a>
+  <div class="header-right">
+    <span id="adminName" style="font-size:12px;color:var(--ink3)"></span>
+    <button class="logout-btn" id="logoutBtn" onclick="logout()" style="display:none">ログアウト</button>
+  </div>
+</header>
+
+<!-- ログイン画面 -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="admin-title">管理者ログイン</div>
+    <div class="frow">
+      <label class="flabel">パスワード</label>
+      <input class="finput" id="pwInput" type="password" placeholder="パスワードを入力" autocomplete="current-password">
+    </div>
+    <button class="fsubmit" onclick="doLogin()">ログイン</button>
+    <div class="error-msg" id="loginError" style="margin-top:.75rem">パスワードが違います</div>
+  </div>
+</div>
+
+<!-- 管理画面本体 -->
+<div class="admin-wrap" id="adminScreen" style="display:none">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem">
+    <h1 class="admin-title" style="margin:0">投稿管理</h1>
+    <div id="pendingBadge" style="font-size:12px;color:var(--ink3)"></div>
+  </div>
+
+  <div class="admin-tabs">
+    <button class="admin-tab active" onclick="switchTab('pending',this)">承認待ち</button>
+    <button class="admin-tab" onclick="switchTab('approved',this)">承認済み</button>
+  </div>
+
+  <!-- 承認待ち -->
+  <div id="tab-pending">
+    <div id="pendingList"></div>
+  </div>
+
+  <!-- 承認済み -->
+  <div id="tab-approved" style="display:none">
+    <div id="approvedList"></div>
+  </div>
+</div>
+
+<script src="js/const.js"></script>
+<script src="js/ugc.js"></script>
+<script>
+// ===== ハッシュ化 =====
+async function sha256(str) {
+  const buf  = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+// ===== ログイン =====
+async function doLogin() {
+  const pw   = document.getElementById('pwInput').value;
+  const hash = await sha256(pw);
+  if (hash === ADMIN_HASH) {
+    sessionStorage.setItem('admin_auth', '1');
+    showAdmin();
+  } else {
+    document.getElementById('loginError').style.display = 'block';
+  }
+}
+
+function logout() {
+  sessionStorage.removeItem('admin_auth');
+  location.reload();
+}
+
+function showAdmin() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('adminScreen').style.display = 'block';
+  document.getElementById('logoutBtn').style.display = 'block';
+  document.getElementById('adminName').textContent = '管理者';
+  loadPending();
+}
+
+// ===== タブ切替 =====
+function switchTab(name, btn) {
+  document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-pending').style.display  = name==='pending'  ? 'block' : 'none';
+  document.getElementById('tab-approved').style.display = name==='approved' ? 'block' : 'none';
+  if (name === 'approved') loadApproved();
+}
+
+// ===== 承認待ち一覧 =====
+async function loadPending() {
+  const list = document.getElementById('pendingList');
+  list.innerHTML = '<div class="admin-empty">読み込み中...</div>';
+  const items = await getPendingList();
+
+  const badge = document.getElementById('pendingBadge');
+  badge.textContent = items.length > 0 ? `承認待ち ${items.length}件` : '';
+
+  if (items.length === 0) {
+    list.innerHTML = '<div class="admin-empty">承認待ちの投稿はありません</div>';
+    return;
+  }
+
+  list.innerHTML = items.map(item => `
+    <div class="admin-card" id="card-${item.id}">
+      <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.5rem">
+        <div class="admin-card-word">${item.word}</div>
+        <span style="font-size:11px;color:var(--ink3)">${item.kana}</span>
+        <span class="badge-pending">承認待ち</span>
+      </div>
+      <div class="admin-card-meta">
+        <span class="tag ${GENREC[item.genre]||'gn'}">${item.situation || GENRE[item.genre]||''}</span>
+        <span style="margin-left:.5rem">— ${item.authorName}</span>
+        <span style="margin-left:.5rem;color:var(--ink3)">${new Date(item.submittedAt).toLocaleDateString('ja-JP')}</span>
+      </div>
+      <div class="admin-card-body">
+        <div style="margin-bottom:.4rem"><strong style="font-size:11px;color:var(--ink3)">ニュアンス</strong><br>${item.nuance}</div>
+        <div style="margin-bottom:.4rem"><strong style="font-size:11px;color:var(--ink3)">例文</strong><br>
+          <span style="font-family:'Noto Serif JP',serif;font-style:italic">${item.scene}</span>
+        </div>
+        ${item.baAfter ? `<div><strong style="font-size:11px;color:var(--ink3)">BA例文</strong><br>
+          <span style="color:var(--ink3);font-size:12px">→ </span>
+          <span style="font-family:'Noto Serif JP',serif">${item.baAfter}</span>
+        </div>` : ''}
+      </div>
+      <div class="admin-acts">
+        <button class="approve-btn" onclick="doApprove('${item.id}')">✓ 承認</button>
+        <button class="reject-btn"  onclick="doReject('${item.id}')">✗ 却下</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ===== 承認済み一覧 =====
+async function loadApproved() {
+  const list = document.getElementById('approvedList');
+  list.innerHTML = '<div class="admin-empty">読み込み中...</div>';
+  const items = await getApprovedList();
+
+  if (items.length === 0) {
+    list.innerHTML = '<div class="admin-empty">承認済みの投稿はありません</div>';
+    return;
+  }
+
+  list.innerHTML = items.map(item => `
+    <div class="admin-card">
+      <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.5rem">
+        <div class="admin-card-word">${item.word}</div>
+        <span style="font-size:11px;color:var(--ink3)">${item.kana}</span>
+        <span class="badge-approved">承認済み</span>
+      </div>
+      <div class="admin-card-meta">
+        <span class="tag ${GENREC[item.genre]||'gn'}">${item.situation || GENRE[item.genre]||''}</span>
+        <span style="margin-left:.5rem">— ${item.authorName}</span>
+        <span style="margin-left:.5rem;color:var(--ink3)">${new Date(item.approvedAt).toLocaleDateString('ja-JP')}承認</span>
+      </div>
+      <div class="admin-card-body">
+        <span style="font-family:'Noto Serif JP',serif;font-style:italic">${item.scene}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ===== 承認・却下アクション =====
+async function doApprove(id) {
+  const btn = event.target;
+  btn.disabled = true; btn.textContent = '処理中...';
+  const ok = await approveUGC(id);
+  if (ok) {
+    document.getElementById(`card-${id}`).style.opacity = '.4';
+    setTimeout(() => { document.getElementById(`card-${id}`)?.remove(); loadPending(); }, 600);
+  }
+}
+
+async function doReject(id) {
+  if (!confirm('この投稿を却下しますか？')) return;
+  const ok = await rejectUGC(id);
+  if (ok) {
+    document.getElementById(`card-${id}`).style.opacity = '.4';
+    setTimeout(() => { document.getElementById(`card-${id}`)?.remove(); loadPending(); }, 400);
+  }
+}
+
+// ===== 起動 =====
+window.addEventListener('load', () => {
+  if (sessionStorage.getItem('admin_auth') === '1') {
+    showAdmin();
+  }
+  document.getElementById('pwInput').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+});
+</script>
+</body>
+</html>

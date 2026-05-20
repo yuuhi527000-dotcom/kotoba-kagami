@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>表現を投稿 — 言葉の鏡</title>
+<!-- OGP -->
+<meta property="og:title"       content="表現を投稿 — 言葉の鏡">
+<meta property="og:description" content="小説・ラノベで使える表現を投稿しよう。承認された表現はサイトに掲載されCC0で公開されます。">
+<meta property="og:type"        content="website">
+<meta name="twitter:card"       content="summary">
+<meta property="og:site_name"   content="言葉の鏡">
+<!-- ファビコン -->
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500&family=Zen+Kaku+Gothic+New:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="logo">言葉の<span>鏡</span></a>
+  <span class="hsub">表現を投稿する</span>
+</header>
+
+<div class="form-wrap">
+  <h1 class="form-title">表現を投稿する</h1>
+  <p class="form-sub">
+    あなたが実際に使った・見つけた表現を投稿してください。<br>
+    投稿内容は管理者が確認後、承認された表現がサイトに掲載されます。<br>
+    掲載された表現は <strong>CC0（パブリックドメイン）</strong> として誰でも自由に使用できます。
+  </p>
+
+  <div class="frow">
+    <label class="flabel">言葉・単語 <span>*</span></label>
+    <input class="finput" id="f-word" type="text" placeholder="例：雨、悲しい、走る" maxlength="20">
+    <div class="char-count" id="cc-word">0 / 20</div>
+  </div>
+
+  <div class="frow">
+    <label class="flabel">読み仮名 <span>*</span></label>
+    <input class="finput" id="f-kana" type="text" placeholder="例：あめ、かなしい、はしる" maxlength="30">
+  </div>
+
+  <div class="frow">
+    <label class="flabel">ニュアンス・使いどころ <span>*</span></label>
+    <input class="finput" id="f-nuance" type="text" placeholder="例：突如降り出す激しい雨。感情爆発・急変を暗示" maxlength="50">
+    <div class="char-count" id="cc-nuance">0 / 50</div>
+  </div>
+
+  <div class="frow">
+    <label class="flabel">例文（この言葉を使った文章） <span>*</span></label>
+    <textarea class="ftextarea" id="f-scene" placeholder="例：驟雨が路地を叩いた瞬間、彼女は走り出した。" maxlength="100"></textarea>
+    <div class="char-count" id="cc-scene">0 / 100</div>
+  </div>
+
+  <div class="frow">
+    <label class="flabel">ビフォー → アフター（言い換え例）</label>
+    <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:.5rem;align-items:center;margin-bottom:.5rem">
+      <input class="finput" id="f-before" type="text" placeholder="Before：雨が降っていた" maxlength="40">
+      <span style="color:var(--acc);font-size:16px;text-align:center">→</span>
+      <input class="finput" id="f-after" type="text" placeholder="After：驟雨が石畳を叩いた" maxlength="60">
+    </div>
+  </div>
+
+  <div class="frow">
+    <label class="flabel">ジャンル <span>*</span></label>
+    <select class="fselect" id="f-genre">
+      <option value="">選択してください</option>
+      <option value="romance">恋愛・青春</option>
+      <option value="fantasy">異世界・ファンタジー</option>
+      <option value="horror">ホラー・ミステリ</option>
+      <option value="historical">歴史・時代</option>
+      <option value="general">汎用（どのジャンルにも）</option>
+    </select>
+  </div>
+
+  <div class="frow">
+    <label class="flabel">シチュエーション</label>
+    <input class="finput" id="f-situation" type="text" placeholder="例：恋愛・失恋、異世界・幕開け、ホラー・逃走" maxlength="30">
+  </div>
+
+  <div class="frow">
+    <label class="flabel">投稿者名（ペンネーム可）</label>
+    <input class="finput" id="f-author" type="text" placeholder="匿名の場合は空欄" maxlength="30">
+  </div>
+
+  <div class="frow">
+    <label class="fcheck">
+      <input type="checkbox" id="f-cc0">
+      投稿する表現の著作権を放棄し、CC0（パブリックドメイン）として誰でも自由に使用できることに同意します。
+    </label>
+  </div>
+
+  <div class="frow">
+    <label class="fcheck">
+      <input type="checkbox" id="f-original">
+      投稿する表現は自分が考えたオリジナルの表現、または既存作品からの引用ではありません。
+    </label>
+  </div>
+
+  <button class="fsubmit" id="submitBtn" onclick="handleSubmit()" disabled>投稿する</button>
+
+  <div class="success-msg" id="successMsg">
+    ✓ 投稿しました！管理者の確認後、承認されるとサイトに掲載されます。
+    <br><a href="index.html" style="color:#085041">← 検索に戻る</a>
+  </div>
+  <div class="error-msg" id="errorMsg"></div>
+</div>
+
+<script src="js/const.js"></script>
+<script src="js/ugc.js"></script>
+<script>
+// URLパラメータから単語を自動入力
+window.addEventListener('load', () => {
+  const params = new URLSearchParams(location.search);
+  const w = params.get('word');
+  if (w) document.getElementById('f-word').value = w;
+  updateCharCount();
+  checkForm();
+});
+
+// 文字数カウント
+function updateCharCount() {
+  [['f-word','cc-word',20],['f-nuance','cc-nuance',50],['f-scene','cc-scene',100]].forEach(([fid,cid,max]) => {
+    const el = document.getElementById(fid);
+    const cc = document.getElementById(cid);
+    if (el && cc) cc.textContent = `${el.value.length} / ${max}`;
+  });
+}
+
+// フォームバリデーション
+function checkForm() {
+  const btn = document.getElementById('submitBtn');
+  const ok = document.getElementById('f-word').value.trim() &&
+             document.getElementById('f-kana').value.trim() &&
+             document.getElementById('f-nuance').value.trim() &&
+             document.getElementById('f-scene').value.trim() &&
+             document.getElementById('f-genre').value &&
+             document.getElementById('f-cc0').checked &&
+             document.getElementById('f-original').checked;
+  btn.disabled = !ok;
+}
+
+document.querySelectorAll('.finput,.ftextarea,.fselect').forEach(el => {
+  el.addEventListener('input', () => { updateCharCount(); checkForm(); });
+});
+document.querySelectorAll('input[type=checkbox]').forEach(el => {
+  el.addEventListener('change', checkForm);
+});
+
+async function handleSubmit() {
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = '投稿中...';
+
+  const formData = {
+    word:       document.getElementById('f-word').value,
+    kana:       document.getElementById('f-kana').value,
+    nuance:     document.getElementById('f-nuance').value,
+    scene:      document.getElementById('f-scene').value,
+    baAfter:    document.getElementById('f-after').value,
+    genre:      document.getElementById('f-genre').value,
+    situation:  document.getElementById('f-situation').value,
+    authorName: document.getElementById('f-author').value,
+  };
+
+  try {
+    await submitUGC(formData);
+    document.getElementById('successMsg').style.display = 'block';
+    document.getElementById('errorMsg').style.display = 'none';
+    btn.style.display = 'none';
+  } catch(e) {
+    document.getElementById('errorMsg').textContent = `エラー: ${e.message}`;
+    document.getElementById('errorMsg').style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = '投稿する';
+  }
+}
+</script>
+</body>
+</html>

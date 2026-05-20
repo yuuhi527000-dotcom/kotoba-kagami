@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>言葉の鏡 — 小説・ラノベ作家のための表現辞典</title>
+<meta name="description" content="小説・ライトノベル作家のための表現言い換えサイト。恋愛・異世界・ホラー・歴史など、ジャンル別・シーン別の表現例文を検索できます。">
+
+<!-- OGP（XにURLを貼ったときに表示される情報） -->
+<meta property="og:title"       content="言葉の鏡 — 小説・ラノベ作家のための表現辞典">
+<meta property="og:description" content="「悲しかった」→ ジャンル別に10種類以上の表現を即座に提案。恋愛・異世界・ホラー・歴史に特化した言い換えサイト。">
+<meta property="og:type"        content="website">
+<meta property="og:url"         content="https://kotoba-kagami.com">
+<meta property="og:image"       content="https://kotoba-kagami.com/ogp.png">
+<meta property="og:site_name"   content="言葉の鏡">
+<meta name="twitter:card"       content="summary_large_image">
+<meta name="twitter:title"      content="言葉の鏡 — 小説・ラノベ作家のための表現辞典">
+<meta name="twitter:description" content="「悲しかった」→ ジャンル別に10種類以上の表現を即座に提案。恋愛・異世界・ホラー・歴史に特化した言い換えサイト。">
+<meta name="twitter:image"      content="https://kotoba-kagami.com/ogp.png">
+
+<!-- ファビコン -->
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500;700&family=Zen+Kaku+Gothic+New:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="logo">言葉の<span>鏡</span></a>
+  <div class="header-right">
+    <div id="memoryBar" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;max-width:400px"></div>
+    <a href="submit.html" class="header-link">＋ 表現を投稿</a>
+  </div>
+</header>
+
+<div class="hero">
+  <p class="hero-eye">頭の中の情景を、正確な言葉に</p>
+  <div class="sw">
+    <input class="si" id="si" type="text" placeholder="雨、走る、「雨が降った」など文章もOK" autocomplete="off">
+    <button class="sbtn" onclick="doSearch()">検索</button>
+  </div>
+  <div class="genre-row">
+    <span class="gl">ジャンル：</span>
+    <button class="gbtn active" onclick="setGenre('all',this)">すべて</button>
+    <button class="gbtn" onclick="setGenre('romance',this)">恋愛・青春</button>
+    <button class="gbtn" onclick="setGenre('fantasy',this)">異世界・ファンタジー</button>
+    <button class="gbtn" onclick="setGenre('horror',this)">ホラー・ミステリ</button>
+    <button class="gbtn" onclick="setGenre('historical',this)">歴史・時代</button>
+  </div>
+  <div class="qrow">
+    <span class="qw" onclick="qs('雨')">雨</span>
+    <span class="qw" onclick="qs('夜')">夜</span>
+    <span class="qw" onclick="qs('風')">風</span>
+    <span class="qw" onclick="qs('雪')">雪</span>
+    <span class="qw" onclick="qs('闇')">闇</span>
+    <span class="qw" onclick="qs('光')">光</span>
+    <span class="qdiv">｜</span>
+    <span class="qw" onclick="qs('悲しい')">悲しい</span>
+    <span class="qw" onclick="qs('切ない')">切ない</span>
+    <span class="qw" onclick="qs('寂しい')">寂しい</span>
+    <span class="qw" onclick="qs('苦しい')">苦しい</span>
+    <span class="qw" onclick="qs('嬉しい')">嬉しい</span>
+    <span class="qw" onclick="qs('孤独')">孤独</span>
+    <span class="qdiv">｜</span>
+    <span class="qw" onclick="qs('走る')">走る</span>
+    <span class="qw" onclick="qs('泣く')">泣く</span>
+    <span class="qw" onclick="qs('笑う')">笑う</span>
+    <span class="qw" onclick="qs('叫ぶ')">叫ぶ</span>
+    <span class="qw" onclick="qs('怒り')">怒り</span>
+    <span class="qw" onclick="qs('恐怖')">恐怖</span>
+  </div>
+</div>
+
+<main>
+  <div class="loading" id="loading">
+    <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+    <div style="margin-top:.6rem;font-size:12px" id="lmsg">語彙の海を探索中</div>
+  </div>
+  <div id="area"></div>
+  <div class="empty" id="empty">
+    <div class="empty-icon">鏡</div>
+    <div class="empty-text">
+      単語でも文章でも検索できます<br>
+      ジャンルを選ぶとそのシーン向けの例文のみ表示<br>
+      全20語収録 ／ 「雨が降った」など文章入力にも対応
+    </div>
+  </div>
+</main>
+
+<!-- 広告① コンテンツをすべて読み終えた後・フッター直前 -->
+<!-- ボタンやリンクから最低48px離す / 誤タップ防止のため上下に余白 -->
+<div style="max-width:960px;margin:0 auto;padding:0 2rem">
+  <div style="height:40px"></div><!-- 上余白：直前コンテンツから離す -->
+  <div style="text-align:center;font-size:10px;color:var(--ink3);letter-spacing:.08em;margin-bottom:6px">スポンサー</div>
+  <div class="ad-slot ad-slot-horizontal" style="margin:0">
+    <!-- Google AdSense 審査通過後にコードをここに貼る -->
+    広告スペース（728×90）
+  </div>
+  <div style="height:40px"></div><!-- 下余白：フッターリンクから離す -->
+</div>
+
+<footer style="border-top:1px solid var(--paper3);padding:1.5rem 2rem;text-align:center;font-size:12px;color:var(--ink3)">
+  <div style="display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;margin-bottom:.75rem">
+    <a href="index.html"   style="color:var(--ink3);text-decoration:none">トップ</a>
+    <a href="submit.html"  style="color:var(--ink3);text-decoration:none">表現を投稿</a>
+    <a href="privacy.html" style="color:var(--ink3);text-decoration:none">プライバシーポリシー</a>
+  </div>
+  <!-- 広告② フッター内・リンクの下・十分な余白あり -->
+  <div style="margin:1rem auto 0;max-width:320px">
+    <div style="font-size:10px;color:var(--ink3);letter-spacing:.08em;margin-bottom:5px">スポンサー</div>
+    <div class="ad-slot" style="min-height:50px;margin:0;font-size:11px">
+      <!-- Google AdSense 審査通過後にコードをここに貼る -->
+      広告スペース（320×50）
+    </div>
+  </div>
+  <div style="margin-top:1rem">© 2025 言葉の鏡 — 小説・ラノベ作家のための表現辞典</div>
+</footer>
+
+<script src="js/const.js"></script>
+<script src="js/db.js"></script>
+<script src="js/memory.js"></script>
+<script src="js/ugc.js"></script>
+<script src="js/search.js"></script>
+<script>
+  document.getElementById('si').addEventListener('keydown', e => { if(e.key==='Enter') doSearch(); });
+  window.addEventListener('load', () => { renderMemoryBar(); });
+</script>
+</body>
+</html>
