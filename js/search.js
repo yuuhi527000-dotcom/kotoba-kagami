@@ -50,19 +50,9 @@ async function doSearch() {
   if (isSentence(input)) {
     await sentenceSearch(input);
   } else {
-    // 1. 記憶（キャッシュ）を確認
-    setLoading(true, '記憶を探しています');
-    const cached = await loadMemory(input);
-    if (cached) {
-      setLoading(false);
-      showToast(`「${input}」は記憶から取り出しました`);
-      renderWord(input, cached);
-      return;
-    }
-
-    // 2. AIで生成
-    setLoading(true, 'AIが表現を生成中');
-    await aiWord(input);
+    // AIで生成
+setLoading(true, 'AIが表現を生成中');
+await aiWord(input);
   }
 }
 
