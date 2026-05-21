@@ -263,10 +263,9 @@ async function aiWord(word) {
     if (!r.ok) throw new Error('APIエラー');
 
     const j = await r.json();
-    if (j.error) throw new Error(j.error.message || 'APIエラー');
-    const raw = j.content.map(x => x.text||'').join('');
-    const clean = raw.replace(/```json|```/g,'').trim();
-    const parsed = JSON.parse(repairJSON(clean));
+    if (j.error && !j.ok) throw new Error(j.error || 'APIエラー');
+    const parsed = j.ok ? j.data : JSON.parse(repairJSON((j.raw||'').trim()));
+    if (!parsed || !parsed.synonyms) throw new Error('データ取得失敗');
     renderWord(word, parsed);
     await saveMemory(word, parsed);
   } catch(e) {
