@@ -145,7 +145,7 @@
   }
 
   // 【超重要】JSが「si」という古いIDで入力欄を探しにきても、エラーにせず自動転送する仕組み
- // 修正案：シンプルにIDを一つに絞る
+// 修正案：シンプルにIDを一つに絞る
   const inputEl = document.getElementById('si'); // 元のIDに戻す
   if(inputEl) {
     inputEl.addEventListener('keydown', e => { if(e.key==='Enter') doSearch(); });
