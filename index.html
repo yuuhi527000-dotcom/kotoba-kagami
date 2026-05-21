@@ -79,11 +79,11 @@
       例文をコピーして使う
     </div>
   </div>
-  <div class="sw">
+<div class="sw">
     <input class="si" id="si" type="text" placeholder="雨、悲しい、「雨が降った」など文章もOK" autocomplete="off">
     <button class="sbtn" onclick="doSearch()">検索</button>
   </div>
-  <div class="genre-row">
+  <div id="memoryBar" style="max-width:600px; margin: 0.5rem auto 0; text-align: left; display: flex; flex-wrap: wrap; gap: 0.5rem; min-height: 24px;"></div> <div class="genre-row">
     <span class="gl">ジャンル：</span>
     <button class="gbtn active" onclick="setGenre('all',this)">すべて</button>
     <button class="gbtn" onclick="setGenre('romance',this)">恋愛・青春</button>
