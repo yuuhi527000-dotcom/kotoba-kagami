@@ -3,41 +3,84 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>言葉の鏡 — 小説・ラノベ作家のための表現辞典</title>
-<meta name="description" content="小説・ライトノベル作家のための表現言い換えサイト。恋愛・異世界・ホラー・歴史など、ジャンル別・シーン別の表現例文を検索できます。">
+<title>言葉の鏡 — 小説・ラノベの言い換え表現辞典【なろう・カクヨム作家向け】</title>
+<meta name="description" content="なろう・カクヨムで執筆中の作家向け。「悲しい」「走る」など言い換え表現をジャンル別に即検索。ビフォー→アフター例文付き。恋愛・異世界・ホラー・歴史に対応。">
 
 <!-- OGP（XにURLを貼ったときに表示される情報） -->
-<meta property="og:title"       content="言葉の鏡 — 小説・ラノベ作家のための表現辞典">
-<meta property="og:description" content="「悲しかった」→ ジャンル別に10種類以上の表現を即座に提案。恋愛・異世界・ホラー・歴史に特化した言い換えサイト。">
+<meta property="og:title"       content="言葉の鏡 — 小説・ラノベの言い換え表現辞典【なろう・カクヨム作家向け】">
+<meta property="og:description" content="なろう・カクヨム作家向け。「悲しい」「雨」など言い換え表現をジャンル別に即検索。ビフォー→アフター例文・類語比較付き。">
 <meta property="og:type"        content="website">
 <meta property="og:url"         content="https://kotoba-kagami.com">
 <meta property="og:image"       content="https://kotoba-kagami.com/ogp.png">
 <meta property="og:site_name"   content="言葉の鏡">
 <meta name="twitter:card"       content="summary_large_image">
-<meta name="twitter:title"      content="言葉の鏡 — 小説・ラノベ作家のための表現辞典">
-<meta name="twitter:description" content="「悲しかった」→ ジャンル別に10種類以上の表現を即座に提案。恋愛・異世界・ホラー・歴史に特化した言い換えサイト。">
+<meta name="twitter:title"      content="言葉の鏡 — 小説・ラノベの言い換え表現辞典【なろう・カクヨム作家向け】">
+<meta name="twitter:description" content="なろう・カクヨム作家向け。「悲しい」「雨」など言い換え表現をジャンル別に即検索。ビフォー→アフター例文・類語比較付き。">
 <meta name="twitter:image"      content="https://kotoba-kagami.com/ogp.png">
 
 <!-- ファビコン -->
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#8b4513">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="言葉の鏡">
+<link rel="apple-touch-icon" href="/icon.svg">
 
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500;700&family=Zen+Kaku+Gothic+New:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-XXXXXXXXXX');
+</script>
 </head>
 <body>
 
-<header>
-  <a href="index.html" class="logo">言葉の<span>鏡</span></a>
-  <div class="header-right">
-    <div id="memoryBar" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;max-width:400px"></div>
-    <a href="submit.html" class="header-link">＋ 表現を投稿</a>
+<header style="padding:0;flex-direction:column;gap:0;align-items:stretch">
+  <div style="display:flex;align-items:center;justify-content:center;padding:.65rem 1.25rem;border-bottom:1px solid var(--paper3)">
+    <a href="/index.html" class="logo">言葉の<span>鏡</span></a>
   </div>
+  <nav style="display:flex;align-items:center;border-bottom:1px solid var(--paper3);background:#fff">
+    <a href="/index.html" class="tab-link">トップ</a>
+    <a href="/ranking.html" class="tab-link">ランキング</a>
+    <a href="/submit.html" class="tab-link">＋ 投稿</a>
+  </nav>
 </header>
 
 <div class="hero">
-  <p class="hero-eye">頭の中の情景を、正確な言葉に</p>
+  <p class="hero-eye">小説・ラノベ作家のための言い換えサイト</p>
+  <div style="display:inline-flex;align-items:center;gap:.5rem;font-size:11px;color:var(--ink3);background:#fff;border:0.5px solid var(--paper3);border-radius:2px;padding:.35rem .75rem;margin-bottom:.75rem">
+    <span>表現はAIで生成しています</span>
+    <span style="color:var(--paper3)">｜</span>
+    <label style="display:flex;align-items:center;gap:.35rem;cursor:pointer">
+      <input type="checkbox" id="aiConsent" checked style="accent-color:var(--acc);width:13px;height:13px">
+      <span>AI使用に同意</span>
+    </label>
+  </div>
+  <h1 style="font-family:'Noto Serif JP',serif;font-size:20px;font-weight:400;color:var(--ink2);margin-bottom:1.25rem;letter-spacing:.06em;line-height:1.8">
+    「悲しかった」→ <span style="color:var(--ink);font-weight:500">断腸の思いで唇をかんだ</span><br>
+    「雨が降った」→ <span style="color:var(--ink);font-weight:500">氷雨がひとりぼっちの背中を濡らした</span>
+  </h1>
+  <div style="display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.25rem">
+    <div style="display:flex;align-items:center;gap:.4rem;font-size:12px;color:var(--ink3)">
+      <span style="background:var(--acc);color:#fff;border-radius:50%;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0">1</span>
+      言葉を入力
+    </div>
+    <div style="display:flex;align-items:center;gap:.4rem;font-size:12px;color:var(--ink3)">
+      <span style="background:var(--acc);color:#fff;border-radius:50%;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0">2</span>
+      ジャンルを選ぶ
+    </div>
+    <div style="display:flex;align-items:center;gap:.4rem;font-size:12px;color:var(--ink3)">
+      <span style="background:var(--acc);color:#fff;border-radius:50%;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0">3</span>
+      例文をコピーして使う
+    </div>
+  </div>
   <div class="sw">
-    <input class="si" id="si" type="text" placeholder="雨、走る、「雨が降った」など文章もOK" autocomplete="off">
+    <input class="si" id="si" type="text" placeholder="雨、悲しい、「雨が降った」など文章もOK" autocomplete="off">
     <button class="sbtn" onclick="doSearch()">検索</button>
   </div>
   <div class="genre-row">
@@ -48,28 +91,9 @@
     <button class="gbtn" onclick="setGenre('horror',this)">ホラー・ミステリ</button>
     <button class="gbtn" onclick="setGenre('historical',this)">歴史・時代</button>
   </div>
-  <div class="qrow">
-    <span class="qw" onclick="qs('雨')">雨</span>
-    <span class="qw" onclick="qs('夜')">夜</span>
-    <span class="qw" onclick="qs('風')">風</span>
-    <span class="qw" onclick="qs('雪')">雪</span>
-    <span class="qw" onclick="qs('闇')">闇</span>
-    <span class="qw" onclick="qs('光')">光</span>
-    <span class="qdiv">｜</span>
-    <span class="qw" onclick="qs('悲しい')">悲しい</span>
-    <span class="qw" onclick="qs('切ない')">切ない</span>
-    <span class="qw" onclick="qs('寂しい')">寂しい</span>
-    <span class="qw" onclick="qs('苦しい')">苦しい</span>
-    <span class="qw" onclick="qs('嬉しい')">嬉しい</span>
-    <span class="qw" onclick="qs('孤独')">孤独</span>
-    <span class="qdiv">｜</span>
-    <span class="qw" onclick="qs('走る')">走る</span>
-    <span class="qw" onclick="qs('泣く')">泣く</span>
-    <span class="qw" onclick="qs('笑う')">笑う</span>
-    <span class="qw" onclick="qs('叫ぶ')">叫ぶ</span>
-    <span class="qw" onclick="qs('怒り')">怒り</span>
-    <span class="qw" onclick="qs('恐怖')">恐怖</span>
-  </div>
+  <p style="font-size:12px;color:var(--ink3);letter-spacing:.08em;margin-top:.25rem">
+    ジャンルを選んで検索してください
+  </p>
 </div>
 
 <main>
@@ -104,6 +128,7 @@
   <div style="display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;margin-bottom:.75rem">
     <a href="index.html"   style="color:var(--ink3);text-decoration:none">トップ</a>
     <a href="words.html"   style="color:var(--ink3);text-decoration:none">語録一覧</a>
+    <a href="ranking.html" style="color:var(--ink3);text-decoration:none">ランキング</a>
     <a href="submit.html"  style="color:var(--ink3);text-decoration:none">表現を投稿</a>
     <a href="privacy.html" style="color:var(--ink3);text-decoration:none">プライバシーポリシー</a>
   </div>
@@ -115,17 +140,23 @@
       広告スペース（320×50）
     </div>
   </div>
-  <div style="margin-top:1rem">© 2025 言葉の鏡 — 小説・ラノベ作家のための表現辞典</div>
+  <div style="margin-top:1rem">© 2025 言葉の鏡 — なろう・カクヨム作家のための言い換え表現辞典</div>
 </footer>
 
 <script src="js/const.js"></script>
 <script src="js/db.js"></script>
-<script src="js/memory.js"></script>
 <script src="js/ugc.js"></script>
 <script src="js/search.js"></script>
 <script>
   document.getElementById('si').addEventListener('keydown', e => { if(e.key==='Enter') doSearch(); });
-  window.addEventListener('load', () => { renderMemoryBar(); });
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .catch(e => console.log('SW error:', e));
+  });
+}
 </script>
 </body>
 </html>
