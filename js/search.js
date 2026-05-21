@@ -60,28 +60,7 @@ async function doSearch() {
       return;
     }
 
-    // 2. Supabaseから語録を取得
-    setLoading(true, '語録を検索中');
-    try {
-      const res = await fetch(`/api/words?action=get&word=${encodeURIComponent(input)}`);
-      const data = await res.json();
-      if (data && data.synonyms && data.synonyms.length > 0) {
-        setLoading(false);
-        renderWord(input, data);
-        await saveMemory(input, data);
-        return;
-      }
-    } catch(e) {}
-
-    // 3. DB（静的データ）を確認
-    const staticData = DB[input];
-    if (staticData) {
-      setLoading(false);
-      renderWord(input, staticData);
-      return;
-    }
-
-    // 4. AIで生成
+    // 2. AIで生成
     setLoading(true, 'AIが表現を生成中');
     await aiWord(input);
   }
