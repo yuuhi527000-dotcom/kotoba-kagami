@@ -6,15 +6,19 @@
 <title>注目ランキング — 言葉の鏡</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500;700&family=Zen+Kaku+Gothic+New:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=2">
-
 <style>
   header { padding: 0 !important; flex-direction: column !important; gap: 0 !important; align-items: stretch !important; background: #fff !important; position: sticky !important; top: 0 !important; z-index: 100 !important; border-bottom: 1px solid var(--paper3) !important; width: 100% !important; display: flex !important; }
   .header-wrap { display: flex !important; align-items: center !important; justify-content: center !important; padding: .85rem 1.25rem !important; border-bottom: 1px solid var(--paper3) !important; width: 100% !important; box-sizing: border-box !important; }
   .tab-nav { display: flex !important; width: 100% !important; background: #fff !important; margin: 0 !important; padding: 0 !important; list-style: none !important; }
   .tab-nav a { flex: 1 !important; text-align: center !important; padding: 0.8rem 0 !important; font-size: 13px !important; font-weight: 500 !important; text-decoration: none !important; display: block !important; box-sizing: border-box !important; }
-  
   .tab-nav a.tab-other { color: var(--ink2) !important; border-bottom: 1px solid var(--paper3) !important; }
   .tab-nav a.tab-rank { color: var(--acc) !important; border-bottom: 2px solid var(--acc) !important; }
+  .rank-num { font-size:28px;font-weight:300;color:var(--paper3);min-width:36px;text-align:center;font-family:'Noto Serif JP',serif; }
+  .rank-num.top { color:var(--acc);font-weight:500; }
+  .rank-card { display:flex;align-items:center;gap:1rem;background:#fff;border:0.5px solid var(--paper3);padding:1rem 1.25rem;cursor:pointer;transition:border-color .15s;text-decoration:none; }
+  .rank-card:hover { border-color:var(--acc); }
+  .rank-bar { height:3px;background:var(--paper3);border-radius:2px;margin-top:4px; }
+  .rank-fill { height:100%;background:var(--acc);border-radius:2px; }
 </style>
 </head>
 <body>
@@ -30,58 +34,102 @@
   </nav>
 </header>
 
-<main style="padding-top: 1.5rem;">
-  <div style="max-width:600px; margin:0 auto; padding:0 1rem;">
-    <h1 style="font-family:'Noto Serif JP',serif; font-size:20px; font-weight:500; color:var(--ink); margin-bottom:1.5rem; text-align:center;">注目度の高い表現</h1>
+<main style="padding-top:1.5rem;">
+  <div style="max-width:600px;margin:0 auto;padding:0 1rem;">
+    <h1 style="font-family:'Noto Serif JP',serif;font-size:20px;font-weight:500;color:var(--ink);margin-bottom:.5rem;text-align:center;">よく使われる言い換え TOP5</h1>
+    <p style="font-size:12px;color:var(--ink3);text-align:center;margin-bottom:1.5rem;">なろう・カクヨム作家に人気の表現ランキング</p>
     <div id="rankingArea"></div>
   </div>
 </main>
 
-<footer style="border-top:1px solid var(--paper3);padding:1.5rem 2rem;text-align:center;font-size:12px;color:var(--ink3);margin-top:4px">
+<footer style="border-top:1px solid var(--paper3);padding:1.5rem 2rem;text-align:center;font-size:12px;color:var(--ink3);margin-top:2rem">
   <div style="display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;margin-bottom:.75rem">
     <a href="index.html" style="color:var(--ink3);text-decoration:none">トップ</a>
     <a href="ranking.html" style="color:var(--ink3);text-decoration:none">ランキング</a>
     <a href="submit.html" style="color:var(--ink3);text-decoration:none">表現を投稿</a>
     <a href="privacy.html" style="color:var(--ink3);text-decoration:none">プライバシーポリシー</a>
   </div>
-  <div style="margin-top:1rem">© 2025 言葉の鏡 — なろう・カクヨム作家のための言い換え表現辞典</div>
+  <div>© 2025 言葉の鏡 — なろう・カクヨム作家のための言い換え表現辞典</div>
 </footer>
 
 <script src="js/const.js?v=2"></script>
 <script src="js/db.js?v=2"></script>
-<script src="js/ugc.js?v=2"></script>
 <script>
-  async function loadRanking() {
-    const area = document.getElementById('rankingArea');
-    if(!area) return;
-    area.innerHTML = '<div class="loading" style="display:block;"><span class="dot"></span><span class="dot"></span><span class="dot"></span><div style="margin-top:.6rem;font-size:12px;color:var(--ink3)">ランキングを抽出中</div></div>';
-    try {
-      const res = await fetch('/api/ugc?action=popular');
-      const items = res.ok ? await res.json() : [];
-      if(items.length === 0) {
-        area.innerHTML = '<p style="text-align:center;color:var(--ink3);font-size:13px;padding:2rem">現在ランキングデータはありません。</p>';
-        return;
-      }
-      let html = '<div style="display:flex;flex-direction:column;gap:1rem;">';
-      items.forEach((item, idx) => {
-        const gc = GENREC[item.genre] || 'gn';
-        const gl = GENRE[item.genre] || '';
-        html += `
-          <div class="ugc-card" style="position:relative; padding:1.25rem; background:#fff; border:1px solid var(--paper3); border-radius:4px;">
-            <div style="position:absolute;top:12px;right:15px;font-size:20px;font-weight:700;color:var(--acc);font-style:italic;opacity:0.4;">Rank ${idx+1}</div>
-            <div class="ugc-word" style="font-size:16px;font-weight:bold;color:var(--ink);">${item.word}<span style="font-size:11px;color:var(--ink3);margin-left:.5rem;font-weight:normal;">${item.kana||''}</span></div>
-            <div class="ugc-meta" style="margin:0.4rem 0 0.6rem;"><span class="tag ${gc}">${item.situation || gl}</span><span style="margin-left:.5rem;font-size:11px;color:var(--ink3)">— ${item.author_name||'匿名'}</span></div>
-            <div class="ugc-scene" style="color:var(--ink2);line-height:1.6;font-size:14px;">${item.scene}</div>
-            ${item.ba_after ? `<div style="margin-top:8px;font-size:13px;color:var(--ink3)">→ <span style="font-family:'Noto Serif JP',serif;color:var(--ink);font-weight:500;">${item.ba_after}</span></div>` : ''}
-          </div>`;
-      });
-      html += '</div>';
-      area.innerHTML = html;
-    } catch(e) {
-      area.innerHTML = '<p style="text-align:center;color:var(--ink3);font-size:13px;padding:2rem">データの読み込みに失敗しました。</p>';
+
+// 仮ランキングデータ（Google Analyticsが育ったら実データに差し替え）
+const FALLBACK = [
+  { word:'悲しい', genre:'romance', ex:'断腸の思いで唇をかんだ', pct:100 },
+  { word:'雨',     genre:'general', ex:'氷雨がひとりぼっちの背中を濡らした', pct:94 },
+  { word:'走る',   genre:'fantasy', ex:'疾風のように姿を消した', pct:88 },
+  { word:'怒り',   genre:'horror',  ex:'怒髪天を衝く勢いで立ち上がった', pct:82 },
+  { word:'切ない', genre:'romance', ex:'胸が締め付けられて、視線を逸らすしかなかった', pct:76 },
+];
+
+async function loadRanking() {
+  const area = document.getElementById('rankingArea');
+  let items = [];
+
+  // Supabaseから人気UGCを取得
+  try {
+    const res = await fetch('/api/ugc?action=popular&limit=5');
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data) && data.length > 0) items = data;
     }
+  } catch(e) {}
+
+  // UGCがなければ仮データを使用
+  if (items.length === 0) {
+    renderFallback(area);
+    return;
   }
-  document.addEventListener('DOMContentLoaded', loadRanking);
+
+  // UGCデータを表示
+  let html = '<div style="display:flex;flex-direction:column;gap:8px;">';
+  items.slice(0,5).forEach((item, idx) => {
+    const gc = GENREC[item.genre] || 'gn';
+    const gl = GENRE[item.genre] || '';
+    html += `
+      <div style="background:#fff;border:0.5px solid var(--paper3);padding:1rem 1.25rem;border-radius:2px;">
+        <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.5rem;">
+          <span style="font-family:'Noto Serif JP',serif;font-size:22px;font-weight:${idx<3?'500':'300'};color:${idx<3?'var(--acc)':'var(--paper3)'};">${idx+1}</span>
+          <div>
+            <span style="font-size:17px;font-weight:500;color:var(--ink);">${item.word}</span>
+            <span class="tag ${gc}" style="margin-left:.5rem;">${item.situation||gl}</span>
+          </div>
+        </div>
+        <div style="font-size:13px;color:var(--ink2);font-style:italic;line-height:1.7;">${item.scene}</div>
+        ${item.ba_after ? `<div style="font-size:12px;color:var(--ink3);margin-top:4px;">→ <span style="color:var(--ink);">${item.ba_after}</span></div>` : ''}
+        <div style="font-size:11px;color:var(--ink3);margin-top:6px;">— ${item.author_name||'匿名'}</div>
+      </div>`;
+  });
+  html += '</div>';
+  area.innerHTML = html;
+}
+
+function renderFallback(area) {
+  let html = '<div style="display:flex;flex-direction:column;gap:8px;">';
+  FALLBACK.forEach((item, idx) => {
+    const gc = GENREC[item.genre] || 'gn';
+    html += `
+      <a class="rank-card" href="index.html" onclick="sessionStorage.setItem('autoSearch','${item.word}')">
+        <div class="rank-num ${idx<3?'top':''}">${idx+1}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-family:'Noto Serif JP',serif;font-size:17px;font-weight:500;color:var(--ink);margin-bottom:2px;">${item.word}</div>
+          <div style="font-size:12px;color:var(--ink3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">例）${item.ex}</div>
+          <div class="rank-bar"><div class="rank-fill" style="width:${item.pct}%;"></div></div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          <span class="tag ${gc}">${GENRE[item.genre]||item.genre}</span>
+        </div>
+      </a>`;
+  });
+  html += '</div>';
+  html += '<p style="text-align:center;font-size:11px;color:var(--paper3);margin-top:1rem;">※ 現在は仮データを表示しています</p>';
+  area.innerHTML = html;
+}
+
+document.addEventListener('DOMContentLoaded', loadRanking);
 </script>
 </body>
 </html>
