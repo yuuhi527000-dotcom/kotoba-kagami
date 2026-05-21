@@ -50,17 +50,7 @@ async function doSearch() {
   if (isSentence(input)) {
     await sentenceSearch(input);
   } else {
-    // 1. 記憶（キャッシュ）を確認
-    setLoading(true, '記憶を探しています');
-    const cached = await loadMemory(input);
-    if (cached) {
-      setLoading(false);
-      showToast(`「${input}」は記憶から取り出しました`);
-      renderWord(input, cached);
-      return;
-    }
-
-    // 2. AIで生成
+    // AIで生成
     setLoading(true, 'AIが表現を生成中');
     await aiWord(input);
   }
@@ -257,19 +247,17 @@ async function aiWord(word) {
   }
   const gk   = genre !== 'all' ? genre : 'all';
   const gn   = GENRE[gk] || '全ジャンル';
-  const sits = gk !== 'all' ? GLABEL[gk] : ['恋愛・失恋','恋愛・成就','異世界・幕開け','異世界・幕締め','ホラー・緊迫','歴史・冒頭','汎用・クライマックス'];
-  const inst = gk !== 'all' ? `【重要】ジャンルは「${gn}」に完全固定。beforeafterのgenreはすべて"${gk}"のみ。` : '複数ジャンルで出すこと。';
-  const sitEx = sits.map((s,i) => `{"sit":"${s}","genre":"${gk!=='all'?gk:['romance','romance','fantasy','fantasy','horror','historical','general'][i]||'general'}","before":"平凡な文${i+1}","after":"豊かな表現${i+1}","note":"20字"}`).join(',');
+  const sits = gk !== 'all' ? GLABEL[gk].slice(0,3) : ['恋愛・失恋','異世界・幕開け','ホラー・緊迫'];
+  const inst = gk !== 'all' ? `ジャンル:${gn}固定。` : '';
+  const sitEx = sits.map((s,i) => `{"sit":"${s}","genre":"${gk!=='all'?gk:['romance','fantasy','horror'][i]||'general'}","before":"平凡な文","after":"豊かな表現","note":"15字"}`).join(',');
 
-  const prompt = `小説・ラノベ作家向け。「${word}」の言い換え。${inst}
-JSONのみ（マークダウン不要）:
-{"synonyms":[{"word":"語","kana":"読み","nuance":"20字","tone":"poetic","genres":["${gk!=='all'?gk:'romance'}"],"intensity":70,"lyricism":60,"usecases":["シーン1","シーン2"],"desc":"40字","scene":"40字"}],"expressions":["表現1","表現2","表現3","表現4"],"beforeafter":[${sitEx}]}`;
+  const prompt = `小説作家向け。「${word}」言い換え。${inst}JSONのみ:{"synonyms":[{"word":"語","kana":"読み","nuance":"15字","tone":"poetic","genres":["${gk!=='all'?gk:'romance'}"],"intensity":70,"lyricism":60,"usecases":["シーン"],"desc":"25字","scene":"25字"},{"word":"語2","kana":"読み","nuance":"15字","tone":"modern","genres":["${gk!=='all'?gk:'general'}"],"intensity":50,"lyricism":50,"usecases":["シーン"],"desc":"25字","scene":"25字"},{"word":"語3","kana":"読み","nuance":"15字","tone":"classical","genres":["${gk!=='all'?gk:'fantasy'}"],"intensity":80,"lyricism":70,"usecases":["シーン"],"desc":"25字","scene":"25字"}],"expressions":["表現1","表現2","表現3"],"beforeafter":[${sitEx}]}`;
 
   try {
     setLoading(true, 'AIが生成中');
     const r = await fetch('/api/chat', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({max_tokens:2000, stream:true, messages:[{role:'user',content:prompt}]})
+      body: JSON.stringify({max_tokens:3000, stream:false, messages:[{role:'user',content:prompt}]})
     });
 
     if (!r.ok) throw new Error('APIエラー');
