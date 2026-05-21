@@ -145,11 +145,16 @@
   }
 
   // 【超重要】JSが「si」という古いIDで入力欄を探しにきても、エラーにせず自動転送する仕組み
-// 修正案：シンプルにIDを一つに絞る
-  const inputEl = document.getElementById('si'); // 元のIDに戻す
-  if(inputEl) {
-    inputEl.addEventListener('keydown', e => { if(e.key==='Enter') doSearch(); });
-  }
+  Object.defineProperty(document, 'getElementById', {
+    value: function(id) {
+      if (id === 'si') {
+        return document.getElementById('search-input');
+      }
+      return Document.prototype.getElementById.call(this, id);
+    },
+    writable: true,
+    configurable: true
+  });
 
   // iPhoneの古いService Workerキャッシュを強制的に排除するスクリプト
   if ('serviceWorker' in navigator) {
