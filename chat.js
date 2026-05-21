@@ -10,7 +10,6 @@ export default async function handler(req, res) {
 
   try {
     const { messages } = req.body;
-
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -24,20 +23,7 @@ export default async function handler(req, res) {
         messages,
       }),
     });
-
     const data = await response.json();
-
-    // テキストからマークダウンコードブロックを除去してJSONを返す
-    if (data.content && data.content[0] && data.content[0].text) {
-      const raw = data.content[0].text.replace(/```json|```/g, '').trim();
-      try {
-        const parsed = JSON.parse(raw);
-        return res.status(200).json({ ok: true, data: parsed });
-      } catch(e) {
-        return res.status(200).json({ ok: false, raw, error: 'parse_error' });
-      }
-    }
-
     return res.status(200).json(data);
   } catch (e) {
     return res.status(500).json({ error: e.message });
