@@ -55,9 +55,9 @@ async function renderMemoryBar() {
     items.sort((a, b) => b.savedAt - a.savedAt);
     const displayItems = items.slice(0, 10);
 
-    bar.innerHTML = `<span class="gl" style="font-size:12px;color:var(--ink3)">記憶：</span>` +
+    bar.innerHTML = `<span class="gl" style="font-size:12px;color:var(--ink3);margin-right:8px;">記憶：</span>` +
       displayItems.map(item => `
-        <span class="gbtn" style="padding:2px 8px;font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:4px" onclick="qs('${item.word.replace(/'/g, "\\'")}')">
+        <span class="gbtn" style="padding:2px 8px;font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:4px;margin-right:4px;margin-bottom:4px;" onclick="qs('${item.word.replace(/'/g, "\\'")}')">
           ${item.word}
           <span style="opacity:0.5;padding-left:2px" onclick="deleteMemory('${item.word.replace(/'/g, "\\'")}', event)">×</span>
         </span>
