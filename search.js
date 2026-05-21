@@ -262,61 +262,13 @@ async function aiWord(word) {
 
     if (!r.ok) throw new Error('APIエラー');
 
-    // ストリーミング受信
-    const reader = r.body.getReader();
-    const decoder = new TextDecoder();
-    let raw = '';
-    let rendered = false;
-
-    setLoading(false);
-    // ローディング表示をプレースホルダーに切り替え
-    document.getElementById('area').innerHTML = `
-      <div style="padding:1.5rem 0">
-        <div style="height:24px;background:var(--paper2);border-radius:2px;margin-bottom:8px;animation:p 1.2s ease-in-out infinite"></div>
-        <div style="height:80px;background:var(--paper2);border-radius:2px;margin-bottom:8px;animation:p 1.2s ease-in-out infinite;animation-delay:.1s"></div>
-        <div style="height:80px;background:var(--paper2);border-radius:2px;animation:p 1.2s ease-in-out infinite;animation-delay:.2s"></div>
-      </div>`;
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      const chunk = decoder.decode(value, { stream: true });
-
-      // SSEからテキストデルタを抽出
-      const lines = chunk.split("\n");
-      for (const line of lines) {
-        if (line.startsWith('data: ')) {
-          try {
-            const data = JSON.parse(line.slice(6));
-            if (data.type === 'content_block_delta' && data.delta?.text) {
-              raw += data.delta.text;
-            }
-          } catch(e) {}
-        }
-      }
-
-      // JSONが揃ったら途中でもレンダリング試行
-      if (!rendered && raw.includes('"beforeafter"') && raw.includes(']')) {
-        try {
-          const parsed = JSON.parse(repairJSON(raw.replace(/```json|```/g,'').trim()));
-          if (parsed.synonyms?.length) {
-            renderWord(word, parsed);
-            rendered = true;
-          }
-        } catch(e) {}
-      }
-    }
-
-    // 最終レンダリング
-    if (raw) {
-      try {
-        const parsed = JSON.parse(repairJSON(raw.replace(/```json|```/g,'').trim()));
-        renderWord(word, parsed);
-        await saveMemory(word, parsed);
-      } catch(e) {
-        if (!rendered) throw new Error('解析エラー');
-      }
-    }
+    const j = await r.json();
+    if (j.error) throw new Error(j.error.message || 'APIエラー');
+    const raw = j.content.map(x => x.text||'').join('');
+    const clean = raw.replace(/```json|```/g,'').trim();
+    const parsed = JSON.parse(repairJSON(clean));
+    renderWord(word, parsed);
+    await saveMemory(word, parsed);
   } catch(e) {
     setLoading(false);
     document.getElementById('area').innerHTML = `<p style="text-align:center;padding:2rem;color:var(--ink3);font-size:13px">エラー: ${e.message}</p>`;
