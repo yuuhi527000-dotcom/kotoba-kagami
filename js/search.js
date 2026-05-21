@@ -253,6 +253,7 @@ async function aiWord(word) {
     renderWord(word, parsed);
     await saveMemory(word, parsed);
     renderMemoryBar();
+    var ad = document.getElementById('adSlot1'); if (ad) ad.style.display = 'block';
   } catch(e) {
     setLoading(false);
     document.getElementById('area').innerHTML = `<p style="text-align:center;padding:2rem;color:var(--ink3);font-size:13px">エラー: ${e.message}</p>`;
