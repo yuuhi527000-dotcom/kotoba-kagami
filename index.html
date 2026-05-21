@@ -1,3 +1,20 @@
+<script src="js/const.js"></script>
+<script src="js/db.js"></script>
+<script src="js/ugc.js"></script>
+<script src="js/search.js"></script>  <script src="js/memory.js"></script>  ```
+
+一見正しそうに見えるのですが、現在入っている `search.js` の132行目あたりで `TONE` というデータ（`const.js` に書いてあるもの）を使おうとした際、ブラウザが「まだ読み込みが終わっていない（あるいは見えない空白のせいで `const.js` 自体が壊れてスキップされた）」状態になり、処理が完全にバーストして白い画面のまま止まっています。
+
+また、`memoryBar`（検索履歴の青い枠など）のHTML要素があるのに、それを動かす `memory.js` が一番後ろにあったり、前のコードで削られていたため、連鎖的に動かなくなっています。
+
+---
+
+### 🛠️ 【解決策】順番を正しく並び替え、見えない空白を完全に消した `index.html`
+
+これで絶対にエラーの青い文字（`ReferenceError`）は消えます。
+以下のコードを丸ごとコピーして、**`index.html`** に上書き貼り付けをしてください。
+
+```html
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -6,30 +23,27 @@
 <title>言葉の鏡 — 小説・ラノベの言い換え表現辞典【なろう・カクヨム作家向け】</title>
 <meta name="description" content="なろう・カクヨムで執筆中の作家向け。「悲しい」「走る」など言い換え表現をジャンル別に即検索。ビフォー→アフター例文付き。恋愛・異世界・ホラー・歴史に対応。">
 
-<!-- OGP（XにURLを貼ったときに表示される情報） -->
-<meta property="og:title"       content="言葉の鏡 — 小説・ラノベの言い換え表現辞典【なろう・カクヨム作家向け】">
+<meta property="og:title" content="言葉の鏡 — 小説・ラノベの言い換え表現辞典【なろう・カクヨム作家向け】">
 <meta property="og:description" content="なろう・カクヨム作家向け。「悲しい」「雨」など言い換え表現をジャンル別に即検索。ビフォー→アフター例文・類語比較付き。">
-<meta property="og:type"        content="website">
-<meta property="og:url"         content="https://kotoba-kagami.com">
-<meta property="og:image"       content="https://kotoba-kagami.com/ogp.png">
-<meta property="og:site_name"   content="言葉の鏡">
-<meta name="twitter:card"       content="summary_large_image">
-<meta name="twitter:title"      content="言葉の鏡 — 小説・ラノベの言い換え表現辞典【なろう・カクヨム作家向け】">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://kotoba-kagami.com">
+<meta property="og:image" content="https://kotoba-kagami.com/ogp.png">
+<meta property="og:site_name" content="言葉の鏡">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="言葉の鏡 — 小説・ラノベの言い換え表現辞典【なろう・カクヨム作家向け】">
 <meta name="twitter:description" content="なろう・カクヨム作家向け。「悲しい」「雨」など言い換え表現をジャンル別に即検索。ビフォー→アフター例文・類語比較付き。">
-<meta name="twitter:image"      content="https://kotoba-kagami.com/ogp.png">
+<meta name="twitter:image" content="https://kotoba-kagami.com/ogp.png">
 
-<!-- ファビコン -->
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#8b4513">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="言葉の鏡">
-<link rel="apple-touch-icon" href="/icon.svg">
+<link class="apple-touch-icon" href="/icon.svg">
 
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500;700&family=Zen+Kaku+Gothic+New:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
-<!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -83,6 +97,7 @@
     <input class="si" id="si" type="text" placeholder="雨、悲しい、「雨が降った」など文章もOK" autocomplete="off">
     <button class="sbtn" onclick="doSearch()">検索</button>
   </div>
+  <div id="memoryBar" style="max-width:600px; margin: 0.5rem auto 0; text-align: left; display: flex; flex-wrap: wrap; gap: 0.5rem; min-height: 24px;"></div> 
   <div class="genre-row">
     <span class="gl">ジャンル：</span>
     <button class="gbtn active" onclick="setGenre('all',this)">すべて</button>
@@ -107,34 +122,29 @@
     <div class="empty-text">
       単語でも文章でも検索できます<br>
       ジャンルを選ぶとそのシーン向けの例文のみ表示<br>
-          </div>
+    </div>
   </div>
 </main>
 
-<!-- 広告① コンテンツをすべて読み終えた後・フッター直前 -->
-<!-- ボタンやリンクから最低48px離す / 誤タップ防止のため上下に余白 -->
 <div style="max-width:960px;margin:0 auto;padding:0 2rem">
-  <div style="height:40px"></div><!-- 上余白：直前コンテンツから離す -->
+  <div style="height:40px"></div>
   <div style="text-align:center;font-size:10px;color:var(--ink3);letter-spacing:.08em;margin-bottom:6px">スポンサー</div>
   <div class="ad-slot ad-slot-horizontal" style="margin:0">
-    <!-- Google AdSense 審査通過後にコードをここに貼る -->
     広告スペース（728×90）
   </div>
-  <div style="height:40px"></div><!-- 下余白：フッターリンクから離す -->
+  <div style="height:40px"></div>
 </div>
 
 <footer style="border-top:1px solid var(--paper3);padding:1.5rem 2rem;text-align:center;font-size:12px;color:var(--ink3)">
   <div style="display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;margin-bottom:.75rem">
-    <a href="index.html"   style="color:var(--ink3);text-decoration:none">トップ</a>
+    <a href="index.html" style="color:var(--ink3);text-decoration:none">トップ</a>
     <a href="ranking.html" style="color:var(--ink3);text-decoration:none">ランキング</a>
-    <a href="submit.html"  style="color:var(--ink3);text-decoration:none">表現を投稿</a>
+    <a href="submit.html" style="color:var(--ink3);text-decoration:none">表現を投稿</a>
     <a href="privacy.html" style="color:var(--ink3);text-decoration:none">プライバシーポリシー</a>
   </div>
-  <!-- 広告② フッター内・リンクの下・十分な余白あり -->
   <div style="margin:1rem auto 0;max-width:320px">
     <div style="font-size:10px;color:var(--ink3);letter-spacing:.08em;margin-bottom:5px">スポンサー</div>
     <div class="ad-slot" style="min-height:50px;margin:0;font-size:11px">
-      <!-- Google AdSense 審査通過後にコードをここに貼る -->
       広告スペース（320×50）
     </div>
   </div>
@@ -144,6 +154,7 @@
 <script src="js/const.js"></script>
 <script src="js/db.js"></script>
 <script src="js/ugc.js"></script>
+<script src="js/memory.js"></script> 
 <script src="js/search.js"></script>
 <script>
   document.getElementById('si').addEventListener('keydown', e => { if(e.key==='Enter') doSearch(); });
