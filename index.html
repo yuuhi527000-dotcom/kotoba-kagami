@@ -37,14 +37,14 @@
 </head>
 <body>
 
-<header style="padding:0;flex-direction:column;gap:0;align-items:stretch">
-  <div style="display:flex;align-items:center;justify-content:center;padding:.65rem 1.25rem;border-bottom:1px solid var(--paper3)">
+<header style="padding:0; flex-direction:column; gap:0; align-items:stretch; background:#fff; position:sticky; top:0; z-index:100; border-bottom:1px solid var(--paper3);">
+  <div style="display:flex; align-items:center; justify-content:center; padding:.85rem 1.25rem; border-bottom:1px solid var(--paper3);">
     <a href="/index.html" class="logo">言葉の<span>鏡</span></a>
   </div>
-  <nav style="display:flex;align-items:center;border-bottom:1px solid var(--paper3);background:#fff">
-    <a href="/index.html" class="tab-link">トップ</a>
-    <a href="/ranking.html" class="tab-link">ランキング</a>
-    <a href="/submit.html" class="tab-link">＋ 投稿</a>
+  <nav style="display:flex; width:100%; background:#fff; margin:0; padding:0;">
+    <a href="/index.html" class="tab-link" style="flex:1; text-align:center; padding:0.8rem 0; font-size:13px; font-weight:500; color:var(--acc); border-bottom:2px solid var(--acc); text-decoration:none; display:block;">トップ</a>
+    <a href="/ranking.html" class="tab-link" style="flex:1; text-align:center; padding:0.8rem 0; font-size:13px; font-weight:500; color:var(--ink2); border-bottom:1px solid var(--paper3); text-decoration:none; display:block;">ランキング</a>
+    <a href="/submit.html" class="tab-link" style="flex:1; text-align:center; padding:0.8rem 0; font-size:13px; font-weight:500; color:var(--ink2); border-bottom:1px solid var(--paper3); text-decoration:none; display:block;">＋ 投稿</a>
   </nav>
 </header>
 
@@ -80,9 +80,7 @@
     <input class="si" id="si" type="text" placeholder="雨、悲しい、「雨が降った」など文章もOK" autocomplete="off">
     <button class="sbtn" onclick="doSearch()">検索</button>
   </div>
-  
-  <div id="memoryBar" class="memory-bar" style="max-width:600px; margin: 0.5rem auto 0; display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; align-items: center; min-height: 30px;"></div> 
-
+  <div id="memoryBar" style="max-width:600px; margin: 0.5rem auto 0; text-align: left; display: flex; flex-wrap: wrap; gap: 0.5rem; min-height: 24px;"></div> 
   <div class="genre-row">
     <span class="gl">ジャンル：</span>
     <button class="gbtn active" onclick="setGenre('all',this)">すべて</button>
