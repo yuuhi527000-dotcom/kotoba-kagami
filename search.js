@@ -363,6 +363,8 @@ function showDetailSent(idx, ei) {
 }
 
 function repairJSON(str) {
+  if (typeof str !== 'string') return '{}';
+  str = str.replace(/```json/g,'').replace(/```/g,'').trim();
   const st = []; let inS = false, esc = false;
   for (let i = 0; i < str.length; i++) {
     const c = str[i];
