@@ -1,31 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
   <rect width="1200" height="630" fill="#f7f4ef"/>
-  <rect width="1200" height="5" fill="#8b4513"/>
-  <rect y="625" width="1200" height="5" fill="#8b4513"/>
-
-  <!-- メインタイトル -->
-  <text x="600" y="220" font-family="serif" font-size="100" font-weight="400" text-anchor="middle" fill="#1a1714" letter-spacing="12">言葉の鏡</text>
-
-  <!-- サブタイトル -->
-  <text x="600" y="305" font-family="sans-serif" font-size="32" text-anchor="middle" fill="#4a4540" letter-spacing="4">小説・ラノベ作家のための表現言い換えサイト</text>
-
-  <!-- 区切り線 -->
-  <rect x="480" y="335" width="240" height="1" fill="#c4854a"/>
-
-  <!-- サンプル例文 -->
-  <text x="600" y="390" font-family="sans-serif" font-size="24" text-anchor="middle" fill="#8a8480">「悲しかった」→</text>
-  <text x="600" y="425" font-family="serif" font-size="26" text-anchor="middle" fill="#8b4513">断腸の思いで唇をかんだ</text>
-
-  <!-- ジャンルタグ -->
-  <rect x="280" y="470" width="140" height="36" rx="2" fill="#f8e8ee"/>
-  <text x="350" y="493" font-family="sans-serif" font-size="18" text-anchor="middle" fill="#7a1a3a">恋愛・青春</text>
-
-  <rect x="440" y="470" width="200" height="36" rx="2" fill="#e8f0f8"/>
-  <text x="540" y="493" font-family="sans-serif" font-size="18" text-anchor="middle" fill="#1a3a5c">異世界・ファンタジー</text>
-
-  <rect x="660" y="470" width="160" height="36" rx="2" fill="#e8e8e8"/>
-  <text x="740" y="493" font-family="sans-serif" font-size="18" text-anchor="middle" fill="#2a2a2a">ホラー・ミステリ</text>
-
-  <rect x="840" y="470" width="140" height="36" rx="2" fill="#f4f0e4"/>
-  <text x="910" y="493" font-family="sans-serif" font-size="18" text-anchor="middle" fill="#4a3a1a">歴史・時代</text>
+  <rect width="1200" height="6" fill="#8b4513"/>
+  <text x="600" y="240" font-family="serif" font-size="120" text-anchor="middle" fill="#8b4513">言葉の鏡</text>
+  <text x="600" y="340" font-family="sans-serif" font-size="36" text-anchor="middle" fill="#4a4540">小説・ラノベ作家のための表現辞典</text>
+  <text x="600" y="420" font-family="sans-serif" font-size="28" text-anchor="middle" fill="#8a8480">恋愛・異世界・ホラー・歴史 ジャンル別に表現を提案</text>
 </svg>
