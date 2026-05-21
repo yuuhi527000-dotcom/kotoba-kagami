@@ -17,7 +17,7 @@
 <meta name="twitter:description" content="なろう・カクヨム作家向け。「悲しい」「雨」など言い換え表現をジャンル別に即検索。ビフォー→アフター例文・類語比較付き。">
 <meta name="twitter:image" content="https://kotoba-kagami.com/ogp.png">
 
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#8b4513">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -26,7 +26,20 @@
 <link class="apple-touch-icon" href="/icon.svg">
 
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500;700&family=Zen+Kaku+Gothic+New:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="css/style.css">
+
+<style>
+  header { padding: 0 !important; flex-direction: column !important; gap: 0 !important; align-items: stretch !important; background: #fff !important; position: sticky !important; top: 0 !important; z-index: 100 !important; border-bottom: 1px solid var(--paper3) !important; }
+  header div:first-child { display: flex !important; align-items: center !important; justify-content: center !important; padding: .85rem 1.25rem !important; border-bottom: 1px solid var(--paper3) !important; width: 100% !important; box-sizing: border-box !important; }
+  header nav { display: flex !important; width: 100% !important; background: #fff !important; margin: 0 !important; padding: 0 !important; }
+  header nav a { flex: 1 !important; text-align: center !important; padding: 0.8rem 0 !important; font-size: 13px !important; font-weight: 500 !important; text-decoration: none !important; display: block !important; box-sizing: border-box !important; }
+  
+  /* トップページ用のタブ色アクティブ設定 */
+  header nav a:nth-child(1) { color: var(--acc) !important; border-bottom: 2px solid var(--acc) !important; }
+  header nav a:nth-child(2) { color: var(--ink2) !important; border-bottom: 1px solid var(--paper3) !important; }
+  header nav a:nth-child(3) { color: var(--ink2) !important; border-bottom: 1px solid var(--paper3) !important; }
+</style>
+
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -37,14 +50,14 @@
 </head>
 <body>
 
-<header style="padding:0; flex-direction:column; gap:0; align-items:stretch; background:#fff; position:sticky; top:0; z-index:100; border-bottom:1px solid var(--paper3);">
-  <div style="display:flex; align-items:center; justify-content:center; padding:.85rem 1.25rem; border-bottom:1px solid var(--paper3);">
-    <a href="/index.html" class="logo">言葉の<span>鏡</span></a>
+<header>
+  <div>
+    <a href="index.html" class="logo">言葉の<span>鏡</span></a>
   </div>
-  <nav style="display:flex; width:100%; background:#fff; margin:0; padding:0;">
-    <a href="/index.html" class="tab-link" style="flex:1; text-align:center; padding:0.8rem 0; font-size:13px; font-weight:500; color:var(--acc); border-bottom:2px solid var(--acc); text-decoration:none; display:block;">トップ</a>
-    <a href="/ranking.html" class="tab-link" style="flex:1; text-align:center; padding:0.8rem 0; font-size:13px; font-weight:500; color:var(--ink2); border-bottom:1px solid var(--paper3); text-decoration:none; display:block;">ランキング</a>
-    <a href="/submit.html" class="tab-link" style="flex:1; text-align:center; padding:0.8rem 0; font-size:13px; font-weight:500; color:var(--ink2); border-bottom:1px solid var(--paper3); text-decoration:none; display:block;">＋ 投稿</a>
+  <nav>
+    <a href="index.html">トップ</a>
+    <a href="ranking.html">ランキング</a>
+    <a href="submit.html">＋ 投稿</a>
   </nav>
 </header>
 
@@ -59,7 +72,7 @@
     </label>
   </div>
   <h1 style="font-family:'Noto Serif JP',serif;font-size:20px;font-weight:400;color:var(--ink2);margin-bottom:1.25rem;letter-spacing:.06em;line-height:1.8">
-    「悲しかった」→ <span style="color:var(--ink);font-weight:500">断腸 of 思いで唇をかんだ</span><br>
+    「悲しかった」→ <span style="color:var(--ink);font-weight:500">断腸の思いで唇をかんだ</span><br>
     「雨が降った」→ <span style="color:var(--ink);font-weight:500">氷雨がひとりぼっちの背中を濡らした</span>
   </h1>
   <div style="display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.25rem">
@@ -111,19 +124,19 @@
 
 <footer style="border-top:1px solid var(--paper3);padding:1.5rem 2rem;text-align:center;font-size:12px;color:var(--ink3)">
   <div style="display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;margin-bottom:.75rem">
-    <a href="/index.html" style="color:var(--ink3);text-decoration:none">トップ</a>
-    <a href="/ranking.html" style="color:var(--ink3);text-decoration:none">ランキング</a>
-    <a href="/submit.html" style="color:var(--ink3);text-decoration:none">表現を投稿</a>
-    <a href="/privacy.html" style="color:var(--ink3);text-decoration:none">プライバシーポリシー</a>
+    <a href="index.html" style="color:var(--ink3);text-decoration:none">トップ</a>
+    <a href="ranking.html" style="color:var(--ink3);text-decoration:none">ランキング</a>
+    <a href="submit.html" style="color:var(--ink3);text-decoration:none">表現を投稿</a>
+    <a href="privacy.html" style="color:var(--ink3);text-decoration:none">プライバシーポリシー</a>
   </div>
   <div style="margin-top:1rem">© 2025 言葉の鏡 — なろう・カクヨム作家のための言い換え表現辞典</div>
 </footer>
 
-<script src="/js/const.js"></script>
-<script src="/js/db.js"></script>
-<script src="/js/ugc.js"></script>
-<script src="/js/memory.js"></script> 
-<script src="/js/search.js"></script>
+<script src="js/const.js"></script>
+<script src="js/db.js"></script>
+<script src="js/ugc.js"></script>
+<script src="js/memory.js"></script> 
+<script src="js/search.js"></script>
 <script>
   document.getElementById('si').addEventListener('keydown', e => { if(e.key==='Enter') doSearch(); });
 </script>
