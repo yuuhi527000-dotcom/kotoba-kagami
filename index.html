@@ -14,19 +14,19 @@
 <meta property="og:site_name" content="言葉の鏡">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="言葉の鏡 — 小説・ラノベの言い換え表現辞典【なろう・カクヨム作家向け】">
-<meta name="twitter:description" content="なろう・カクヨム作家向け。「悲しい」「雨’など言い換え表現をジャンル別に即検索。ビフォー→アフター例文・類語比較付き。">
+<meta name="twitter:description" content="なろう・カクヨム作家向け。「悲しい」「雨」など言い換え表現をジャンル別に即検索。ビフォー→アフター例文・類語比較付き。">
 <meta name="twitter:image" content="https://kotoba-kagami.com/ogp.png">
 
-<link rel="icon" href="favicon.svg?v=3" type="image/svg+xml">
-<link rel="manifest" href="/manifest.json?v=3">
+<link rel="icon" href="favicon.svg?v=4" type="image/svg+xml">
+<link rel="manifest" href="/manifest.json?v=4">
 <meta name="theme-color" content="#8b4513">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="言葉の鏡">
-<link class="apple-touch-icon" href="/icon.svg?v=3">
+<link class="apple-touch-icon" href="/icon.svg?v=4">
 
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500;700&family=Zen+Kaku+Gothic+New:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=3">
+<link rel="stylesheet" href="css/style.css?v=4">
 
 <style>
   body header, html body header { padding: 0 !important; flex-direction: column !important; gap: 0 !important; align-items: stretch !important; background: #fff !important; position: sticky !important; top: 0 !important; z-index: 100 !important; border-bottom: 1px solid var(--paper3) !important; width: 100% !important; display: flex !important; }
@@ -87,10 +87,12 @@
       例文をコピーして使う
     </div>
   </div>
+  
   <div class="sw">
-    <input class="si" id="si" type="text" placeholder="雨、悲しい、「雨が降った」など文章もOK" autocomplete="off">
+    <input class="si" id="search-input" name="si" type="text" placeholder="雨、悲しい、「雨が降った」など文章もOK" autocomplete="off">
     <button class="sbtn" onclick="doSearch()">検索</button>
   </div>
+  
   <div id="memoryBar" style="max-width:600px; margin: 0.5rem auto 0; text-align: left; display: flex; flex-wrap: wrap; gap: 0.5rem; min-height: 24px;"></div> 
   <div class="genre-row">
     <span class="gl">ジャンル：</span>
@@ -127,18 +129,34 @@
     <a href="submit.html" style="color:var(--ink3);text-decoration:none">表現を投稿</a>
     <a href="privacy.html" style="color:var(--ink3);text-decoration:none">プライバシーポリシー</a>
   </div>
-  <div style="margin-top:1rem">© 2025 言換の鏡 — なろう・カクヨム作家のための言い換え表現辞典</div>
+  <div style="margin-top:1rem">© 2025 言葉の鏡 — なろう・カクヨム作家のための言い換え表現辞典</div>
 </footer>
 
-<script src="js/const.js?v=3"></script>
-<script src="js/db.js?v=3"></script>
-<script src="js/ugc.js?v=3"></script>
-<script src="js/memory.js?v=3"></script> 
-<script src="js/search.js?v=3"></script>
+<script src="js/const.js?v=4"></script>
+<script src="js/db.js?v=4"></script>
+<script src="js/ugc.js?v=4"></script>
+<script src="js/memory.js?v=4"></script> 
+<script src="js/search.js?v=4"></script>
 <script>
-  document.getElementById('si').addEventListener('keydown', e => { if(e.key==='Enter') doSearch(); });
+  // エンターキーでの検索対応
+  const inputEl = document.getElementById('search-input');
+  if(inputEl) {
+    inputEl.addEventListener('keydown', e => { if(e.key==='Enter') doSearch(); });
+  }
 
-  // 【超重要】iPhoneの古いService Workerキャッシュを強制的に上書きして消去するスクリプト
+  // 【超重要】JSが「si」という古いIDで入力欄を探しにきても、エラーにせず自動転送する仕組み
+  Object.defineProperty(document, 'getElementById', {
+    value: function(id) {
+      if (id === 'si') {
+        return document.getElementById('search-input');
+      }
+      return Document.prototype.getElementById.call(this, id);
+    },
+    writable: true,
+    configurable: true
+  });
+
+  // iPhoneの古いService Workerキャッシュを強制的に排除するスクリプト
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.getRegistrations().then(function(registrations) {
       for(let registration of registrations) {
