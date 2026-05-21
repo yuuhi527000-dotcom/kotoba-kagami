@@ -259,7 +259,7 @@ JSONのみ（マークダウン不要）:
     setLoading(true, 'AIが生成中');
     const r = await fetch('/api/chat', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({max_tokens:2000, stream:true, messages:[{role:'user',content:prompt}]})
+      body: JSON.stringify({max_tokens:2000, stream:false, messages:[{role:'user',content:prompt}]})
     });
 
     if (!r.ok) throw new Error('APIエラー');
