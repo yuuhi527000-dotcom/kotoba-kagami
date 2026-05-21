@@ -1,11 +1,10 @@
 // ===== 検索・表示ロジック =====
 
-let genre    = 'all';
-let curWord  = '';
-let allSyns  = [];
-let selCard  = null;
+let genre   = 'all';
+let curWord = '';
+let allSyns = [];
+let selCard = null;
 
-// ---- ジャンル ----
 function setGenre(g, btn) {
   genre = g;
   document.querySelectorAll('.gbtn').forEach(b => b.classList.remove('active'));
@@ -18,16 +17,13 @@ function qs(w) {
   doSearch();
 }
 
-// ---- 文章判定 ----
 function isSentence(t) {
   if (/[がをにはでもとへのやをも]/.test(t)) return true;
   if (/する|した|してい|れる|られる|てい|ない|ます|です|だった|いた|って|った|んだ|いで|んで|めた|けた/.test(t)) return true;
   return false;
 }
 
-// ---- メイン検索 ----
 async function doSearch() {
-  // AI使用同意チェック
   const consent = document.getElementById('aiConsent');
   if (consent && !consent.checked) {
     document.getElementById('empty').style.display = 'none';
@@ -42,16 +38,12 @@ async function doSearch() {
   const input = document.getElementById('si').value.trim();
   if (!input) return;
   curWord = input;
-
   document.getElementById('empty').style.display = 'none';
   document.getElementById('area').innerHTML = '';
   setLoading(true, '語彙の海を探索中');
-
   if (isSentence(input)) {
     await sentenceSearch(input);
   } else {
-    // AIで生成
-    setLoading(true, 'AIが表現を生成中');
     await aiWord(input);
   }
 }
@@ -62,11 +54,10 @@ function setLoading(on, msg = '') {
   if (msg) document.getElementById('lmsg').textContent = msg;
 }
 
-// ---- 単語レンダリング ----
 async function renderWord(word, data) {
   setLoading(false);
-  allSyns  = [];
-  selCard  = null;
+  allSyns = [];
+  selCard = null;
 
   let syns = data.synonyms || [];
   let bas  = data.beforeafter || [];
@@ -82,7 +73,6 @@ async function renderWord(word, data) {
   const gb = genre !== 'all' ? `<span class="rbadge">${GENRE[genre]||genre}向けを優先</span>` : '';
   let h = `<div class="rh"><span class="rw">「${word}」</span><span class="rm">の言い換え ${syns.length}件</span>${gb}</div>`;
 
-  // ③ ビフォーアフター（メイン）
   if (bas.length) {
     h += `<div class="sh">ビフォー → アフター 例文集（${bas.length}件）</div><div class="ba-section"><div class="ba-grid">`;
     bas.forEach(b => {
@@ -103,19 +93,17 @@ async function renderWord(word, data) {
     h += `</div></div>`;
   }
 
-  // 情景表現
   if ((data.expressions||[]).length) {
     h += `<div class="sh">情景表現フレーズ</div><div class="expr-list">`;
     data.expressions.forEach(e => { h += `<div class="expr">${e}</div>`; });
     h += `</div>`;
   }
 
-  // ① ニュアンスカード
   if (syns.length) {
     h += `<div class="sh">ニュアンス比較カード（クリックで詳細）</div><div class="nc-grid">`;
     syns.forEach((s, i) => {
-      const uc  = (s.usecases||[]).map(u => `<span class="uc">📌 ${u}</span>`).join(' ');
-      const gt  = (s.genres||[]).slice(0,2).map(g => `<span class="tag ${GENREC[g]||'gn'}">${GENRE[g]||g}</span>`).join('');
+      const uc = (s.usecases||[]).map(u => `<span class="uc">📌 ${u}</span>`).join(' ');
+      const gt = (s.genres||[]).slice(0,2).map(g => `<span class="tag ${GENREC[g]||'gn'}">${GENRE[g]||g}</span>`).join('');
       h += `<div class="nc" id="c${i}" onclick="showDetail(${i})">
         <div class="nc-w">${s.word}</div><div class="nc-k">${s.kana}</div>
         <div class="brow"><span class="blabel">強度</span><div class="bbar"><div class="bfill" style="width:${s.intensity||50}%"></div></div></div>
@@ -136,10 +124,7 @@ async function renderWord(word, data) {
     </div>`;
   }
 
-  // UGCセクション
-  const ugcContainer = document.createElement('div');
   h += `<div id="ugcContainer"></div>`;
-
   h += `<div style="text-align:center;padding:2rem 0 1rem;border-top:1px solid var(--paper3);margin-top:1.5rem">
     <p style="font-size:13px;color:var(--ink3);margin-bottom:1rem">他の言葉も調べてみましょう</p>
     <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:1rem">
@@ -154,7 +139,6 @@ async function renderWord(word, data) {
   await renderUGCSection(word, genre, document.getElementById('ugcContainer'));
 }
 
-// ---- 詳細パネル ----
 function showDetail(i) {
   const s = allSyns[i]; if (!s) return;
   if (selCard !== null) document.getElementById(`c${selCard}`)?.classList.remove('sel');
@@ -203,26 +187,38 @@ function cpText(text, btn) {
   });
 }
 
+function longCopy(e, text) {
+  e.preventDefault();
+  navigator.clipboard.writeText(text).then(() => { showToast('コピーしました'); });
+}
+
+function showToast(msg) {
+  let t = document.getElementById('toast');
+  if (!t) { t = document.createElement('div'); t.id = 'toast'; t.style.cssText = 'position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:#1a1714;color:#fff;padding:.5rem 1.25rem;font-size:13px;border-radius:2px;z-index:999;opacity:0;transition:opacity .2s'; document.body.appendChild(t); }
+  t.textContent = msg; t.style.opacity = '1';
+  setTimeout(() => { t.style.opacity = '0'; }, 2000);
+}
+
 const RELATED_MAP = {
-    '雨':['夜','風','雪','闇','沈黙'],
-    '夜':['雨','闇','風','沈黙','孤独'],
-    '風':['雨','雪','夜','儚い','揺れる'],
-    '雪':['雨','風','闇','儚い','静か'],
-    '闇':['夜','恐怖','孤独','沈黙','消える'],
-    '光':['輝く','明るい','嬉しい','憧れる','燃える'],
-    '悲しい':['切ない','寂しい','苦しい','泣く','孤独'],
-    '嬉しい':['笑う','輝く','明るい','好き','温かい'],
-    '切ない':['悲しい','寂しい','恋しい','儚い','迷う'],
-    '寂しい':['孤独','悲しい','切ない','一人','沈黙'],
-    '苦しい':['悲しい','怒り','恐怖','迷う','叫ぶ'],
-    '怒り':['叫ぶ','苦しい','憎い','震える','恐怖'],
-    '恐怖':['怖い','震える','逃げる','叫ぶ','闇'],
-    '孤独':['寂しい','一人','沈黙','切ない','儚い'],
-    '沈黙':['孤独','静か','一人','寂しい','夜'],
-    '走る':['逃げる','叫ぶ','震える','焦る','歩く'],
-    '泣く':['悲しい','切ない','苦しい','寂しい','孤独'],
-    '笑う':['嬉しい','明るい','好き','輝く','温かい'],
-    '叫ぶ':['怒り','恐怖','苦しい','震える','走る'],
+  '雨':['夜','風','雪','闇','沈黙'],
+  '夜':['雨','闇','風','沈黙','孤独'],
+  '風':['雨','雪','夜','儚い','揺れる'],
+  '雪':['雨','風','闇','儚い','静か'],
+  '闇':['夜','恐怖','孤独','沈黙','消える'],
+  '光':['輝く','明るい','嬉しい','憧れる','燃える'],
+  '悲しい':['切ない','寂しい','苦しい','泣く','孤独'],
+  '嬉しい':['笑う','輝く','明るい','好き','温かい'],
+  '切ない':['悲しい','寂しい','恋しい','儚い','迷う'],
+  '寂しい':['孤独','悲しい','切ない','一人','沈黙'],
+  '苦しい':['悲しい','怒り','恐怖','迷う','叫ぶ'],
+  '怒り':['叫ぶ','苦しい','憎い','震える','恐怖'],
+  '恐怖':['怖い','震える','逃げる','叫ぶ','闇'],
+  '孤独':['寂しい','一人','沈黙','切ない','儚い'],
+  '沈黙':['孤独','静か','一人','寂しい','夜'],
+  '走る':['逃げる','叫ぶ','震える','焦る','歩く'],
+  '泣く':['悲しい','切ない','苦しい','寂しい','孤独'],
+  '笑う':['嬉しい','明るい','好き','輝く','温かい'],
+  '叫ぶ':['怒り','恐怖','苦しい','震える','走る'],
 };
 
 function getRelatedWords(word) {
@@ -233,41 +229,27 @@ function escQ(s) { return s.replace(/'/g, "\\'"); }
 
 // ---- AI単語検索 ----
 async function aiWord(word) {
-  // AI使用同意チェック
-  const consent = document.getElementById('aiConsent');
-  if (consent && !consent.checked) {
-    setLoading(false);
-    document.getElementById('area').innerHTML = `
-      <div style="text-align:center;padding:2.5rem 1rem;color:var(--ink3)">
-        <div style="font-size:32px;margin-bottom:.75rem;opacity:.3">🤖</div>
-        <div style="font-size:14px;color:var(--ink2);margin-bottom:.5rem">「${word}」はDB未収録です</div>
-        <div style="font-size:13px;line-height:1.8">AI生成を使用するには<br>「AI使用に同意」にチェックを入れてください</div>
-      </div>`;
-    return;
-  }
   const gk   = genre !== 'all' ? genre : 'all';
   const gn   = GENRE[gk] || '全ジャンル';
-  const sits = gk !== 'all' ? GLABEL[gk].slice(0,3) : ['恋愛・失恋','異世界・幕開け','ホラー・緊迫'];
-  const inst = gk !== 'all' ? `ジャンル:${gn}固定。` : '';
-  const sitEx = sits.map((s,i) => `{"sit":"${s}","genre":"${gk!=='all'?gk:['romance','fantasy','horror'][i]||'general'}","before":"平凡な文","after":"豊かな表現","note":"15字"}`).join(',');
-
-  const prompt = `小説作家向け。「${word}」言い換え。${inst}JSONのみ:{"synonyms":[{"word":"語","kana":"読み","nuance":"15字","tone":"poetic","genres":["${gk!=='all'?gk:'romance'}"],"intensity":70,"lyricism":60,"usecases":["シーン"],"desc":"25字","scene":"25字"},{"word":"語2","kana":"読み","nuance":"15字","tone":"modern","genres":["${gk!=='all'?gk:'general'}"],"intensity":50,"lyricism":50,"usecases":["シーン"],"desc":"25字","scene":"25字"},{"word":"語3","kana":"読み","nuance":"15字","tone":"classical","genres":["${gk!=='all'?gk:'fantasy'}"],"intensity":80,"lyricism":70,"usecases":["シーン"],"desc":"25字","scene":"25字"}],"expressions":["表現1","表現2","表現3"],"beforeafter":[${sitEx}]}`;
+  const sits = gk !== 'all' ? GLABEL[gk].slice(0,2) : ['恋愛・失恋','異世界・幕開け'];
+  const inst = gk !== 'all' ? `ジャンルは${gn}固定。` : '';
+  const sitEx = sits.map((s,i) => `{"sit":"${s}","genre":"${gk!=='all'?gk:['romance','fantasy'][i]||'general'}","before":"平凡な文","after":"豊かな表現","note":"15字"}`).join(',');
+  const prompt = `小説作家向け。「${word}」の言い換え3語。${inst}JSONのみ:{"synonyms":[{"word":"語","kana":"読み","nuance":"15字","tone":"poetic","genres":["${gk!=='all'?gk:'romance'}"],"intensity":70,"lyricism":60,"usecases":["シーン"],"desc":"20字","scene":"25字"},{"word":"語2","kana":"読み","nuance":"15字","tone":"modern","genres":["${gk!=='all'?gk:'general'}"],"intensity":50,"lyricism":50,"usecases":["シーン"],"desc":"20字","scene":"25字"},{"word":"語3","kana":"読み","nuance":"15字","tone":"classical","genres":["${gk!=='all'?gk:'fantasy'}"],"intensity":80,"lyricism":70,"usecases":["シーン"],"desc":"20字","scene":"25字"}],"expressions":["表現1","表現2"],"beforeafter":[${sitEx}]}`;
 
   try {
     setLoading(true, 'AIが生成中');
     const r = await fetch('/api/chat', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({max_tokens:3000, stream:false, messages:[{role:'user',content:prompt}]})
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({max_tokens: 1500, messages: [{role:'user',content:prompt}]})
     });
-
     if (!r.ok) throw new Error('APIエラー');
-
     const j = await r.json();
     if (j.error) throw new Error(j.error.message || 'APIエラー');
-    const rawText = (j.content || []).map(x => x.text || '').join('');
-    const cleanText = rawText.replace(/```json/g,'').replace(/```/g,'').trim();
-    const parsed = JSON.parse(repairJSON(cleanText));
-    if (!parsed || !parsed.synonyms) throw new Error('データ不正');
+    const raw = (j.content||[]).map(x => x.text||'').join('');
+    const clean = raw.replace(/```json/g,'').replace(/```/g,'').trim();
+    const parsed = JSON.parse(repairJSON(clean));
+    if (!parsed.synonyms) throw new Error('データ不正');
     renderWord(word, parsed);
     await saveMemory(word, parsed);
   } catch(e) {
@@ -282,24 +264,22 @@ async function sentenceSearch(sentence) {
   const dbHits = Object.keys(DB).filter(k => sentence.includes(k));
   const gk  = genre !== 'all' ? genre : 'all';
   const gn  = GENRE[gk] || '全ジャンル';
-  const sits = gk !== 'all' ? GLABEL[gk].slice(0,5) : ['恋愛・失恋','恋愛・成就','異世界・幕開け','ホラー・緊迫','歴史・冒頭'];
-  const inst = gk !== 'all' ? `【重要】ジャンルは「${gn}」に完全固定。beforeafterのgenreはすべて"${gk}"のみ。` : '';
-  const sitEx = sits.map((s,i) => `{"sit":"${s}","genre":"${gk!=='all'?gk:['romance','romance','fantasy','horror','historical'][i]||'general'}","before":"元の文","after":"言い換え文","note":"15字"}`).join(',');
-
-  const prompt = `小説作家が「${sentence}」の言い換えを探しています。${inst}
-この文の核となる動詞・形容詞を最大2つ特定し、各々に言い換え3語とビフォーアフター5件を提案。
-JSONのみ:
-{"detected":"解釈15字","elements":[{"original":"元の語","synonyms":[{"word":"語","kana":"読み","nuance":"15字","tone":"modern","genres":["${gk!=='all'?gk:'general'}"],"intensity":50,"lyricism":50,"usecases":["シーン"],"desc":"30字","scene":"35字"}],"beforeafter":[${sitEx}]}]}`;
+  const sits = gk !== 'all' ? GLABEL[gk].slice(0,2) : ['恋愛・失恋','異世界・幕開け'];
+  const inst = gk !== 'all' ? `ジャンルは${gn}固定。` : '';
+  const sitEx = sits.map((s,i) => `{"sit":"${s}","genre":"${gk!=='all'?gk:['romance','fantasy'][i]||'general'}","before":"元の文","after":"言い換え文","note":"15字"}`).join(',');
+  const prompt = `小説作家が「${sentence}」の言い換えを探しています。${inst}核となる語を特定し言い換え3語とBA2件を提案。JSONのみ:{"detected":"解釈15字","elements":[{"original":"元の語","synonyms":[{"word":"語","kana":"読み","nuance":"15字","tone":"modern","genres":["${gk!=='all'?gk:'general'}"],"intensity":50,"lyricism":50,"usecases":["シーン"],"desc":"20字","scene":"25字"}],"beforeafter":[${sitEx}]}]}`;
 
   try {
     const r = await fetch('/api/chat', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({max_tokens:3000, messages:[{role:'user',content:prompt}]})
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({max_tokens: 1500, messages: [{role:'user',content:prompt}]})
     });
     const j = await r.json();
     if (j.error) throw new Error(j.error.message);
-    const raw    = j.content.map(c => c.text||'').join('');
-    const parsed = JSON.parse(repairJSON(raw.replace(/```json|```/g,'').trim()));
+    const raw    = (j.content||[]).map(c => c.text||'').join('');
+    const clean  = raw.replace(/```json/g,'').replace(/```/g,'').trim();
+    const parsed = JSON.parse(repairJSON(clean));
     renderSentence(sentence, parsed, dbHits);
   } catch(e) {
     setLoading(false);
@@ -307,7 +287,6 @@ JSONのみ:
   }
 }
 
-// ---- 文章レンダリング ----
 async function renderSentence(sentence, parsed, dbHits) {
   setLoading(false);
   allSyns = []; selCard = null;
@@ -320,7 +299,7 @@ async function renderSentence(sentence, parsed, dbHits) {
     dbHits.forEach(k => {
       h += `<div class="db-match" onclick="qs('${k}')">
         <span class="dm-w">「${k}」</span>
-        <span class="dm-m">${DB[k].synonyms.length}件の言い換え＋${DB[k].beforeafter.length}件の例文 →</span>
+        <span class="dm-m">言い換えを見る →</span>
       </div>`;
     });
     h += `<div style="height:1.25rem"></div>`;
@@ -383,7 +362,6 @@ function showDetailSent(idx, ei) {
   }
 }
 
-// ---- JSON修復 ----
 function repairJSON(str) {
   const st = []; let inS = false, esc = false;
   for (let i = 0; i < str.length; i++) {
@@ -401,3 +379,18 @@ function repairJSON(str) {
   while (st.length) r += st.pop();
   return r;
 }
+
+async function saveMemory(word, data) {
+  try { localStorage.setItem('mem:'+word, JSON.stringify({word, data, savedAt:Date.now()})); } catch(e){}
+}
+
+async function loadMemory(word) {
+  try { const v = localStorage.getItem('mem:'+word); return v ? JSON.parse(v).data : null; } catch(e){ return null; }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const si = document.getElementById('si');
+  if (si) si.addEventListener('keydown', e => { if(e.key==='Enter') doSearch(); });
+  const s = sessionStorage.getItem('autoSearch');
+  if (s) { sessionStorage.removeItem('autoSearch'); si.value = s; doSearch(); }
+});
