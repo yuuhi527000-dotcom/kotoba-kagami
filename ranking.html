@@ -20,6 +20,21 @@
   .rank-bar { height:3px;background:var(--paper3);border-radius:2px;margin-top:4px; }
   .rank-fill { height:100%;background:var(--acc);border-radius:2px; }
 </style>
+<script>
+// タブアクティブ（即時実行）
+document.addEventListener('DOMContentLoaded', function() {
+  var path = location.pathname;
+  document.querySelectorAll('.tab-link, .tab-nav a').forEach(function(a) {
+    a.classList.remove('active');
+    var href = (a.getAttribute('href') || '').replace(/^\//, '');
+    var cur = path.replace(/^\//, '') || 'index.html';
+    if (href === cur || (cur === '' && href === 'index.html') ||
+        (href !== '' && path.indexOf(href) !== -1)) {
+      a.classList.add('active');
+    }
+  });
+});
+</script>
 </head>
 <body>
 
@@ -131,17 +146,6 @@ function renderFallback(area) {
 
 document.addEventListener('DOMContentLoaded', loadRanking);
 </script>
-<script>
-(function() {
-  var path = location.pathname.replace(/\/+$/, '') || '/index.html';
-  document.querySelectorAll('.tab-link, .tab-nav a').forEach(function(a) {
-    a.classList.remove('active');
-    var href = a.getAttribute('href');
-    if (path === href || path === '/' && href === '/index.html' || path.endsWith(href)) {
-      a.classList.add('active');
-    }
-  });
-})();
-</script>
+
 </body>
 </html>

@@ -14,6 +14,21 @@
   .tab-nav a.tab-other { color: var(--ink2) !important; border-bottom: 1px solid var(--paper3) !important; }
   .tab-nav a.tab-submit { color: var(--acc) !important; border-bottom: 2px solid var(--acc) !important; }
 </style>
+<script>
+// タブアクティブ（即時実行）
+document.addEventListener('DOMContentLoaded', function() {
+  var path = location.pathname;
+  document.querySelectorAll('.tab-link, .tab-nav a').forEach(function(a) {
+    a.classList.remove('active');
+    var href = (a.getAttribute('href') || '').replace(/^\//, '');
+    var cur = path.replace(/^\//, '') || 'index.html';
+    if (href === cur || (cur === '' && href === 'index.html') ||
+        (href !== '' && path.indexOf(href) !== -1)) {
+      a.classList.add('active');
+    }
+  });
+});
+</script>
 </head>
 <body>
 
@@ -133,17 +148,6 @@
     }
   }
 </script>
-<script>
-(function() {
-  var path = location.pathname.replace(/\/+$/, '') || '/index.html';
-  document.querySelectorAll('.tab-link, .tab-nav a').forEach(function(a) {
-    a.classList.remove('active');
-    var href = a.getAttribute('href');
-    if (path === href || path === '/' && href === '/index.html' || path.endsWith(href)) {
-      a.classList.add('active');
-    }
-  });
-})();
-</script>
+
 </body>
 </html>
