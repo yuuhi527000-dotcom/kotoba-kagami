@@ -11,20 +11,19 @@
 
 <header style="padding:0; flex-direction:column; gap:0; align-items:stretch; background:#fff; position:sticky; top:0; z-index:100; border-bottom:1px solid var(--paper3);">
   <div style="display:flex; align-items:center; justify-content:center; padding:.85rem 1.25rem; border-bottom:1px solid var(--paper3);">
-    <a href="/index.html" class="logo">言葉の<span>鏡</span></a>
+    <a href="index.html" class="logo">言葉の<span>鏡</span></a>
   </div>
   <nav style="display:flex; width:100%; background:#fff; margin:0; padding:0;">
-    <a href="/index.html" class="tab-link" style="flex:1; text-align:center; padding:0.8rem 0; font-size:13px; font-weight:500; color:var(--ink2); border-bottom:1px solid var(--paper3); text-decoration:none; display:block;">トップ</a>
-    <a href="/ranking.html" class="tab-link" style="flex:1; text-align:center; padding:0.8rem 0; font-size:13px; font-weight:500; color:var(--acc); border-bottom:2px solid var(--acc); text-decoration:none; display:block;">ランキング</a>
-    <a href="/submit.html" class="tab-link" style="flex:1; text-align:center; padding:0.8rem 0; font-size:13px; font-weight:500; color:var(--ink2); border-bottom:1px solid var(--paper3); text-decoration:none; display:block;">＋ 投稿</a>
+    <a href="index.html" class="tab-link" style="flex:1; text-align:center; padding:0.8rem 0; font-size:13px; font-weight:500; color:var(--ink2); border-bottom:1px solid var(--paper3); text-decoration:none; display:block;">トップ</a>
+    <a href="ranking.html" class="tab-link" style="flex:1; text-align:center; padding:0.8rem 0; font-size:13px; font-weight:500; color:var(--acc); border-bottom:2px solid var(--acc); text-decoration:none; display:block;">ランキング</a>
+    <a href="submit.html" class="tab-link" style="flex:1; text-align:center; padding:0.8rem 0; font-size:13px; font-weight:500; color:var(--ink2); border-bottom:1px solid var(--paper3); text-decoration:none; display:block;">＋ 投稿</a>
   </nav>
 </header>
 
 <main style="padding-top: 1.5rem;">
   <div style="max-width:600px; margin:0 auto; padding:0 1rem;">
     <h1 style="font-family:'Noto Serif JP',serif; font-size:20px; font-weight:500; color:var(--ink); margin-bottom:1.5rem; text-align:center;">注目度の高い表現</h1>
-    <div id="rankingArea">
-      </div>
+    <div id="rankingArea"></div>
   </div>
 </main>
 
@@ -42,11 +41,10 @@
 <script src="js/db.js"></script>
 <script src="js/ugc.js"></script>
 <script>
-  // ランキング画面用の簡易ダミーまたはAPI読み込み処理
   async function loadRanking() {
     const area = document.getElementById('rankingArea');
     if(!area) return;
-    area.innerHTML = '<p style="text-align:center;color:var(--ink3);font-size:13px;padding:2rem">データを読み込み中...</p>';
+    area.innerHTML = '<div class="loading" style="display:block;"><span class="dot"></span><span class="dot"></span><span class="dot"></span><div style="margin-top:.6rem;font-size:12px;color:var(--ink3)">ランキングを抽出中</div></div>';
     try {
       const res = await fetch('/api/ugc?action=popular');
       const items = res.ok ? await res.json() : [];
@@ -54,23 +52,23 @@
         area.innerHTML = '<p style="text-align:center;color:var(--ink3);font-size:13px;padding:2rem">現在ランキングデータはありません。</p>';
         return;
       }
-      let html = '<div class="ugc-grid" style="display:flex;flex-direction:column;gap:1rem;">';
+      let html = '<div style="display:flex;flex-direction:column;gap:1rem;">';
       items.forEach((item, idx) => {
         const gc = GENREC[item.genre] || 'gn';
         const gl = GENRE[item.genre] || '';
         html += `
-          <div class="ugc-card" style="position:relative;">
-            <div style="position:absolute;top:10px;right:15px;font-size:18px;font-weight:bold;color:var(--acc);opacity:0.3;">#${idx+1}</div>
-            <div class="ugc-word" style="font-size:16px;font-weight:bold;">${item.word}</div>
-            <div class="ugc-meta" style="margin:0.25rem 0 0.5rem;"><span class="tag ${gc}">${item.situation || gl}</span></div>
-            <div class="ugc-scene" style="font-style:italic;color:var(--ink2);">${item.scene}</div>
-            ${item.ba_after ? `<div class="ugc-after" style="margin-top:6px;color:var(--ink);font-weight:500;">→ ${item.ba_after}</div>` : ''}
+          <div class="ugc-card" style="position:relative; padding:1.25rem; background:#fff; border:1px solid var(--paper3); border-radius:4px;">
+            <div style="position:absolute;top:12px;right:15px;font-size:20px;font-weight:700;color:var(--acc);font-style:italic;opacity:0.4;">Rank ${idx+1}</div>
+            <div class="ugc-word" style="font-size:16px;font-weight:bold;color:var(--ink);">${item.word}<span style="font-size:11px;color:var(--ink3);margin-left:.5rem;font-weight:normal;">${item.kana||''}</span></div>
+            <div class="ugc-meta" style="margin:0.4rem 0 0.6rem;"><span class="tag ${gc}">${item.situation || gl}</span><span style="margin-left:.5rem;font-size:11px;color:var(--ink3)">— ${item.author_name||'匿名'}</span></div>
+            <div class="ugc-scene" style="color:var(--ink2);line-height:1.6;font-size:14px;">${item.scene}</div>
+            ${item.ba_after ? `<div style="margin-top:8px;font-size:13px;color:var(--ink3)">→ <span style="font-family:'Noto Serif JP',serif;color:var(--ink);font-weight:500;">${item.ba_after}</span></div>` : ''}
           </div>`;
       });
       html += '</div>';
       area.innerHTML = html;
     } catch(e) {
-      area.innerHTML = '<p style="text-align:center;color:var(--ink3);font-size:13px;padding:2rem">読み込み中にエラーが発生しました。</p>';
+      area.innerHTML = '<p style="text-align:center;color:var(--ink3);font-size:13px;padding:2rem">データの読み込みに失敗しました。</p>';
     }
   }
   document.addEventListener('DOMContentLoaded', loadRanking);
