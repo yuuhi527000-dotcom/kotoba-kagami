@@ -251,10 +251,9 @@ async function aiWord(word) {
   const inst = gk !== 'all' ? `【重要】ジャンルは「${gn}」に完全固定。beforeafterのgenreはすべて"${gk}"のみ。` : '複数ジャンルで出すこと。';
   const sitEx = sits.map((s,i) => `{"sit":"${s}","genre":"${gk!=='all'?gk:['romance','romance','fantasy','fantasy','horror','historical','general'][i]||'general'}","before":"平凡な文${i+1}","after":"豊かな表現${i+1}","note":"20字"}`).join(',');
 
-  const prompt = `小説・ラノベ作家向け。「${word}」の言い換え。${inst}
-JSONのみ（マークダウン不要）:
-{"synonyms":[{"word":"語","kana":"読み","nuance":"20字","tone":"poetic","genres":["${gk!=='all'?gk:'romance'}"],"intensity":70,"lyricism":60,"usecases":["シーン1","シーン2"],"desc":"40字","scene":"40字"}],"expressions":["表現1","表現2","表現3","表現4"],"beforeafter":[${sitEx}]}`;
-
+  const prompt = `小説作家向け。「${word}」の言い換え3語のみ。${inst}JSONのみ:{"synonyms":[{"word":"語","kana":"読み","nuance":"15字","tone":"poetic","genres":["${gk!=='all'?gk:'romance'}"],"intensity":70,"lyricism":60,"usecases":["シーン"],"desc":"20字","scene":"25字"}],"expressions":["表現1","表現2"],"beforeafter":[${sitEx}]}`;
+  const sits = gk !== 'all' ? GLABEL[gk].slice(0,2) : ['恋愛・失恋','異世界・幕開け'];
+  
   try {
     setLoading(true, 'AIが生成中');
     const r = await fetch('/api/chat', {
