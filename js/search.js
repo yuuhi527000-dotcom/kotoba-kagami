@@ -27,18 +27,6 @@ function isSentence(t) {
 
 // ---- メイン検索 ----
 async function doSearch() {
-  // AI使用同意チェック
-  const consent = document.getElementById('aiConsent');
-  if (consent && !consent.checked) {
-    document.getElementById('empty').style.display = 'none';
-    document.getElementById('area').innerHTML = `
-      <div style="text-align:center;padding:2.5rem 1rem;color:var(--ink3)">
-        <div style="font-size:32px;margin-bottom:.75rem;opacity:.3">🤖</div>
-        <div style="font-size:14px;color:var(--ink2);margin-bottom:.5rem">AI使用に同意が必要です</div>
-        <div style="font-size:13px;line-height:1.8">上の「AI使用に同意」にチェックを入れると<br>言い換え表現を検索できます</div>
-      </div>`;
-    return;
-  }
   const input = document.getElementById('si').value.trim();
   if (!input) return;
   curWord = input;
@@ -50,9 +38,21 @@ async function doSearch() {
   if (isSentence(input)) {
     await sentenceSearch(input);
   } else {
-    // AIで生成
-setLoading(true, 'AIが表現を生成中');
-await aiWord(input);
+    const staticData = DB[input];
+    if (staticData) {
+      setLoading(false);
+      renderWord(input, staticData);
+      return;
+    }
+    const cached = await loadMemory(input);
+    if (cached) {
+      setLoading(false);
+      showToast(`「${input}」は記憶から取り出しました`);
+      renderWord(input, cached);
+      return;
+    }
+    setLoading(true, 'AIが表現を生成中');
+    await aiWord(input);
   }
 }
 
@@ -95,7 +95,7 @@ async function renderWord(word, data) {
         <div class="ba-body">
           <div class="ba-b">${b.before}</div>
           <div class="ba-arrow">→</div>
-          <div class="ba-a" oncontextmenu="longCopy(event,'${escQ(b.after)}')">${b.after}</div>
+          <div class="ba-a">${b.after}</div>
         </div>
         ${b.note ? `<div class="ba-note">${b.note}</div>` : ''}
       </div>`;
@@ -140,16 +140,6 @@ async function renderWord(word, data) {
   const ugcContainer = document.createElement('div');
   h += `<div id="ugcContainer"></div>`;
 
-  h += `<div style="text-align:center;padding:2rem 0 1rem;border-top:1px solid var(--paper3);margin-top:1.5rem">
-    <p style="font-size:13px;color:var(--ink3);margin-bottom:1rem">他の言葉も調べてみましょう</p>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:1rem">
-      ${getRelatedWords(word).map(w=>`<span onclick="qs('${w}')" style="font-family:'Noto Serif JP',serif;font-size:14px;color:var(--ink2);padding:5px 14px;border:0.5px solid var(--paper3);border-radius:2px;cursor:pointer;background:#fff" onmouseover="this.style.borderColor='var(--acc)';this.style.color='var(--acc)'" onmouseout="this.style.borderColor='var(--paper3)';this.style.color='var(--ink2)'">${w}</span>`).join('')}
-    </div>
-    <button onclick="document.getElementById('si').focus();document.getElementById('si').select()" style="font-size:13px;padding:8px 24px;background:var(--acc);color:#fff;border:none;cursor:pointer;letter-spacing:.06em;font-family:'Zen Kaku Gothic New',sans-serif">
-      別の言葉を検索する
-    </button>
-  </div>`;
-
   document.getElementById('area').innerHTML = h;
   await renderUGCSection(word, genre, document.getElementById('ugcContainer'));
 }
@@ -174,150 +164,43 @@ function showDetail(i) {
 function cp(id, bid) {
   navigator.clipboard.writeText(document.getElementById(id).textContent).then(() => {
     const b = document.getElementById(bid);
-    b.textContent = '✓ コピー済み';
-    b.style.background = 'var(--acc)';
-    b.style.color = '#fff';
-    b.style.borderColor = 'var(--acc)';
-    setTimeout(() => {
-      b.textContent = id==='dw'?'単語をコピー':'例文をコピー';
-      b.style.background = '';
-      b.style.color = '';
-      b.style.borderColor = '';
-    }, 1800);
+    b.textContent = 'コピー済み ✓'; b.classList.add('ok');
+    setTimeout(() => { b.textContent = id==='dw'?'単語をコピー':'例文をコピー'; b.classList.remove('ok'); }, 1500);
   });
 }
 
 function cpText(text, btn) {
   navigator.clipboard.writeText(text).then(() => {
-    const orig = btn.textContent;
-    btn.textContent = '✓ コピー済み';
-    btn.style.background = 'var(--acc)';
-    btn.style.color = '#fff';
-    btn.style.borderColor = 'var(--acc)';
-    setTimeout(() => {
-      btn.textContent = orig;
-      btn.style.background = '';
-      btn.style.color = '';
-      btn.style.borderColor = '';
-    }, 1800);
+    btn.textContent = 'コピー済み ✓';
+    setTimeout(() => { btn.textContent = 'コピー'; }, 1500);
   });
-}
-
-const RELATED_MAP = {
-    '雨':['夜','風','雪','闇','沈黙'],
-    '夜':['雨','闇','風','沈黙','孤独'],
-    '風':['雨','雪','夜','儚い','揺れる'],
-    '雪':['雨','風','闇','儚い','静か'],
-    '闇':['夜','恐怖','孤独','沈黙','消える'],
-    '光':['輝く','明るい','嬉しい','憧れる','燃える'],
-    '悲しい':['切ない','寂しい','苦しい','泣く','孤独'],
-    '嬉しい':['笑う','輝く','明るい','好き','温かい'],
-    '切ない':['悲しい','寂しい','恋しい','儚い','迷う'],
-    '寂しい':['孤独','悲しい','切ない','一人','沈黙'],
-    '苦しい':['悲しい','怒り','恐怖','迷う','叫ぶ'],
-    '怒り':['叫ぶ','苦しい','憎い','震える','恐怖'],
-    '恐怖':['怖い','震える','逃げる','叫ぶ','闇'],
-    '孤独':['寂しい','一人','沈黙','切ない','儚い'],
-    '沈黙':['孤独','静か','一人','寂しい','夜'],
-    '走る':['逃げる','叫ぶ','震える','焦る','歩く'],
-    '泣く':['悲しい','切ない','苦しい','寂しい','孤独'],
-    '笑う':['嬉しい','明るい','好き','輝く','温かい'],
-    '叫ぶ':['怒り','恐怖','苦しい','震える','走る'],
-};
-
-function getRelatedWords(word) {
-  return RELATED_MAP[word] || Object.keys(RELATED_MAP).filter(w=>w!==word).slice(0,5);
 }
 
 function escQ(s) { return s.replace(/'/g, "\\'"); }
 
 // ---- AI単語検索 ----
 async function aiWord(word) {
-  // AI使用同意チェック
-  const consent = document.getElementById('aiConsent');
-  if (consent && !consent.checked) {
-    setLoading(false);
-    document.getElementById('area').innerHTML = `
-      <div style="text-align:center;padding:2.5rem 1rem;color:var(--ink3)">
-        <div style="font-size:32px;margin-bottom:.75rem;opacity:.3">🤖</div>
-        <div style="font-size:14px;color:var(--ink2);margin-bottom:.5rem">「${word}」はDB未収録です</div>
-        <div style="font-size:13px;line-height:1.8">AI生成を使用するには<br>「AI使用に同意」にチェックを入れてください</div>
-      </div>`;
-    return;
-  }
   const gk   = genre !== 'all' ? genre : 'all';
   const gn   = GENRE[gk] || '全ジャンル';
   const sits = gk !== 'all' ? GLABEL[gk] : ['恋愛・失恋','恋愛・成就','異世界・幕開け','異世界・幕締め','ホラー・緊迫','歴史・冒頭','汎用・クライマックス'];
   const inst = gk !== 'all' ? `【重要】ジャンルは「${gn}」に完全固定。beforeafterのgenreはすべて"${gk}"のみ。` : '複数ジャンルで出すこと。';
   const sitEx = sits.map((s,i) => `{"sit":"${s}","genre":"${gk!=='all'?gk:['romance','romance','fantasy','fantasy','horror','historical','general'][i]||'general'}","before":"平凡な文${i+1}","after":"豊かな表現${i+1}","note":"20字"}`).join(',');
 
-  const prompt = `小説作家向け。「${word}」の言い換え3語のみ。${inst}JSONのみ:{"synonyms":[{"word":"語","kana":"読み","nuance":"15字","tone":"poetic","genres":["${gk!=='all'?gk:'romance'}"],"intensity":70,"lyricism":60,"usecases":["シーン"],"desc":"20字","scene":"25字"}],"expressions":["表現1","表現2"],"beforeafter":[${sitEx}]}`;
-  const sits = gk !== 'all' ? GLABEL[gk].slice(0,2) : ['恋愛・失恋','異世界・幕開け'];
-  
+  const prompt = `小説・ラノベ作家向け。「${word}」の言い換え。${inst}
+JSONのみ（マークダウン不要）:
+{"synonyms":[{"word":"語","kana":"読み","nuance":"20字","tone":"poetic","genres":["${gk!=='all'?gk:'romance'}"],"intensity":70,"lyricism":60,"usecases":["シーン1","シーン2"],"desc":"40字","scene":"40字"}],"expressions":["表現1","表現2","表現3","表現4"],"beforeafter":[${sitEx}]}`;
+
   try {
-    setLoading(true, 'AIが生成中');
     const r = await fetch('/api/chat', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({max_tokens:3000, stream:false, messages:[{role:'user',content:prompt}]})
+      body: JSON.stringify({max_tokens:3000, messages:[{role:'user',content:prompt}]})
     });
-
-    if (!r.ok) throw new Error('APIエラー');
-
-    // ストリーミング受信
-    const reader = r.body.getReader();
-    const decoder = new TextDecoder();
-    let raw = '';
-    let rendered = false;
-
-    setLoading(false);
-    // ローディング表示をプレースホルダーに切り替え
-    document.getElementById('area').innerHTML = `
-      <div style="padding:1.5rem 0">
-        <div style="height:24px;background:var(--paper2);border-radius:2px;margin-bottom:8px;animation:p 1.2s ease-in-out infinite"></div>
-        <div style="height:80px;background:var(--paper2);border-radius:2px;margin-bottom:8px;animation:p 1.2s ease-in-out infinite;animation-delay:.1s"></div>
-        <div style="height:80px;background:var(--paper2);border-radius:2px;animation:p 1.2s ease-in-out infinite;animation-delay:.2s"></div>
-      </div>`;
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      const chunk = decoder.decode(value, { stream: true });
-
-      // SSEからテキストデルタを抽出
-      const lines = chunk.split("\n");
-      for (const line of lines) {
-        if (line.startsWith('data: ')) {
-          try {
-            const data = JSON.parse(line.slice(6));
-            if (data.type === 'content_block_delta' && data.delta?.text) {
-              raw += data.delta.text;
-            }
-          } catch(e) {}
-        }
-      }
-
-      // JSONが揃ったら途中でもレンダリング試行
-      if (!rendered && raw.includes('"beforeafter"') && raw.includes(']')) {
-        try {
-          const parsed = JSON.parse(repairJSON(raw.replace(/```json|```/g,'').trim()));
-          if (parsed.synonyms?.length) {
-            renderWord(word, parsed);
-            rendered = true;
-          }
-        } catch(e) {}
-      }
-    }
-
-    // 最終レンダリング
-    if (raw) {
-      try {
-        const parsed = JSON.parse(repairJSON(raw.replace(/```json|```/g,'').trim()));
-        renderWord(word, parsed);
-        await saveMemory(word, parsed);
-      } catch(e) {
-        if (!rendered) throw new Error('解析エラー');
-      }
-    }
+    const j = await r.json();
+    if (j.error) throw new Error(j.error.message);
+    const raw    = j.content.map(c => c.text||'').join('');
+    const parsed = JSON.parse(repairJSON(raw.replace(/```json|```/g,'').trim()));
+    renderWord(word, parsed);
+    await saveMemory(word, parsed);
   } catch(e) {
     setLoading(false);
     document.getElementById('area').innerHTML = `<p style="text-align:center;padding:2rem;color:var(--ink3);font-size:13px">エラー: ${e.message}</p>`;
@@ -388,7 +271,7 @@ async function renderSentence(sentence, parsed, dbHits) {
           <div class="ba-body">
             <div class="ba-b">${b.before}</div>
             <div class="ba-arrow">→</div>
-            <div class="ba-a" oncontextmenu="longCopy(event,'${escQ(b.after)}')">${b.after}</div>
+            <div class="ba-a">${b.after}</div>
           </div>
           ${b.note ? `<div class="ba-note">${b.note}</div>` : ''}
         </div>`;
