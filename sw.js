@@ -1,5 +1,5 @@
 // Service Worker — 言葉の鏡
-const CACHE = 'kotoba-kagami-v1';
+const CACHE = 'kotoba-kagami-v2'; // ★ここを v1 から v2 に変更してキャッシュを更新
 
 // オフラインでも使えるファイル
 const STATIC = [
@@ -9,6 +9,7 @@ const STATIC = [
   '/css/style.css',
   '/js/const.js',
   '/js/db.js',
+  '/js/memory.js', // ★ここに新しく memory.js を追加！
   '/js/search.js',
   '/js/ugc.js',
   '/favicon.svg',
@@ -34,23 +35,16 @@ self.addEventListener('activate', e => {
 
 // リクエスト時：キャッシュ優先・なければネットワーク
 self.addEventListener('fetch', e => {
-  // APIリクエストはキャッシュしない
   if (e.request.url.includes('/api/')) return;
 
   e.respondWith(
     caches.match(e.request).then(cached => {
       return cached || fetch(e.request).then(res => {
-        // 成功したレスポンスをキャッシュに追加
         if (res.ok) {
           const clone = res.clone();
           caches.open(CACHE).then(c => c.put(e.request, clone));
         }
         return res;
-      }).catch(() => {
-        // オフライン時はindex.htmlを返す
-        if (e.request.mode === 'navigate') {
-          return caches.match('/index.html');
-        }
       });
     })
   );
