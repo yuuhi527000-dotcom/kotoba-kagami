@@ -3,179 +3,118 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>表現を投稿 — 言葉の鏡</title>
-<!-- OGP -->
-<meta property="og:title"       content="表現を投稿 — 言葉の鏡">
-<meta property="og:description" content="小説・ラノベで使える表現を投稿しよう。承認された表現はサイトに掲載されCC0で公開されます。">
-<meta property="og:type"        content="website">
-<meta name="twitter:card"       content="summary">
-<meta property="og:site_name"   content="言葉の鏡">
-<!-- ファビコン -->
-<link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500&family=Zen+Kaku+Gothic+New:wght@300;400;500&display=swap" rel="stylesheet">
+<title>表現を投稿する — 言葉の鏡</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500;700&family=Zen+Kaku+Gothic+New:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<header>
-  <a href="index.html" class="logo">言葉の<span>鏡</span></a>
-  <span class="hsub">表現を投稿する</span>
+<header style="padding:0; flex-direction:column; gap:0; align-items:stretch; background:#fff; position:sticky; top:0; z-index:100; border-bottom:1px solid var(--paper3);">
+  <div style="display:flex; align-items:center; justify-content:center; padding:.85rem 1.25rem; border-bottom:1px solid var(--paper3);">
+    <a href="/index.html" class="logo">言葉の<span>鏡</span></a>
+  </div>
+  <nav style="display:flex; width:100%; background:#fff; margin:0; padding:0;">
+    <a href="/index.html" class="tab-link" style="flex:1; text-align:center; padding:0.8rem 0; font-size:13px; font-weight:500; color:var(--ink2); border-bottom:1px solid var(--paper3); text-decoration:none; display:block;">トップ</a>
+    <a href="/ranking.html" class="tab-link" style="flex:1; text-align:center; padding:0.8rem 0; font-size:13px; font-weight:500; color:var(--ink2); border-bottom:1px solid var(--paper3); text-decoration:none; display:block;">ランキング</a>
+    <a href="/submit.html" class="tab-link" style="flex:1; text-align:center; padding:0.8rem 0; font-size:13px; font-weight:500; color:var(--acc); border-bottom:2px solid var(--acc); text-decoration:none; display:block;">＋ 投稿</a>
+  </nav>
 </header>
 
-<div class="form-wrap">
-  <h1 class="form-title">表現を投稿する</h1>
-  <p class="form-sub">
-    あなたが実際に使った・見つけた表現を投稿してください。<br>
-    投稿内容は管理者が確認後、承認された表現がサイトに掲載されます。<br>
-    掲載された表現は <strong>CC0（パブリックドメイン）</strong> として誰でも自由に使用できます。
-  </p>
+<main style="padding-top: 1.5rem;">
+  <div style="max-width:500px; margin:0 auto; padding:0 1rem;">
+    <h1 style="font-family:'Noto Serif JP',serif; font-size:20px; font-weight:500; color:var(--ink); margin-bottom:1rem; text-align:center;">新しい言い換え表現を投稿</h1>
+    <p style="font-size:12px; color:var(--ink3); text-align:center; margin-bottom:1.5rem; line-height:1.6;">
+      あなたが創作活動で使っている素敵な表現や、お気に入りの語彙を教えてください。運営の承認後に反映されます。
+    </p>
 
-  <div class="frow">
-    <label class="flabel">言葉・単語 <span>*</span></label>
-    <input class="finput" id="f-word" type="text" placeholder="例：雨、悲しい、走る" maxlength="20">
-    <div class="char-count" id="cc-word">0 / 20</div>
+    <form id="submitForm" onsubmit="doSubmit(event)" style="display:flex; flex-direction:column; gap:1.25rem; background:#fff; padding:1.25rem; border:1px solid var(--paper3); border-radius:4px;">
+      <div>
+        <label style="display:block; font-size:12px; font-weight:500; margin-bottom:0.4rem; color:var(--ink2);">元々の言葉（例：雨、悲しい、走る） <span style="color:var(--acc);">*</span></label>
+        <input type="text" id="formWord" required placeholder="検索キーワードになる言葉" style="width:100%; padding:0.6rem; border:1px solid var(--paper3); border-radius:2px; font-size:14px;" autocomplete="off">
+      </div>
+
+      <div>
+        <label style="display:block; font-size:12px; font-weight:500; margin-bottom:0.4rem; color:var(--ink2);">言い換え後の言葉・表現（例：断腸の思い、氷雨） <span style="color:var(--acc);">*</span></label>
+        <input type="text" id="formKana" required placeholder="核心となる単語やフレーズ" style="width:100%; padding:0.6rem; border:1px solid var(--paper3); border-radius:2px; font-size:14px;" autocomplete="off">
+      </div>
+
+      <div>
+        <label style="display:block; font-size:12px; font-weight:500; margin-bottom:0.4rem; color:var(--ink2);">ジャンル <span style="color:var(--acc);">*</span></label>
+        <select id="formGenre" style="width:100%; padding:0.6rem; border:1px solid var(--paper3); border-radius:2px; font-size:14px; background:#fff;">
+          <option value="general">汎用・その他</option>
+          <option value="romance">恋愛・青春</option>
+          <option value="fantasy">異世界・ファンタジー</option>
+          <option value="horror">ホラー・ミステリ</option>
+          <option value="historical">歴史・時代</option>
+        </select>
+      </div>
+
+      <div>
+        <label style="display:block; font-size:12px; font-weight:500; margin-bottom:0.4rem; color:var(--ink2);">シチュエーション・ニュアンス（例：失恋した時、戦闘シーンなど）</label>
+        <input type="text" id="formSituation" placeholder="どんな場面に合うか" style="width:100%; padding:0.6rem; border:1px solid var(--paper3); border-radius:2px; font-size:14px;" autocomplete="off">
+      </div>
+
+      <div>
+        <label style="display:block; font-size:12px; font-weight:500; margin-bottom:0.4rem; color:var(--ink2);">小説風の例文（Before → Afterの一文など） <span style="color:var(--acc);">*</span></label>
+        <textarea id="formScene" required placeholder="例：氷雨がひとりぼっちの背中を濡らした。" style="width:100%; padding:0.6rem; border:1px solid var(--paper3); border-radius:2px; font-size:14px; height:80px; resize:vertical; font-family:inherit;"></textarea>
+      </div>
+
+      <div>
+        <label style="display:block; font-size:12px; font-weight:500; margin-bottom:0.4rem; color:var(--ink2);">著者名（ペンネーム）</label>
+        <input type="text" id="formAuthor" placeholder="匿名" style="width:100%; padding:0.6rem; border:1px solid var(--paper3); border-radius:2px; font-size:14px;" autocomplete="off">
+      </div>
+
+      <button type="submit" style="background:var(--acc); color:#fff; border:none; padding:0.8rem; border-radius:2px; font-size:14px; font-weight:500; cursor:pointer; margin-top:0.5rem;">表現を投稿する（審査へ）</button>
+    </form>
   </div>
+</main>
 
-  <div class="frow">
-    <label class="flabel">読み仮名 <span>*</span></label>
-    <input class="finput" id="f-kana" type="text" placeholder="例：あめ、かなしい、はしる" maxlength="30">
+<footer style="border-top:1px solid var(--paper3);padding:1.5rem 2rem;text-align:center;font-size:12px;color:var(--ink3);margin-top:2rem">
+  <div style="display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;margin-bottom:.75rem">
+    <a href="index.html" style="color:var(--ink3);text-decoration:none">トップ</a>
+    <a href="ranking.html" style="color:var(--ink3);text-decoration:none">ランキング</a>
+    <a href="submit.html" style="color:var(--ink3);text-decoration:none">表現を投稿</a>
+    <a href="privacy.html" style="color:var(--ink3);text-decoration:none">プライバシーポリシー</a>
   </div>
-
-  <div class="frow">
-    <label class="flabel">ニュアンス・使いどころ <span>*</span></label>
-    <input class="finput" id="f-nuance" type="text" placeholder="例：突如降り出す激しい雨。感情爆発・急変を暗示" maxlength="50">
-    <div class="char-count" id="cc-nuance">0 / 50</div>
-  </div>
-
-  <div class="frow">
-    <label class="flabel">例文（この言葉を使った文章） <span>*</span></label>
-    <textarea class="ftextarea" id="f-scene" placeholder="例：驟雨が路地を叩いた瞬間、彼女は走り出した。" maxlength="100"></textarea>
-    <div class="char-count" id="cc-scene">0 / 100</div>
-  </div>
-
-  <div class="frow">
-    <label class="flabel">ビフォー → アフター（言い換え例）</label>
-    <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:.5rem;align-items:center;margin-bottom:.5rem">
-      <input class="finput" id="f-before" type="text" placeholder="Before：雨が降っていた" maxlength="40">
-      <span style="color:var(--acc);font-size:16px;text-align:center">→</span>
-      <input class="finput" id="f-after" type="text" placeholder="After：驟雨が石畳を叩いた" maxlength="60">
-    </div>
-  </div>
-
-  <div class="frow">
-    <label class="flabel">ジャンル <span>*</span></label>
-    <select class="fselect" id="f-genre">
-      <option value="">選択してください</option>
-      <option value="romance">恋愛・青春</option>
-      <option value="fantasy">異世界・ファンタジー</option>
-      <option value="horror">ホラー・ミステリ</option>
-      <option value="historical">歴史・時代</option>
-      <option value="general">汎用（どのジャンルにも）</option>
-    </select>
-  </div>
-
-  <div class="frow">
-    <label class="flabel">シチュエーション</label>
-    <input class="finput" id="f-situation" type="text" placeholder="例：恋愛・失恋、異世界・幕開け、ホラー・逃走" maxlength="30">
-  </div>
-
-  <div class="frow">
-    <label class="flabel">投稿者名（ペンネーム可）</label>
-    <input class="finput" id="f-author" type="text" placeholder="匿名の場合は空欄" maxlength="30">
-  </div>
-
-  <div class="frow">
-    <label class="fcheck">
-      <input type="checkbox" id="f-cc0">
-      投稿する表現の著作権を放棄し、CC0（パブリックドメイン）として誰でも自由に使用できることに同意します。
-    </label>
-  </div>
-
-  <div class="frow">
-    <label class="fcheck">
-      <input type="checkbox" id="f-original">
-      投稿する表現は自分が考えたオリジナルの表現、または既存作品からの引用ではありません。
-    </label>
-  </div>
-
-  <button class="fsubmit" id="submitBtn" onclick="handleSubmit()" disabled>投稿する</button>
-
-  <div class="success-msg" id="successMsg">
-    ✓ 投稿しました！管理者の確認後、承認されるとサイトに掲載されます。
-    <br><a href="index.html" style="color:#085041">← 検索に戻る</a>
-  </div>
-  <div class="error-msg" id="errorMsg"></div>
-</div>
+  <div style="margin-top:1rem">© 2025 言葉の鏡 — なろう・カクヨム作家のための言い換え表現辞典</div>
+</footer>
 
 <script src="js/const.js"></script>
+<script src="js/db.js"></script>
 <script src="js/ugc.js"></script>
 <script>
-// URLパラメータから単語を自動入力
-window.addEventListener('load', () => {
-  const params = new URLSearchParams(location.search);
-  const w = params.get('word');
-  if (w) document.getElementById('f-word').value = w;
-  updateCharCount();
-  checkForm();
-});
-
-// 文字数カウント
-function updateCharCount() {
-  [['f-word','cc-word',20],['f-nuance','cc-nuance',50],['f-scene','cc-scene',100]].forEach(([fid,cid,max]) => {
-    const el = document.getElementById(fid);
-    const cc = document.getElementById(cid);
-    if (el && cc) cc.textContent = `${el.value.length} / ${max}`;
+  // ページ読み込み時、URLパラメータにwordがあれば自動セット
+  document.addEventListener('DOMContentLoaded', () => {
+    const p = new URLSearchParams(window.location.search);
+    if(p.has('word')) document.getElementById('formWord').value = p.get('word');
   });
-}
 
-// フォームバリデーション
-function checkForm() {
-  const btn = document.getElementById('submitBtn');
-  const ok = document.getElementById('f-word').value.trim() &&
-             document.getElementById('f-kana').value.trim() &&
-             document.getElementById('f-nuance').value.trim() &&
-             document.getElementById('f-scene').value.trim() &&
-             document.getElementById('f-genre').value &&
-             document.getElementById('f-cc0').checked &&
-             document.getElementById('f-original').checked;
-  btn.disabled = !ok;
-}
-
-document.querySelectorAll('.finput,.ftextarea,.fselect').forEach(el => {
-  el.addEventListener('input', () => { updateCharCount(); checkForm(); });
-});
-document.querySelectorAll('input[type=checkbox]').forEach(el => {
-  el.addEventListener('change', checkForm);
-});
-
-async function handleSubmit() {
-  const btn = document.getElementById('submitBtn');
-  btn.disabled = true;
-  btn.textContent = '投稿中...';
-
-  const formData = {
-    word:       document.getElementById('f-word').value,
-    kana:       document.getElementById('f-kana').value,
-    nuance:     document.getElementById('f-nuance').value,
-    scene:      document.getElementById('f-scene').value,
-    baAfter:    document.getElementById('f-after').value,
-    genre:      document.getElementById('f-genre').value,
-    situation:  document.getElementById('f-situation').value,
-    authorName: document.getElementById('f-author').value,
-  };
-
-  try {
-    await submitUGC(formData);
-    document.getElementById('successMsg').style.display = 'block';
-    document.getElementById('errorMsg').style.display = 'none';
-    btn.style.display = 'none';
-  } catch(e) {
-    document.getElementById('errorMsg').textContent = `エラー: ${e.message}`;
-    document.getElementById('errorMsg').style.display = 'block';
-    btn.disabled = false;
-    btn.textContent = '投稿する';
+  async function doSubmit(e) {
+    e.preventDefault();
+    const btn = e.target.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    btn.innerText = '送信中...';
+    
+    try {
+      await submitUGC({
+        word:       document.getElementById('formWord').value,
+        kana:       document.getElementById('formKana').value,
+        nuance:     '',
+        scene:      document.getElementById('formScene').value,
+        baAfter:    '',
+        genre:      document.getElementById('formGenre').value,
+        situation:  document.getElementById('formSituation').value,
+        authorName: document.getElementById('formAuthor').value
+      });
+      alert('投稿ありがとうございました！運営の承認後に掲載されます。');
+      e.target.reset();
+    } catch(err) {
+      alert(err.message || '投稿に失敗しました。');
+    } finally {
+      btn.disabled = false;
+      btn.innerText = '表現を投稿する（審査へ）';
+    }
   }
-}
 </script>
 </body>
 </html>
