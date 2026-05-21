@@ -1,10 +1,10 @@
 // ===== 記憶機能（検索履歴のlocalStorage保存） =====
 
-// localStorageのキーのプレフィックス
 const MEM_PREFIX = 'mem:';
 
 async function saveMemory(word, data) {
   try {
+    if (!word) return;
     const key = MEM_PREFIX + word;
     const value = JSON.stringify({ word, data, savedAt: Date.now() });
     window.localStorage.setItem(key, value);
@@ -36,7 +36,6 @@ async function renderMemoryBar() {
   const bar = document.getElementById('memoryBar');
   if (!bar) return;
   try {
-    // localStorageから 'mem:' で始まるキーをすべて抽出
     const items = [];
     for (let i = 0; i < window.localStorage.length; i++) {
       const key = window.localStorage.key(i);
@@ -53,15 +52,14 @@ async function renderMemoryBar() {
       return; 
     }
 
-    // 保存日時の新しい順にソートして最大10件にする
     items.sort((a, b) => b.savedAt - a.savedAt);
     const displayItems = items.slice(0, 10);
 
-    bar.innerHTML = `<span class=\"mem-label\">記憶：</span>` +
+    bar.innerHTML = `<span class="gl" style="font-size:12px;color:var(--ink3)">記憶：</span>` +
       displayItems.map(item => `
-        <span class="mem-chip" onclick="qs('${item.word.replace(/'/g, "\\'")}')">
+        <span class="gbtn" style="padding:2px 8px;font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:4px" onclick="qs('${item.word.replace(/'/g, "\\'")}')">
           ${item.word}
-          <span class="mem-del" onclick="deleteMemory('${item.word.replace(/'/g, "\\'")}', event)">×</span>
+          <span style="opacity:0.5;padding-left:2px" onclick="deleteMemory('${item.word.replace(/'/g, "\\'")}', event)">×</span>
         </span>
       `).join('');
   } catch(e) {
@@ -69,7 +67,6 @@ async function renderMemoryBar() {
   }
 }
 
-// ページ読み込み時に一度履歴バーを描画する
 document.addEventListener('DOMContentLoaded', () => {
   renderMemoryBar();
 });
