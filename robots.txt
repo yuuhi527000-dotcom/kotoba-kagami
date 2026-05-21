@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://kotoba-kagami.vercel.app/sitemap.xml
