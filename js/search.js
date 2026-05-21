@@ -295,8 +295,7 @@ JSONのみ（マークダウン不要）:
       const chunk = decoder.decode(value, { stream: true });
 
       // SSEからテキストデルタを抽出
-      const lines = chunk.split('
-');
+      const lines = chunk.split("\n");
       for (const line of lines) {
         if (line.startsWith('data: ')) {
           try {
