@@ -1,20 +1,3 @@
-<script src="js/const.js"></script>
-<script src="js/db.js"></script>
-<script src="js/ugc.js"></script>
-<script src="js/search.js"></script>  <script src="js/memory.js"></script>  ```
-
-一見正しそうに見えるのですが、現在入っている `search.js` の132行目あたりで `TONE` というデータ（`const.js` に書いてあるもの）を使おうとした際、ブラウザが「まだ読み込みが終わっていない（あるいは見えない空白のせいで `const.js` 自体が壊れてスキップされた）」状態になり、処理が完全にバーストして白い画面のまま止まっています。
-
-また、`memoryBar`（検索履歴の青い枠など）のHTML要素があるのに、それを動かす `memory.js` が一番後ろにあったり、前のコードで削られていたため、連鎖的に動かなくなっています。
-
----
-
-### 🛠️ 【解決策】順番を正しく並び替え、見えない空白を完全に消した `index.html`
-
-これで絶対にエラーの青い文字（`ReferenceError`）は消えます。
-以下のコードを丸ごとコピーして、**`index.html`** に上書き貼り付けをしてください。
-
-```html
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -97,7 +80,9 @@
     <input class="si" id="si" type="text" placeholder="雨、悲しい、「雨が降った」など文章もOK" autocomplete="off">
     <button class="sbtn" onclick="doSearch()">検索</button>
   </div>
-  <div id="memoryBar" style="max-width:600px; margin: 0.5rem auto 0; text-align: left; display: flex; flex-wrap: wrap; gap: 0.5rem; min-height: 24px;"></div> 
+  
+  <div id="memoryBar" class="memory-bar" style="max-width:600px; margin: 0.5rem auto 0; display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; align-items: center; min-height: 30px;"></div> 
+
   <div class="genre-row">
     <span class="gl">ジャンル：</span>
     <button class="gbtn active" onclick="setGenre('all',this)">すべて</button>
