@@ -252,6 +252,7 @@ async function aiWord(word) {
     if (!parsed.synonyms) throw new Error('データ不正');
     renderWord(word, parsed);
     await saveMemory(word, parsed);
+    renderMemoryBar();
   } catch(e) {
     setLoading(false);
     document.getElementById('area').innerHTML = `<p style="text-align:center;padding:2rem;color:var(--ink3);font-size:13px">エラー: ${e.message}</p>`;
