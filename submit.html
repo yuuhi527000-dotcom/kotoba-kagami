@@ -6,13 +6,11 @@
 <title>表現を投稿する — 言葉の鏡</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500;700&family=Zen+Kaku+Gothic+New:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=2">
-
 <style>
   header { padding: 0 !important; flex-direction: column !important; gap: 0 !important; align-items: stretch !important; background: #fff !important; position: sticky !important; top: 0 !important; z-index: 100 !important; border-bottom: 1px solid var(--paper3) !important; width: 100% !important; display: flex !important; }
   .header-wrap { display: flex !important; align-items: center !important; justify-content: center !important; padding: .85rem 1.25rem !important; border-bottom: 1px solid var(--paper3) !important; width: 100% !important; box-sizing: border-box !important; }
   .tab-nav { display: flex !important; width: 100% !important; background: #fff !important; margin: 0 !important; padding: 0 !important; list-style: none !important; }
   .tab-nav a { flex: 1 !important; text-align: center !important; padding: 0.8rem 0 !important; font-size: 13px !important; font-weight: 500 !important; text-decoration: none !important; display: block !important; box-sizing: border-box !important; }
-  
   .tab-nav a.tab-other { color: var(--ink2) !important; border-bottom: 1px solid var(--paper3) !important; }
   .tab-nav a.tab-submit { color: var(--acc) !important; border-bottom: 2px solid var(--acc) !important; }
 </style>
@@ -74,6 +72,13 @@
         <input type="text" id="formAuthor" placeholder="匿名" style="width:100%; padding:0.6rem; border:1px solid var(--paper3); border-radius:2px; font-size:14px;" autocomplete="off">
       </div>
 
+      <div style="background:var(--paper);border:1px solid var(--paper3);border-radius:2px;padding:.75rem 1rem;">
+        <label style="display:flex;align-items:flex-start;gap:.6rem;cursor:pointer;font-size:12px;color:var(--ink2);line-height:1.7;">
+          <input type="checkbox" id="chkOriginal" required style="accent-color:var(--acc);width:15px;height:15px;margin-top:2px;flex-shrink:0">
+          <span>AIや著作物から持ってきていません。私はこの表現の権利を放棄します（CC0）。</span>
+        </label>
+      </div>
+
       <button type="submit" style="background:var(--acc); color:#fff; border:none; padding:0.8rem; border-radius:2px; font-size:14px; font-weight:500; cursor:pointer; margin-top:0.5rem;">表現を投稿する（審査へ）</button>
     </form>
   </div>
@@ -93,17 +98,20 @@
 <script src="js/db.js?v=2"></script>
 <script src="js/ugc.js?v=2"></script>
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', function() {
     const p = new URLSearchParams(window.location.search);
     if(p.has('word')) document.getElementById('formWord').value = p.get('word');
   });
 
   async function doSubmit(e) {
     e.preventDefault();
+    if (!document.getElementById('chkOriginal').checked) {
+      alert('権利放棄のチェックを入れてください。');
+      return;
+    }
     const btn = e.target.querySelector('button[type="submit"]');
     btn.disabled = true;
     btn.innerText = '送信中...';
-    
     try {
       await submitUGC({
         word:       document.getElementById('formWord').value,

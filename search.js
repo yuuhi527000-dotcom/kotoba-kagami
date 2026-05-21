@@ -231,17 +231,17 @@ function escQ(s) { return s.replace(/'/g, "\\'"); }
 async function aiWord(word) {
   const gk   = genre !== 'all' ? genre : 'all';
   const gn   = GENRE[gk] || '全ジャンル';
-  const sits = gk !== 'all' ? GLABEL[gk].slice(0,2) : ['恋愛・失恋','異世界・幕開け'];
+  const sits = gk !== 'all' ? GLABEL[gk].slice(0,5) : ['恋愛・失恋','恋愛・成就','異世界・幕開け','ホラー・緊迫','歴史・冒頭'];
   const inst = gk !== 'all' ? `ジャンルは${gn}固定。` : '';
   const sitEx = sits.map((s,i) => `{"sit":"${s}","genre":"${gk!=='all'?gk:['romance','fantasy'][i]||'general'}","before":"平凡な文","after":"豊かな表現","note":"15字"}`).join(',');
-  const prompt = `小説作家向け。「${word}」の言い換え3語。${inst}JSONのみ:{"synonyms":[{"word":"語","kana":"読み","nuance":"15字","tone":"poetic","genres":["${gk!=='all'?gk:'romance'}"],"intensity":70,"lyricism":60,"usecases":["シーン"],"desc":"20字","scene":"25字"},{"word":"語2","kana":"読み","nuance":"15字","tone":"modern","genres":["${gk!=='all'?gk:'general'}"],"intensity":50,"lyricism":50,"usecases":["シーン"],"desc":"20字","scene":"25字"},{"word":"語3","kana":"読み","nuance":"15字","tone":"classical","genres":["${gk!=='all'?gk:'fantasy'}"],"intensity":80,"lyricism":70,"usecases":["シーン"],"desc":"20字","scene":"25字"}],"expressions":["表現1","表現2"],"beforeafter":[${sitEx}]}`;
+  const prompt = `小説作家向け。「${word}」の言い換え3語。${inst}JSONのみ:{"synonyms":[{"word":"語","kana":"読み","nuance":"15字","tone":"poetic","genres":["${gk!=='all'?gk:'romance'}"],"intensity":70,"lyricism":60,"usecases":["シーン"],"desc":"20字","scene":"25字"},{"word":"語2","kana":"読み","nuance":"15字","tone":"modern","genres":["${gk!=='all'?gk:'general'}"],"intensity":50,"lyricism":50,"usecases":["シーン"],"desc":"20字","scene":"25字"},{"word":"語3","kana":"読み","nuance":"15字","tone":"classical","genres":["${gk!=='all'?gk:'fantasy'}"],"intensity":80,"lyricism":70,"usecases":["シーン"],"desc":"20字","scene":"25字"},{"word":"語4","kana":"読み","nuance":"15字","tone":"sensory","genres":["" + (gk !== 'all' ? gk : 'horror') + ""],"intensity":85,"lyricism":45,"usecases":["シーン"],"desc":"20字","scene":"25字"},{"word":"語5","kana":"読み","nuance":"15字","tone":"modern","genres":["" + (gk !== 'all' ? gk : 'historical') + ""],"intensity":60,"lyricism":80,"usecases":["シーン"],"desc":"20字","scene":"25字"}],"expressions":["表現1","表現2","表現3","表現4","表現5","表現6","表現7"],"beforeafter":[${sitEx}]}`;
 
   try {
     setLoading(true, 'AIが生成中');
     const r = await fetch('/api/chat', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({max_tokens: 1500, messages: [{role:'user',content:prompt}]})
+      body: JSON.stringify({max_tokens: 2500, messages: [{role:'user',content:prompt}]})
     });
     if (!r.ok) throw new Error('APIエラー');
     const j = await r.json();
@@ -264,7 +264,7 @@ async function sentenceSearch(sentence) {
   const dbHits = Object.keys(DB).filter(k => sentence.includes(k));
   const gk  = genre !== 'all' ? genre : 'all';
   const gn  = GENRE[gk] || '全ジャンル';
-  const sits = gk !== 'all' ? GLABEL[gk].slice(0,2) : ['恋愛・失恋','異世界・幕開け'];
+  const sits = gk !== 'all' ? GLABEL[gk].slice(0,5) : ['恋愛・失恋','恋愛・成就','異世界・幕開け','ホラー・緊迫','歴史・冒頭'];
   const inst = gk !== 'all' ? `ジャンルは${gn}固定。` : '';
   const sitEx = sits.map((s,i) => `{"sit":"${s}","genre":"${gk!=='all'?gk:['romance','fantasy'][i]||'general'}","before":"元の文","after":"言い換え文","note":"15字"}`).join(',');
   const prompt = `小説作家が「${sentence}」の言い換えを探しています。${inst}核となる語を特定し言い換え3語とBA2件を提案。JSONのみ:{"detected":"解釈15字","elements":[{"original":"元の語","synonyms":[{"word":"語","kana":"読み","nuance":"15字","tone":"modern","genres":["${gk!=='all'?gk:'general'}"],"intensity":50,"lyricism":50,"usecases":["シーン"],"desc":"20字","scene":"25字"}],"beforeafter":[${sitEx}]}]}`;
@@ -273,7 +273,7 @@ async function sentenceSearch(sentence) {
     const r = await fetch('/api/chat', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({max_tokens: 1500, messages: [{role:'user',content:prompt}]})
+      body: JSON.stringify({max_tokens: 2500, messages: [{role:'user',content:prompt}]})
     });
     const j = await r.json();
     if (j.error) throw new Error(j.error.message);
