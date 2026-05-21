@@ -133,5 +133,17 @@
     }
   }
 </script>
+<script>
+(function() {
+  var path = location.pathname.replace(/\/+$/, '') || '/index.html';
+  document.querySelectorAll('.tab-link, .tab-nav a').forEach(function(a) {
+    a.classList.remove('active');
+    var href = a.getAttribute('href');
+    if (path === href || path === '/' && href === '/index.html' || path.endsWith(href)) {
+      a.classList.add('active');
+    }
+  });
+})();
+</script>
 </body>
 </html>

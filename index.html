@@ -195,5 +195,18 @@ if ('serviceWorker' in navigator) {
   });
 }
 </script>
+<script>
+// タブのアクティブ状態をURL判定で設定
+(function() {
+  var path = location.pathname.replace(/\/+$/, '') || '/index.html';
+  document.querySelectorAll('.tab-link').forEach(function(a) {
+    a.classList.remove('active');
+    var href = a.getAttribute('href');
+    if (path === href || path === '/' && href === '/index.html' || path.endsWith(href)) {
+      a.classList.add('active');
+    }
+  });
+})();
+</script>
 </body>
 </html>
