@@ -4,219 +4,251 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>管理画面 — 言葉の鏡</title>
-<!-- OGP -->
-<meta property="og:title"       content="管理画面 — 言葉の鏡">
-<meta property="og:description" content="投稿管理画面">
-<meta property="og:type"        content="website">
-<meta name="twitter:card"       content="summary">
-<meta property="og:site_name"   content="言葉の鏡">
-<!-- ファビコン -->
-<link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500&family=Zen Kaku Gothic New:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-XXXXXXXXXX');
-</script>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9877301846616121"
-     crossorigin="anonymous"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500;700&family=Zen+Kaku+Gothic+New:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=5">
+<style>
+  body { font-size:14px; }
+  .admin-wrap { max-width:900px; margin:0 auto; padding:2rem 1.25rem 4rem; }
+  .tab-btn { padding:8px 20px; border:none; background:none; cursor:pointer; font-size:13px; color:var(--ink3); border-bottom:2px solid transparent; margin-bottom:-1px; font-family:'Zen Kaku Gothic New',sans-serif; transition:all .15s; }
+  .tab-btn.active { color:var(--ink); border-bottom-color:var(--acc); }
+  .panel { display:none; }
+  .panel.active { display:block; }
+  .inp { padding:.55rem .75rem; border:1px solid var(--paper3); font-size:13px; font-family:'Zen Kaku Gothic New',sans-serif; outline:none; border-radius:2px; }
+  .inp:focus { border-color:var(--acc); }
+  .btn { padding:6px 16px; border:none; cursor:pointer; font-size:12px; border-radius:2px; font-family:'Zen Kaku Gothic New',sans-serif; transition:all .15s; }
+  .btn-acc { background:var(--acc); color:#fff; }
+  .btn-acc:hover { background:var(--accl); }
+  .btn-outline { background:#fff; color:var(--ink2); border:1px solid var(--paper3); }
+  .btn-outline:hover { border-color:var(--acc); color:var(--acc); }
+  .btn-danger { background:#fff; color:#791F1F; border:1px solid #791F1F; }
+  .btn-danger:hover { background:#FCEBEB; }
+  .user-row { background:#fff; border:0.5px solid var(--paper3); padding:.75rem 1rem; display:flex; align-items:center; gap:.75rem; flex-wrap:wrap; }
+  .user-row:hover { background:var(--accf); }
+  .premium-badge { font-size:10px; padding:1px 7px; background:var(--acc); color:#fff; border-radius:2px; font-weight:500; }
+  .free-badge { font-size:10px; padding:1px 7px; background:var(--paper2); color:var(--ink3); border-radius:2px; }
+  .ugc-card { background:#fff; border:0.5px solid var(--paper3); border-left:3px solid var(--paper3); padding:.85rem 1.1rem; margin-bottom:8px; }
+  .ugc-card.pending { border-left-color:var(--acc); }
+</style>
 </head>
 <body>
 
-<header style="padding:0;flex-direction:column;gap:0;align-items:stretch">
-  <div style="display:flex;align-items:center;justify-content:center;padding:.65rem 1.25rem;border-bottom:1px solid var(--paper3)">
-    <a href="/index.html" class="logo">言葉の<span>鏡</span></a>
+<div id="loginScreen" style="max-width:360px;margin:4rem auto;padding:0 1.25rem">
+  <div style="text-align:center;margin-bottom:1.5rem">
+    <div class="logo" style="font-family:'Noto Serif JP',serif;font-size:20px;font-weight:500;color:var(--ink)">言葉の<span style="color:var(--acc)">鏡</span></div>
+    <div style="font-size:12px;color:var(--ink3);margin-top:.25rem">管理画面</div>
   </div>
-  <nav style="display:flex;align-items:center;border-bottom:1px solid var(--paper3);background:#fff">
-    <a href="/index.html" class="tab-link">トップ</a>
-    <a href="/ranking.html" class="tab-link">ランキング</a>
-    <a href="/submit.html" class="tab-link">＋ 投稿</a>
-  </nav>
-</header>
+  <div style="display:flex;flex-direction:column;gap:.75rem;background:#fff;border:1px solid var(--paper3);border-top:3px solid var(--acc);padding:1.5rem">
+    <input type="password" id="adminPass" class="inp" placeholder="管理者パスワード" style="width:100%">
+    <button class="btn btn-acc" style="width:100%;padding:.75rem" onclick="doAdminLogin()">ログイン</button>
+    <div id="loginErr" style="font-size:12px;color:#791F1F;display:none;text-align:center">パスワードが違います</div>
+  </div>
+</div>
 
-<!-- ログイン画面 -->
-<div id="loginScreen">
-  <div class="login-box">
-    <div class="admin-title">管理者ログイン</div>
-    <div class="frow">
-      <label class="flabel">パスワード</label>
-      <input class="finput" id="pwInput" type="password" placeholder="パスワードを入力" autocomplete="current-password">
+<div id="adminScreen" style="display:none">
+  <header style="border-bottom:1px solid var(--paper3);padding:.75rem 1.25rem;display:flex;align-items:center;justify-content:space-between;background:#fff;position:sticky;top:0;z-index:100">
+    <div class="logo" style="font-family:'Noto Serif JP',serif;font-size:18px;font-weight:500;color:var(--ink)">言葉の<span style="color:var(--acc)">鏡</span> <span style="font-size:12px;color:var(--ink3);font-family:'Zen Kaku Gothic New',sans-serif">管理画面</span></div>
+    <button class="btn btn-outline" onclick="doLogout()">ログアウト</button>
+  </header>
+
+  <div class="admin-wrap">
+    <div style="display:flex;border-bottom:1px solid var(--paper3);margin-bottom:1.5rem">
+      <button class="tab-btn active" id="tab-users" onclick="switchTab('users')">ユーザー管理</button>
+      <button class="tab-btn" id="tab-ugc" onclick="switchTab('ugc')">投稿承認</button>
+      <button class="tab-btn" id="tab-notify" onclick="switchTab('notify')">通知</button>
     </div>
-    <button class="fsubmit" onclick="doLogin()">ログイン</button>
-    <div class="error-msg" id="loginError" style="margin-top:.75rem">パスワードが違います</div>
+
+    <div id="panel-users" class="panel active">
+      <div style="display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap">
+        <input type="text" id="userSearch" class="inp" placeholder="メールアドレスで検索" style="flex:1;min-width:200px" oninput="searchUsers()">
+        <button class="btn btn-acc" onclick="loadUsers()">更新</button>
+      </div>
+      <div id="userList" style="display:flex;flex-direction:column;gap:4px">
+        <div style="text-align:center;padding:2rem;color:var(--ink3);font-size:13px">読み込み中...</div>
+      </div>
+    </div>
+
+    <div id="panel-ugc" class="panel">
+      <div style="display:flex;gap:.5rem;margin-bottom:1rem">
+        <button class="btn btn-acc" onclick="loadPending()">更新</button>
+        <span id="pendingCount" style="font-size:13px;color:var(--ink3);padding:6px 0"></span>
+      </div>
+      <div id="pendingList">
+        <div style="text-align:center;padding:2rem;color:var(--ink3);font-size:13px">読み込み中...</div>
+      </div>
+    </div>
+
+    <div id="panel-notify" class="panel">
+      <div style="background:#fff;border:1px solid var(--paper3);padding:1.25rem;border-radius:4px">
+        <div style="font-size:14px;font-weight:500;color:var(--ink);margin-bottom:1rem">課金・解約通知</div>
+        <div style="background:var(--paper2);border-radius:2px;padding:1rem;font-size:12px;color:var(--ink2);line-height:1.9">
+          <strong>課金時の手順</strong><br>
+          1. Stripeから「支払い完了」メールを受信<br>
+          2. ユーザー管理タブでメールアドレスを検索<br>
+          3. 「プレミアム付与」ボタンを押す<br><br>
+          <strong>解約時の手順</strong><br>
+          1. Stripeから「解約完了」メールを受信<br>
+          2. ユーザー管理タブでメールアドレスを検索<br>
+          3. 「プレミアム解除」ボタンを押す
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- 管理画面本体 -->
-<div class="admin-wrap" id="adminScreen" style="display:none">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem">
-    <h1 class="admin-title" style="margin:0">投稿管理</h1>
-    <div id="pendingBadge" style="font-size:12px;color:var(--ink3)"></div>
-  </div>
-
-  <div class="admin-tabs">
-    <button class="admin-tab active" onclick="switchTab('pending',this)">承認待ち</button>
-    <button class="admin-tab" onclick="switchTab('approved',this)">承認済み</button>
-  </div>
-
-  <!-- 承認待ち -->
-  <div id="tab-pending">
-    <div id="pendingList"></div>
-  </div>
-
-  <!-- 承認済み -->
-  <div id="tab-approved" style="display:none">
-    <div id="approvedList"></div>
-  </div>
-</div>
-
-<script src="js/const.js"></script>
-<script src="js/ugc.js"></script>
+<script src="js/const.js?v=5"></script>
 <script>
-// ===== ハッシュ化 =====
-async function sha256(str) {
-  const buf  = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+let ADMIN_PASS = '';
+
+function doAdminLogin() {
+  const pass = document.getElementById('adminPass').value;
+  if (!pass) return;
+  ADMIN_PASS = pass;
+  fetch('/api/admin?action=users', {
+    headers: { 'Authorization': 'Bearer ' + pass }
+  }).then(r => {
+    if (r.ok) {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('adminScreen').style.display = 'block';
+      loadUsers();
+      loadPending();
+    } else {
+      document.getElementById('loginErr').style.display = 'block';
+      ADMIN_PASS = '';
+    }
+  }).catch(() => {
+    document.getElementById('loginErr').style.display = 'block';
+  });
 }
 
-// ===== ログイン =====
-async function doLogin() {
-  const pw   = document.getElementById('pwInput').value;
-  const hash = await sha256(pw);
-  if (hash === ADMIN_HASH) {
-    sessionStorage.setItem('admin_auth', '1');
-    showAdmin();
-  } else {
-    document.getElementById('loginError').style.display = 'block';
+function doLogout() {
+  ADMIN_PASS = '';
+  document.getElementById('adminScreen').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'block';
+  document.getElementById('adminPass').value = '';
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + tab).classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+}
+
+let searchTimer = null;
+function searchUsers() {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(loadUsers, 400);
+}
+
+async function loadUsers() {
+  const search = document.getElementById('userSearch').value.trim();
+  const list = document.getElementById('userList');
+  list.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--ink3);font-size:13px">読み込み中...</div>';
+  try {
+    const url = '/api/admin?action=users' + (search ? '&search=' + encodeURIComponent(search) : '');
+    const r = await fetch(url, { headers: { 'Authorization': 'Bearer ' + ADMIN_PASS } });
+    const users = await r.json();
+    if (!users.length) {
+      list.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--ink3);font-size:13px">ユーザーが見つかりません</div>';
+      return;
+    }
+    list.innerHTML = users.map(u => `
+      <div class="user-row">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${u.email}</div>
+          <div style="font-size:11px;color:var(--ink3);margin-top:2px">
+            登録：${new Date(u.created_at).toLocaleDateString('ja-JP')}
+            ${u.premium_since ? '　プレミアム開始：' + new Date(u.premium_since).toLocaleDateString('ja-JP') : ''}
+          </div>
+        </div>
+        <span class="${u.is_premium ? 'premium-badge' : 'free-badge'}">${u.is_premium ? 'PRO' : '無料'}</span>
+        ${!u.is_premium
+          ? `<button class="btn btn-acc" onclick="grantPremium('${u.id}','${u.email}')">プレミアム付与</button>`
+          : `<button class="btn btn-danger" onclick="revokePremium('${u.id}','${u.email}')">プレミアム解除</button>`
+        }
+      </div>
+    `).join('');
+  } catch(e) {
+    list.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--ink3);font-size:13px">読み込みエラー</div>';
   }
 }
 
-function logout() {
-  sessionStorage.removeItem('admin_auth');
-  location.reload();
+async function grantPremium(id, email) {
+  if (!confirm(email + ' にプレミアムを付与しますか？')) return;
+  await fetch('/api/admin?action=grant', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + ADMIN_PASS },
+    body: JSON.stringify({ id }),
+  });
+  loadUsers();
 }
 
-function showAdmin() {
-  document.getElementById('loginScreen').style.display = 'none';
-  document.getElementById('adminScreen').style.display = 'block';
-  document.getElementById('logoutBtn').style.display = 'block';
-  document.getElementById('adminName').textContent = '管理者';
+async function revokePremium(id, email) {
+  if (!confirm(email + ' のプレミアムを解除しますか？')) return;
+  await fetch('/api/admin?action=revoke', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + ADMIN_PASS },
+    body: JSON.stringify({ id }),
+  });
+  loadUsers();
+}
+
+async function loadPending() {
+  const list = document.getElementById('pendingList');
+  list.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--ink3);font-size:13px">読み込み中...</div>';
+  try {
+    const r = await fetch('/api/ugc?action=pending');
+    const items = await r.json();
+    document.getElementById('pendingCount').textContent = items.length + '件の承認待ち';
+    if (!items.length) {
+      list.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--ink3);font-size:13px">承認待ちの投稿はありません</div>';
+      return;
+    }
+    list.innerHTML = items.map(item => {
+      const gc = (typeof GENREC !== 'undefined' ? GENREC[item.genre] : '') || 'gn';
+      const gl = (typeof GENRE !== 'undefined' ? GENRE[item.genre] : '') || item.genre || '';
+      return `
+        <div class="ugc-card pending">
+          <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem;flex-wrap:wrap">
+            <span style="font-family:'Noto Serif JP',serif;font-size:16px;font-weight:500">${item.word||''}</span>
+            <span class="tag ${gc}">${item.situation||gl}</span>
+            <span style="font-size:11px;color:var(--ink3)">— ${item.author_name||'匿名'}</span>
+          </div>
+          <div style="font-family:'Noto Serif JP',serif;font-size:13px;color:var(--ink2);font-style:italic;line-height:1.7;margin-bottom:.75rem">${item.scene||''}</div>
+          <div style="display:flex;gap:.5rem">
+            <button class="btn btn-acc" onclick="approveItem('${item.id}')">承認</button>
+            <button class="btn btn-danger" onclick="rejectItem('${item.id}')">却下</button>
+          </div>
+        </div>`;
+    }).join('');
+  } catch(e) {
+    list.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--ink3);font-size:13px">読み込みエラー</div>';
+  }
+}
+
+async function approveItem(id) {
+  await fetch('/api/ugc?action=approve', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id }),
+  });
   loadPending();
 }
 
-// ===== タブ切替 =====
-function switchTab(name, btn) {
-  document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('tab-pending').style.display  = name==='pending'  ? 'block' : 'none';
-  document.getElementById('tab-approved').style.display = name==='approved' ? 'block' : 'none';
-  if (name === 'approved') loadApproved();
-}
-
-// ===== 承認待ち一覧 =====
-async function loadPending() {
-  const list = document.getElementById('pendingList');
-  list.innerHTML = '<div class="admin-empty">読み込み中...</div>';
-  const items = await getPendingList();
-
-  const badge = document.getElementById('pendingBadge');
-  badge.textContent = items.length > 0 ? `承認待ち ${items.length}件` : '';
-
-  if (items.length === 0) {
-    list.innerHTML = '<div class="admin-empty">承認待ちの投稿はありません</div>';
-    return;
-  }
-
-  list.innerHTML = items.map(item => `
-    <div class="admin-card" id="card-${item.id}">
-      <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.5rem">
-        <div class="admin-card-word">${item.word}</div>
-        <span style="font-size:11px;color:var(--ink3)">${item.kana}</span>
-        <span class="badge-pending">承認待ち</span>
-      </div>
-      <div class="admin-card-meta">
-        <span class="tag ${GENREC[item.genre]||'gn'}">${item.situation || GENRE[item.genre]||''}</span>
-        <span style="margin-left:.5rem">— ${item.authorName}</span>
-        <span style="margin-left:.5rem;color:var(--ink3)">${new Date(item.submittedAt).toLocaleDateString('ja-JP')}</span>
-      </div>
-      <div class="admin-card-body">
-        <div style="margin-bottom:.4rem"><strong style="font-size:11px;color:var(--ink3)">ニュアンス</strong><br>${item.nuance}</div>
-        <div style="margin-bottom:.4rem"><strong style="font-size:11px;color:var(--ink3)">例文</strong><br>
-          <span style="font-family:'Noto Serif JP',serif;font-style:italic">${item.scene}</span>
-        </div>
-        ${item.baAfter ? `<div><strong style="font-size:11px;color:var(--ink3)">BA例文</strong><br>
-          <span style="color:var(--ink3);font-size:12px">→ </span>
-          <span style="font-family:'Noto Serif JP',serif">${item.baAfter}</span>
-        </div>` : ''}
-      </div>
-      <div class="admin-acts">
-        <button class="approve-btn" onclick="doApprove('${item.id}')">✓ 承認</button>
-        <button class="reject-btn"  onclick="doReject('${item.id}')">✗ 却下</button>
-      </div>
-    </div>
-  `).join('');
-}
-
-// ===== 承認済み一覧 =====
-async function loadApproved() {
-  const list = document.getElementById('approvedList');
-  list.innerHTML = '<div class="admin-empty">読み込み中...</div>';
-  const items = await getApprovedList();
-
-  if (items.length === 0) {
-    list.innerHTML = '<div class="admin-empty">承認済みの投稿はありません</div>';
-    return;
-  }
-
-  list.innerHTML = items.map(item => `
-    <div class="admin-card">
-      <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.5rem">
-        <div class="admin-card-word">${item.word}</div>
-        <span style="font-size:11px;color:var(--ink3)">${item.kana}</span>
-        <span class="badge-approved">承認済み</span>
-      </div>
-      <div class="admin-card-meta">
-        <span class="tag ${GENREC[item.genre]||'gn'}">${item.situation || GENRE[item.genre]||''}</span>
-        <span style="margin-left:.5rem">— ${item.authorName}</span>
-        <span style="margin-left:.5rem;color:var(--ink3)">${new Date(item.approvedAt).toLocaleDateString('ja-JP')}承認</span>
-      </div>
-      <div class="admin-card-body">
-        <span style="font-family:'Noto Serif JP',serif;font-style:italic">${item.scene}</span>
-      </div>
-    </div>
-  `).join('');
-}
-
-// ===== 承認・却下アクション =====
-async function doApprove(id) {
-  const btn = event.target;
-  btn.disabled = true; btn.textContent = '処理中...';
-  const ok = await approveUGC(id);
-  if (ok) {
-    document.getElementById(`card-${id}`).style.opacity = '.4';
-    setTimeout(() => { document.getElementById(`card-${id}`)?.remove(); loadPending(); }, 600);
-  }
-}
-
-async function doReject(id) {
+async function rejectItem(id) {
   if (!confirm('この投稿を却下しますか？')) return;
-  const ok = await rejectUGC(id);
-  if (ok) {
-    document.getElementById(`card-${id}`).style.opacity = '.4';
-    setTimeout(() => { document.getElementById(`card-${id}`)?.remove(); loadPending(); }, 400);
-  }
+  await fetch('/api/ugc?action=reject', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id }),
+  });
+  loadPending();
 }
 
-// ===== 起動 =====
-window.addEventListener('load', () => {
-  if (sessionStorage.getItem('admin_auth') === '1') {
-    showAdmin();
-  }
-  document.getElementById('pwInput').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('adminPass').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') doAdminLogin();
+  });
 });
 </script>
 </body>
