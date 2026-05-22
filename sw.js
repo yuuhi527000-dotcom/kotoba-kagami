@@ -1,5 +1,5 @@
 // Service Worker — 言葉の鏡
-const CACHE = 'kotoba-kagami-v5';
+const CACHE = 'kotoba-kagami-v6';
 
 // オフラインでも使えるファイル
 const STATIC = [
