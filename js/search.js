@@ -274,18 +274,37 @@ function escQ(s) { return s.replace(/'/g, "\\'"); }
 
 // ---- AI単語検索（2段階表示） ----
 async function aiWord(word) {
-  addSearchCount();
   const gk   = genre !== 'all' ? genre : 'all';
   const gn   = GENRE[gk] || '全ジャンル';
   const inst = gk !== 'all' ? `ジャンルは${gn}固定。` : '';
   const sits = gk !== 'all' ? GLABEL[gk].slice(0,5) : ['恋愛・失恋','恋愛・成就','異世界・幕開け','ホラー・緊迫','歴史・冒頭'];
   const sitEx = sits.map((s,i) => `{"sit":"${s}","genre":"${gk!=='all'?gk:['romance','fantasy','horror','historical','general'][i]||'general'}","before":"平凡な文","after":"豊かな表現","note":"15字"}`).join(',');
 
+  // ===== キャッシュチェック =====
+  try {
+    setLoading(true, '検索中...');
+    const cacheRes = await fetch('/api/chat', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({word: word, genre: gk, max_tokens: 1, messages: [{role:'user',content:''}]})
+    });
+    const cacheData = await cacheRes.json();
+    if (cacheData.cached && cacheData.data) {
+      addSearchCount();
+      setLoading(false);
+      renderWord(word, cacheData.data);
+      renderMemoryBar();
+      const ad = document.getElementById('adSlot1'); if (ad) ad.style.display = 'block';
+      return;
+    }
+  } catch(e) {}
+
   // ===== 第1フェーズ：BA例文を先に表示 =====
   const prompt1 = `小説作家向け。「${word}」のビフォーアフター例文5件。${inst}JSONのみ:{"beforeafter":[${sitEx}]}`;
 
   try {
     setLoading(true, 'AIが例文を生成中...');
+    addSearchCount();
     const r1 = await fetch('/api/chat', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
@@ -312,7 +331,7 @@ async function aiWord(word) {
     const r2 = await fetch('/api/chat', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({max_tokens: 1800, messages: [{role:'user',content:prompt2}]})
+      body: JSON.stringify({max_tokens: 1800, word: word, genre: gk, messages: [{role:'user',content:prompt2}]})
     });
     const j2 = await r2.json();
     const raw2 = (j2.content||[]).map(x => x.text||'').join('');
