@@ -18,8 +18,6 @@ function qs(w) {
 }
 
 function isSentence(t) {
-  if (/[がをにはでもとへのやをも]/.test(t)) return true;
-  if (/する|した|してい|れる|られる|てい|ない|ます|です|だった|いた|って|った|んだ|いで|んで|めた|けた/.test(t)) return true;
   return false;
 }
 
@@ -280,17 +278,19 @@ async function aiWord(word) {
   const sits = gk !== 'all' ? GLABEL[gk].slice(0,5) : ['恋愛・失恋','恋愛・成就','異世界・幕開け','ホラー・緊迫','歴史・冒頭'];
   const sitEx = sits.map((s,i) => `{"sit":"${s}","genre":"${gk!=='all'?gk:['romance','fantasy','horror','historical','general'][i]||'general'}","before":"平凡な文","after":"豊かな表現","note":"15字"}`).join(',');
 
+  // 検索カウント追加（キャッシュ・API問わず1回として数える）
+  addSearchCount();
+
   // ===== キャッシュチェック =====
   try {
     setLoading(true, '検索中...');
     const cacheRes = await fetch('/api/chat', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({word: word, genre: gk, max_tokens: 1, messages: [{role:'user',content:''}]})
+      body: JSON.stringify({word: word, genre: gk, max_tokens: 1, messages: [{role:'user',content:'ping'}]})
     });
     const cacheData = await cacheRes.json();
     if (cacheData.cached && cacheData.data) {
-      addSearchCount();
       setLoading(false);
       renderWord(word, cacheData.data);
       renderMemoryBar();
@@ -304,7 +304,6 @@ async function aiWord(word) {
 
   try {
     setLoading(true, 'AIが例文を生成中...');
-    addSearchCount();
     const r1 = await fetch('/api/chat', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
@@ -432,8 +431,17 @@ function renderPhase2(word, phase1, phase2) {
   </div>`;
 
   const p2 = document.getElementById('phase2Area');
-  if (p2) p2.innerHTML = h;
-  if (typeof renderUGCSection === 'function') renderUGCSection(word, genre, document.getElementById('ugcContainer'));
+  if (p2) {
+    p2.innerHTML = h;
+  } else {
+    // phase2Areaがない場合はareaに追記
+    const area = document.getElementById('area');
+    if (area) area.innerHTML += h;
+  }
+  if (typeof renderUGCSection === 'function') {
+    const ugcEl = document.getElementById('ugcContainer');
+    if (ugcEl) renderUGCSection(word, genre, ugcEl);
+  }
 }
 
 // ---- 文章検索 ----

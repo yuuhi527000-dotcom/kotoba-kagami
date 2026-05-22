@@ -29,13 +29,23 @@ export default async function handler(req, res) {
   // ---- 投稿 ----
   if (action === 'submit' && req.method === 'POST') {
     const entry = {
-      ...req.body,
-      status: 'pending',
-      submitted_at: new Date().toISOString(),
-      created_at: new Date().toISOString(),
+      word:         req.body.word || '',
+      kana:         req.body.kana || '',
+      nuance:       req.body.nuance || '',
+      scene:        req.body.scene || '',
+      ba_after:     req.body.ba_after || '',
+      genre:        req.body.genre || 'general',
+      situation:    req.body.situation || '',
+      author_name:  req.body.author_name || '匿名',
+      link_kakuyomu: req.body.link_kakuyomu || null,
+      link_narou:    req.body.link_narou    || null,
+      link_twitter:  req.body.link_twitter  || null,
+      status:       'pending',
+      created_at:   new Date().toISOString(),
     };
     const r = await sb('/ugc_expressions', { method: 'POST', body: JSON.stringify(entry) });
-    return res.status(r.status).json(r.data);
+    if (!r.ok) return res.status(500).json({ error: 'DB error', detail: r.data });
+    return res.status(200).json({ success: true });
   }
 
   // ---- 承認待ち一覧 ----
