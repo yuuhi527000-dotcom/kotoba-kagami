@@ -46,7 +46,7 @@ function showLimitScreen() {
   document.getElementById('area').innerHTML = `
     <div style="text-align:center;padding:2.5rem 1rem">
       <div style="font-size:36px;margin-bottom:.75rem">🔒</div>
-      <div style="font-family:'Noto Serif JP',serif;font-size:18px;font-weight:500;color:var(--ink);margin-bottom:.5rem">本日の無料検索回数（5回）に達しました</div>
+      <div style="font-family:'Noto Serif JP',serif;font-size:18px;font-weight:500;color:var(--ink);margin-bottom:.5rem">本日の無料検索回数（3回）に達しました</div>
       <div style="font-size:13px;color:var(--ink3);margin-bottom:1.5rem;line-height:1.8">明日0時にリセットされます<br>または有料プランで無制限に使えます</div>
       <div style="background:#fff;border:1px solid var(--paper3);border-radius:4px;padding:1.25rem;max-width:300px;margin:0 auto 1rem">
         <div style="font-size:13px;font-weight:500;color:var(--ink);margin-bottom:.5rem">有料プラン</div>
@@ -56,7 +56,7 @@ function showLimitScreen() {
           有料プランに登録する
         </button>
       </div>
-      <div style="font-size:11px;color:var(--ink3)">明日また5回無料で使えます</div>
+      <div style="font-size:11px;color:var(--ink3)">明日また3回無料で使えます</div>
     </div>`;
 }
 
@@ -75,7 +75,7 @@ async function doSearch() {
 
   // 回数制限チェック
   const count = getSearchCount();
-  if (count >= 5) {
+  if (count >= 3) {
     showLimitScreen();
     return;
   }
@@ -283,7 +283,6 @@ async function aiWord(word) {
   // ===== 第1フェーズ：BA例文を先に表示 =====
   const prompt1 = `小説作家向け。「${word}」のビフォーアフター例文5件。${inst}JSONのみ:{"beforeafter":[${sitEx}]}`;
 
- addSearchCount();
   try {
     setLoading(true, 'AIが例文を生成中...');
     const r1 = await fetch('/api/chat', {
