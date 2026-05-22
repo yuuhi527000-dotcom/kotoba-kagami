@@ -18,9 +18,44 @@ function qs(w) {
 }
 
 function isSentence(t) {
-  if (/[がをにはでもとへのやをも]/.test(t)) return true;
-  if (/する|した|してい|れる|られる|てい|ない|ます|です|だった|いた|って|った|んだ|いで|んで|めた|けた/.test(t)) return true;
   return false;
+}
+
+function getSearchCount() {
+  try {
+    const data = JSON.parse(localStorage.getItem('searchLimit') || '{}');
+    const today = new Date().toDateString();
+    if (data.date !== today) return 0;
+    return data.count || 0;
+  } catch(e) { return 0; }
+}
+
+function addSearchCount() {
+  try {
+    const today = new Date().toDateString();
+    const count = getSearchCount() + 1;
+    localStorage.setItem('searchLimit', JSON.stringify({date: today, count}));
+  } catch(e) {}
+}
+
+function showLimitScreen() {
+  document.getElementById('empty').style.display = 'none';
+  document.getElementById('area').innerHTML = `
+    <div style="text-align:center;padding:2.5rem 1rem">
+      <div style="font-size:36px;margin-bottom:.75rem">🔒</div>
+      <div style="font-family:'Noto Serif JP',serif;font-size:18px;font-weight:500;color:var(--ink);margin-bottom:.5rem">本日の無料検索回数（5回）に達しました</div>
+      <div style="font-size:13px;color:var(--ink3);margin-bottom:1.5rem;line-height:1.8">明日0時にリセットされます<br>または有料プランで無制限に使えます</div>
+      <div style="background:#fff;border:1px solid var(--paper3);border-radius:4px;padding:1.25rem;max-width:300px;margin:0 auto 1rem">
+        <div style="font-size:13px;font-weight:500;color:var(--ink);margin-bottom:.5rem">有料プラン</div>
+        <div style="font-family:'Noto Serif JP',serif;font-size:28px;font-weight:500;color:var(--acc);margin-bottom:.5rem">月額300円</div>
+        <div style="font-size:12px;color:var(--ink3);margin-bottom:1rem">検索無制限・全機能使い放題</div>
+        <button onclick="alert('準備中です。もうしばらくお待ちください。')" style="width:100%;padding:.75rem;background:var(--acc);color:#fff;border:none;font-size:14px;font-weight:500;cursor:pointer;border-radius:2px;font-family:'Zen Kaku Gothic New',sans-serif">
+          有料プランに登録する
+        </button>
+      </div>
+      <div style="font-size:11px;color:var(--ink3)">明日また5回無料で使えます</div>
+    </div>`;
+}
 }
 
 // ---- 検索回数チェック ----
