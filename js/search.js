@@ -274,6 +274,7 @@ function escQ(s) { return s.replace(/'/g, "\\'"); }
 
 // ---- AI単語検索（2段階表示） ----
 async function aiWord(word) {
+  addSearchCount();
   const gk   = genre !== 'all' ? genre : 'all';
   const gn   = GENRE[gk] || '全ジャンル';
   const inst = gk !== 'all' ? `ジャンルは${gn}固定。` : '';
