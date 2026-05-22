@@ -71,6 +71,7 @@ async function getRelatedUGC(word, genre = 'all') {
 
 // ---- UGCセクションをレンダリング ----
 async function renderUGCSection(word, genre, containerEl) {
+  if (!containerEl) return;
   const items = await getRelatedUGC(word, genre);
 
   if (items.length === 0) {
