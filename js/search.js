@@ -273,13 +273,7 @@ function getRelatedWords(word) {
 function escQ(s) { return s.replace(/'/g, "\\'"); }
 
 // ---- AI単語検索（2段階表示） ----
-async function aiWord(word) {
-  addSearchCount();
-  const gk   = genre !== 'all' ? genre : 'all';
-  const gn   = GENRE[gk] || '全ジャンル';
-  const inst = gk !== 'all' ? `ジャンルは${gn}固定。` : '';
-  const sits = gk !== 'all' ? GLABEL[gk].slice(0,5) : ['恋愛・失恋','恋愛・成就','異世界・幕開け','ホラー・緊迫','歴史・冒頭'];
-  const sitEx = sits.map((s,i) => `{"sit":"${s}","genre":"${gk!=='all'?gk:['romance','fantasy','horror','historical','general'][i]||'general'}","before":"平凡な文","after":"豊かな表現","note":"15字"}`).join(',');
+AI単語検索
 
   // ===== 第1フェーズ：BA例文を先に表示 =====
   const prompt1 = `小説作家向け。「${word}」のビフォーアフター例文5件。${inst}JSONのみ:{"beforeafter":[${sitEx}]}`;
