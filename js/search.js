@@ -18,8 +18,6 @@ function qs(w) {
 }
 
 function isSentence(t) {
-  if (/[がをにはでもとへのやをも]/.test(t)) return true;
-  if (/する|した|してい|れる|られる|てい|ない|ます|です|だった|いた|って|った|んだ|いで|んで|めた|けた/.test(t)) return true;
   return false;
 }
 
