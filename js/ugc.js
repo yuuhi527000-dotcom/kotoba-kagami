@@ -14,6 +14,9 @@ async function submitUGC(formData) {
       genre:      formData.genre,
       situation:  formData.situation.trim(),
       author_name: formData.authorName.trim() || '匿名',
+      link_kakuyomu: formData.linkKakuyomu || '',
+      link_narou:    formData.linkNarou    || '',
+      link_twitter:  formData.linkTwitter  || '',
     }),
   });
   if (!res.ok) throw new Error('投稿に失敗しました');

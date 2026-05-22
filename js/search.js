@@ -574,17 +574,3 @@ document.addEventListener('DOMContentLoaded', () => {
   const s = sessionStorage.getItem('autoSearch');
   if (s) { sessionStorage.removeItem('autoSearch'); si.value = s; doSearch(); }
 });
-
-function renderMemoryBar() {
-  const bar = document.getElementById('memoryBar');
-  if (!bar) return;
-  try {
-    const keys = Object.keys(localStorage).filter(k => k.startsWith('mem:'));
-    if (keys.length === 0) { bar.style.display = 'none'; return; }
-    bar.style.display = 'flex';
-    bar.innerHTML = keys.slice(-6).reverse().map(function(k) {
-      const word = k.replace('mem:','');
-      return '<span class="mem-chip" onclick="qs(\'' + word + '\')">' + word + ' <span onclick="event.stopPropagation();localStorage.removeItem(\'' + k + '\');renderMemoryBar()" style="color:var(--ink3);font-size:10px">✕</span></span>';
-    }).join('');
-  } catch(e) {}
-}
