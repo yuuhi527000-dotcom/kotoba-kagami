@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 </script>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2159458769076187"
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9877301846616121"
      crossorigin="anonymous"></script>
 <script>
 if ('serviceWorker' in navigator) {
@@ -75,12 +75,15 @@ try {
   if (!limit.date) localStorage.removeItem('searchLimit');
 } catch(e) { localStorage.removeItem('searchLimit'); }
 </script>
+<script src="js/auth.js?v=5"></script>
 </head>
 <body>
 
 <header style="padding:0;flex-direction:column;gap:0;align-items:stretch">
-  <div style="display:flex;align-items:center;justify-content:center;padding:.65rem 1.25rem;border-bottom:1px solid var(--paper3)">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:.65rem 1.25rem;border-bottom:1px solid var(--paper3)">
+    <div style="width:80px"></div>
     <a href="/index.html" class="logo">言葉の<span>鏡</span></a>
+    <div id="authArea" style="width:80px;display:flex;justify-content:flex-end"></div>
   </div>
   <nav style="display:flex;align-items:center;border-bottom:1px solid var(--paper3);background:#fff">
     <a href="/index.html" class="tab-link">トップ</a>

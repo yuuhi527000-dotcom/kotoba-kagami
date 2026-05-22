@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ログイン — 言葉の鏡</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500;700&family=Zen+Kaku+Gothic+New:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=5">
+<style>
+  header { padding: 0 !important; flex-direction: column !important; gap: 0 !important; align-items: stretch !important; background: #fff !important; position: sticky !important; top: 0 !important; z-index: 100 !important; border-bottom: 1px solid var(--paper3) !important; width: 100% !important; display: flex !important; }
+  .header-wrap { display: flex !important; align-items: center !important; justify-content: center !important; padding: .85rem 1.25rem !important; border-bottom: 1px solid var(--paper3) !important; width: 100% !important; box-sizing: border-box !important; }
+  .tab-link { flex:1; text-align:center; font-size:13px; color:var(--ink3); text-decoration:none; padding:.6rem .25rem; border-right:0.5px solid var(--paper3); border-bottom:2px solid transparent; transition:all .15s; white-space:nowrap; display:block; background:#fff; }
+  .tab-link:last-child { border-right:none; }
+  .inp { width:100%; padding:.7rem .9rem; border:1px solid var(--paper3); border-radius:2px; font-size:14px; font-family:'Zen Kaku Gothic New',sans-serif; outline:none; transition:border-color .15s; }
+  .inp:focus { border-color:var(--acc); }
+  .btn-main { width:100%; padding:.85rem; background:var(--acc); color:#fff; border:none; font-size:14px; font-weight:500; cursor:pointer; border-radius:2px; font-family:'Zen Kaku Gothic New',sans-serif; transition:background .15s; }
+  .btn-main:hover { background:var(--accl); }
+  .btn-main:disabled { background:var(--paper3); cursor:not-allowed; }
+  .err { background:#FCEBEB; border:1px solid #791F1F; color:#791F1F; padding:.75rem 1rem; font-size:13px; border-radius:2px; display:none; }
+  .ok  { background:#E1F5EE; border:1px solid #085041; color:#085041; padding:.75rem 1rem; font-size:13px; border-radius:2px; display:none; }
+</style>
+</head>
+<body>
+<header>
+  <div class="header-wrap">
+    <a href="index.html" class="logo">言葉の<span>鏡</span></a>
+  </div>
+  <nav style="display:flex;border-bottom:1px solid var(--paper3);background:#fff">
+    <a href="index.html" class="tab-link">トップ</a>
+    <a href="ranking.html" class="tab-link">ランキング</a>
+    <a href="submit.html" class="tab-link">＋ 投稿</a>
+  </nav>
+</header>
+
+<main>
+<div style="max-width:420px;margin:3rem auto;padding:0 1.25rem 4rem">
+
+  <!-- タブ：ログイン / 新規登録 -->
+  <div style="display:flex;border-bottom:2px solid var(--paper3);margin-bottom:1.5rem">
+    <button id="tabLogin" onclick="switchAuthTab('login')" style="flex:1;padding:.65rem 0;font-size:14px;font-weight:500;border:none;background:none;cursor:pointer;color:var(--acc);border-bottom:2px solid var(--acc);margin-bottom:-2px;font-family:'Zen Kaku Gothic New',sans-serif">ログイン</button>
+    <button id="tabRegister" onclick="switchAuthTab('register')" style="flex:1;padding:.65rem 0;font-size:14px;font-weight:500;border:none;background:none;cursor:pointer;color:var(--ink3);border-bottom:2px solid transparent;margin-bottom:-2px;font-family:'Zen Kaku Gothic New',sans-serif">新規登録</button>
+  </div>
+
+  <div id="errMsg" class="err"></div>
+  <div id="okMsg" class="ok"></div>
+
+  <!-- ログインフォーム -->
+  <div id="formLogin" style="display:flex;flex-direction:column;gap:1rem">
+    <div>
+      <label style="display:block;font-size:12px;font-weight:500;color:var(--ink2);margin-bottom:.4rem">メールアドレス</label>
+      <input type="email" id="loginEmail" class="inp" placeholder="example@gmail.com" autocomplete="email">
+    </div>
+    <div>
+      <label style="display:block;font-size:12px;font-weight:500;color:var(--ink2);margin-bottom:.4rem">パスワード</label>
+      <input type="password" id="loginPass" class="inp" placeholder="パスワードを入力" autocomplete="current-password">
+    </div>
+    <button class="btn-main" id="loginBtn" onclick="doLogin()">ログイン</button>
+    <div style="text-align:center">
+      <button onclick="switchAuthTab('reset')" style="font-size:12px;color:var(--ink3);background:none;border:none;cursor:pointer;text-decoration:underline">パスワードを忘れた方</button>
+    </div>
+  </div>
+
+  <!-- 新規登録フォーム -->
+  <div id="formRegister" style="display:none;flex-direction:column;gap:1rem">
+    <div>
+      <label style="display:block;font-size:12px;font-weight:500;color:var(--ink2);margin-bottom:.4rem">メールアドレス</label>
+      <input type="email" id="regEmail" class="inp" placeholder="example@gmail.com" autocomplete="email">
+    </div>
+    <div>
+      <label style="display:block;font-size:12px;font-weight:500;color:var(--ink2);margin-bottom:.4rem">パスワード（8文字以上）</label>
+      <input type="password" id="regPass" class="inp" placeholder="パスワードを設定" autocomplete="new-password">
+    </div>
+    <div>
+      <label style="display:block;font-size:12px;font-weight:500;color:var(--ink2);margin-bottom:.4rem">パスワード（確認）</label>
+      <input type="password" id="regPass2" class="inp" placeholder="もう一度入力" autocomplete="new-password">
+    </div>
+    <div style="background:var(--paper2);border-radius:2px;padding:.75rem;font-size:11px;color:var(--ink3);line-height:1.7">
+      登録することで<a href="terms.html" style="color:var(--acc)">利用規約</a>および<a href="privacy.html" style="color:var(--acc)">プライバシーポリシー</a>に同意したものとみなします。
+    </div>
+    <button class="btn-main" id="regBtn" onclick="doRegister()">アカウントを作成</button>
+  </div>
+
+  <!-- パスワードリセットフォーム -->
+  <div id="formReset" style="display:none;flex-direction:column;gap:1rem">
+    <p style="font-size:13px;color:var(--ink2);line-height:1.8">登録済みのメールアドレスを入力してください。パスワード再設定のメールをお送りします。</p>
+    <div>
+      <label style="display:block;font-size:12px;font-weight:500;color:var(--ink2);margin-bottom:.4rem">メールアドレス</label>
+      <input type="email" id="resetEmail" class="inp" placeholder="example@gmail.com">
+    </div>
+    <button class="btn-main" id="resetBtn" onclick="doReset()">再設定メールを送信</button>
+    <div style="text-align:center">
+      <button onclick="switchAuthTab('login')" style="font-size:12px;color:var(--ink3);background:none;border:none;cursor:pointer;text-decoration:underline">ログインに戻る</button>
+    </div>
+  </div>
+
+</div>
+</main>
+
+<footer style="border-top:1px solid var(--paper3);padding:1.5rem 2rem;text-align:center;font-size:12px;color:var(--ink3)">
+  <div style="display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;margin-bottom:.75rem">
+    <a href="index.html" style="color:var(--ink3);text-decoration:none">トップ</a>
+    <a href="privacy.html" style="color:var(--ink3);text-decoration:none">プライバシーポリシー</a>
+    <a href="tokushoho.html" style="color:var(--ink3);text-decoration:none">特定商取引法</a>
+    <a href="terms.html" style="color:var(--ink3);text-decoration:none">利用規約</a>
+    <a href="contact.html" style="color:var(--ink3);text-decoration:none">お問い合わせ</a>
+  </div>
+  <div>© 2025 言葉の鏡</div>
+</footer>
+
+<script>
+const SUPABASE_URL = 'https://qkwfdguuvvsedhvwlgwz.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFrd2ZkZ3V1dnZzZWRodndsZ3d6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkyNzg3MDcsImV4cCI6MjA5NDg1NDcwN30.KUMd0GH02vBuJbuC8SYsZOXT6llicjECUMBOoehMikc';
+
+function showErr(msg) {
+  const e = document.getElementById('errMsg');
+  e.textContent = msg; e.style.display = 'block';
+  document.getElementById('okMsg').style.display = 'none';
+}
+function showOk(msg) {
+  const e = document.getElementById('okMsg');
+  e.textContent = msg; e.style.display = 'block';
+  document.getElementById('errMsg').style.display = 'none';
+}
+function hideMsg() {
+  document.getElementById('errMsg').style.display = 'none';
+  document.getElementById('okMsg').style.display = 'none';
+}
+
+function switchAuthTab(tab) {
+  ['login','register','reset'].forEach(t => {
+    document.getElementById('form' + t.charAt(0).toUpperCase() + t.slice(1)).style.display = 'none';
+  });
+  const form = document.getElementById('form' + tab.charAt(0).toUpperCase() + tab.slice(1));
+  if (form) form.style.display = 'flex';
+
+  ['login','register'].forEach(t => {
+    const btn = document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1));
+    if (!btn) return;
+    if (t === tab) {
+      btn.style.color = 'var(--acc)';
+      btn.style.borderBottomColor = 'var(--acc)';
+    } else {
+      btn.style.color = 'var(--ink3)';
+      btn.style.borderBottomColor = 'transparent';
+    }
+  });
+  hideMsg();
+}
+
+async function sbAuth(path, body) {
+  const res = await fetch(SUPABASE_URL + '/auth/v1/' + path, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': SUPABASE_ANON_KEY,
+    },
+    body: JSON.stringify(body),
+  });
+  return await res.json();
+}
+
+async function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass  = document.getElementById('loginPass').value;
+  if (!email || !pass) { showErr('メールアドレスとパスワードを入力してください'); return; }
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true; btn.textContent = 'ログイン中...';
+  try {
+    const data = await sbAuth('token?grant_type=password', { email, password: pass });
+    if (data.error || data.error_description) {
+      showErr('メールアドレスまたはパスワードが正しくありません');
+      return;
+    }
+    // セッション保存
+    localStorage.setItem('sb_session', JSON.stringify({
+      access_token: data.access_token,
+      refresh_token: data.refresh_token,
+      user: data.user,
+      expires_at: Date.now() + (data.expires_in * 1000),
+    }));
+    showOk('ログインしました。トップページに移動します...');
+    setTimeout(() => { window.location.href = 'index.html'; }, 1200);
+  } catch(e) {
+    showErr('エラーが発生しました。しばらくしてからお試しください');
+  } finally {
+    btn.disabled = false; btn.textContent = 'ログイン';
+  }
+}
+
+async function doRegister() {
+  const email = document.getElementById('regEmail').value.trim();
+  const pass  = document.getElementById('regPass').value;
+  const pass2 = document.getElementById('regPass2').value;
+  if (!email || !pass) { showErr('メールアドレスとパスワードを入力してください'); return; }
+  if (pass.length < 8) { showErr('パスワードは8文字以上で設定してください'); return; }
+  if (pass !== pass2) { showErr('パスワードが一致しません'); return; }
+  const btn = document.getElementById('regBtn');
+  btn.disabled = true; btn.textContent = '登録中...';
+  try {
+    const data = await sbAuth('signup', { email, password: pass });
+    if (data.error || data.error_description) {
+      showErr(data.error_description || '登録に失敗しました');
+      return;
+    }
+    showOk('確認メールを送信しました。メールのリンクをクリックして登録を完了してください。');
+  } catch(e) {
+    showErr('エラーが発生しました。しばらくしてからお試しください');
+  } finally {
+    btn.disabled = false; btn.textContent = 'アカウントを作成';
+  }
+}
+
+async function doReset() {
+  const email = document.getElementById('resetEmail').value.trim();
+  if (!email) { showErr('メールアドレスを入力してください'); return; }
+  const btn = document.getElementById('resetBtn');
+  btn.disabled = true; btn.textContent = '送信中...';
+  try {
+    await fetch(SUPABASE_URL + '/auth/v1/recover', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY },
+      body: JSON.stringify({ email }),
+    });
+    showOk('パスワード再設定メールを送信しました。メールをご確認ください。');
+  } catch(e) {
+    showErr('エラーが発生しました');
+  } finally {
+    btn.disabled = false; btn.textContent = '再設定メールを送信';
+  }
+}
+
+// ログイン済みなら即リダイレクト
+(function() {
+  try {
+    const s = JSON.parse(localStorage.getItem('sb_session') || '{}');
+    if (s.access_token && s.expires_at > Date.now()) {
+      window.location.href = 'index.html';
+    }
+  } catch(e) {}
+})();
+</script>
+</body>
+</html>
