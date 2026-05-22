@@ -283,6 +283,7 @@ async function aiWord(word) {
   // ===== 第1フェーズ：BA例文を先に表示 =====
   const prompt1 = `小説作家向け。「${word}」のビフォーアフター例文5件。${inst}JSONのみ:{"beforeafter":[${sitEx}]}`;
 
+ addSearchCount();
   try {
     setLoading(true, 'AIが例文を生成中...');
     const r1 = await fetch('/api/chat', {
