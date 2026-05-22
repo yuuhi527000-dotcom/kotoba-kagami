@@ -74,11 +74,11 @@ async function doSearch() {
   }
 
   // 回数制限チェック
-  //const count = getSearchCount();
- // if (count >= 3) {
-  //  showLimitScreen();
- //   return;
- // }
+  const count = getSearchCount();
+  if (count >= 3) {
+    showLimitScreen();
+    return;
+  }
 
   const input = document.getElementById('si').value.trim();
   if (!input) return;
