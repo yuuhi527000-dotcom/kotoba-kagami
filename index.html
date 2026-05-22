@@ -60,6 +60,16 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9877301846616121"
      crossorigin="anonymous"></script>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(function(r) {
+    for(let reg of r) reg.unregister();
+  });
+  caches.keys().then(function(names) {
+    for (let name of names) caches.delete(name);
+  });
+}
+</script>
 </head>
 <body>
 
