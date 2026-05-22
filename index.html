@@ -69,6 +69,11 @@ if ('serviceWorker' in navigator) {
     for (let name of names) caches.delete(name);
   });
 }
+// searchLimitの初期化（dateがない古いデータはリセット）
+try {
+  var limit = JSON.parse(localStorage.getItem('searchLimit') || '{}');
+  if (!limit.date) localStorage.removeItem('searchLimit');
+} catch(e) { localStorage.removeItem('searchLimit'); }
 </script>
 </head>
 <body>
