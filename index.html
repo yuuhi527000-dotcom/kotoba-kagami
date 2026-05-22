@@ -6,19 +6,17 @@
 <title>言葉の鏡 — 小説・ラノベの言い換え表現辞典【なろう・カクヨム作家向け】</title>
 <meta name="description" content="なろう・カクヨムで執筆中の作家向け。「悲しい」「走る」など言い換え表現をジャンル別に即検索。ビフォー→アフター例文付き。恋愛・異世界・ホラー・歴史に対応。">
 
-<!-- OGP（XにURLを貼ったときに表示される情報） -->
-<meta property="og:title"       content="言葉の鏡 — 小説・ラノベの言い換え表現辞典【なろう・カクヨム作家向け】">
+<meta property="og:title" content="言葉の鏡 — 小説・ラノベの言い換え表現辞典【なろう・カクヨム作家向け】">
 <meta property="og:description" content="なろう・カクヨム作家向け。「悲しい」「雨」など言い換え表現をジャンル別に即検索。ビフォー→アフター例文・類語比較付き。">
-<meta property="og:type"        content="website">
-<meta property="og:url"         content="https://kotoba-kagami.com">
-<meta property="og:image"       content="https://kotoba-kagami.com/ogp.png">
-<meta property="og:site_name"   content="言葉の鏡">
-<meta name="twitter:card"       content="summary_large_image">
-<meta name="twitter:title"      content="言葉の鏡 — 小説・ラノベの言い換え表現辞典【なろう・カクヨム作家向け】">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://kotoba-kagami.com">
+<meta property="og:image" content="https://kotoba-kagami.com/ogp.png">
+<meta property="og:site_name" content="言葉の鏡">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="言葉の鏡 — 小説・ラノベの言い換え表現辞典【なろう・カクヨム作家向け】">
 <meta name="twitter:description" content="なろう・カクヨム作家向け。「悲しい」「雨」など言い換え表現をジャンル別に即検索。ビフォー→アフター例文・類語比較付き。">
-<meta name="twitter:image"      content="https://kotoba-kagami.com/ogp.png">
+<meta name="twitter:image" content="https://kotoba-kagami.com/ogp.png">
 
-<!-- ファビコン -->
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#8b4513">
@@ -29,15 +27,17 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500;700&family=Zen+Kaku+Gothic+New:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=5">
-<!-- Google Analytics -->
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2159458769076187"
-     crossorigin="anonymous"></script>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
   gtag('config', 'G-XXXXXXXXXX');
 </script>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2159458769076187" crossorigin="anonymous"></script>
+
 <style>
 .tab-link{flex:1;text-align:center;font-size:13px;color:var(--ink3);text-decoration:none;padding:.6rem .25rem;border-right:0.5px solid var(--paper3);letter-spacing:.04em;transition:all .15s;white-space:nowrap;display:block;border-bottom:2px solid transparent}
 .tab-link:last-child{border-right:none}
@@ -45,32 +45,22 @@
 .tab-link.active{color:var(--acc);border-bottom:2px solid var(--acc);background:var(--paper)}
 </style>
 <script>
-// タブアクティブ（即時実行）
 document.addEventListener('DOMContentLoaded', function() {
   var path = location.pathname;
   document.querySelectorAll('.tab-link, .tab-nav a').forEach(function(a) {
     a.classList.remove('active');
     var href = (a.getAttribute('href') || '').replace(/^\//, '');
     var cur = path.replace(/^\//, '') || 'index.html';
-    if (href === cur || (cur === '' && href === 'index.html') ||
-        (href !== '' && path.indexOf(href) !== -1)) {
+    if (href === cur || (cur === '' && href === 'index.html') || (href !== '' && path.indexOf(href) !== -1)) {
       a.classList.add('active');
     }
   });
 });
-</script>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2159458769076187"
-     crossorigin="anonymous"></script>
-<script>
+
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.getRegistrations().then(function(r) {
-    for(let reg of r) reg.unregister();
-  });
-  caches.keys().then(function(names) {
-    for (let name of names) caches.delete(name);
-  });
+  navigator.serviceWorker.getRegistrations().then(function(r) { for(let reg of r) reg.unregister(); });
+  caches.keys().then(function(names) { for (let name of names) caches.delete(name); });
 }
-// searchLimitの初期化（dateがない古いデータはリセット）
 try {
   var limit = JSON.parse(localStorage.getItem('searchLimit') || '{}');
   if (!limit.date) localStorage.removeItem('searchLimit');
@@ -78,7 +68,6 @@ try {
 </script>
 </head>
 <body>
-
 <header style="padding:0;flex-direction:column;gap:0;align-items:stretch">
   <div style="display:flex;align-items:center;justify-content:center;padding:.65rem 1.25rem;border-bottom:1px solid var(--paper3)">
     <a href="/index.html" class="logo">言葉の<span>鏡</span></a>
@@ -89,10 +78,8 @@ try {
     <a href="/submit.html" class="tab-link">＋ 投稿</a>
   </nav>
 </header>
-
 <div class="hero">
   <p class="hero-eye">小説・ラノベ作家のための言い換えサイト</p>
-
   <div style="display:inline-flex;align-items:center;gap:.5rem;font-size:11px;color:var(--ink3);background:#fff;border:0.5px solid var(--paper3);border-radius:2px;padding:.3rem .65rem;margin-bottom:.6rem">
     <span>他者の投稿以外はAIで生成しています</span>
     <span style="color:var(--paper3)">｜</span>
@@ -101,135 +88,25 @@ try {
       <span>AI使用に同意</span>
     </label>
   </div>
-
   <div style="font-size:13px;color:var(--ink2);margin-bottom:.85rem;line-height:1.9;text-align:left;padding:.5rem .75rem;background:#fff;border-left:2px solid var(--acc);border-radius:0;max-width:480px;margin-left:auto;margin-right:auto">
     「悲しかった」→ <strong style="color:var(--ink);font-weight:500">断腸の思いで唇をかんだ</strong><br>
     「雨が降った」→ <strong style="color:var(--ink);font-weight:500">氷雨がひとりぼっちの背中を濡らした</strong>
   </div>
-
-  <div style="display:flex;gap:1.25rem;justify-content:center;margin-bottom:.85rem">
-    <div style="display:flex;align-items:center;gap:.35rem;font-size:11px;color:var(--ink3)">
-      <span style="background:var(--acc);color:#fff;border-radius:50%;width:16px;height:16px;display:inline-flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0">1</span>入力
-    </div>
-    <div style="display:flex;align-items:center;gap:.35rem;font-size:11px;color:var(--ink3)">
-      <span style="background:var(--acc);color:#fff;border-radius:50%;width:16px;height:16px;display:inline-flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0">2</span>ジャンル
-    </div>
-    <div style="display:flex;align-items:center;gap:.35rem;font-size:11px;color:var(--ink3)">
-      <span style="background:var(--acc);color:#fff;border-radius:50%;width:16px;height:16px;display:inline-flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0">3</span>検索
-    </div>
-  </div>
-
   <div class="sw">
     <input class="si" id="si" type="text" placeholder="雨、悲しい、「雨が降った」など文章もOK" autocomplete="off">
     <button class="sbtn" onclick="doSearch()">検索</button>
   </div>
-
   <div id="memoryBar" style="display:flex;gap:5px;flex-wrap:wrap;justify-content:center;margin:.5rem 0;min-height:0"></div>
-
-  <div class="genre-row">
-    <span class="gl">ジャンル：</span>
-    <div style="display:flex;flex-direction:column;gap:4px;align-items:center">
-      <div style="display:flex;gap:4px">
-        <button class="gbtn active" onclick="setGenre('all',this)">すべて</button>
-        <button class="gbtn" onclick="setGenre('romance',this)">恋愛・青春</button>
-        <button class="gbtn" onclick="setGenre('fantasy',this)">異世界・ファンタジー</button>
-      </div>
-      <div style="display:flex;gap:4px">
-        <button class="gbtn" onclick="setGenre('horror',this)">ホラー・ミステリ</button>
-        <button class="gbtn" onclick="setGenre('historical',this)">歴史・時代</button>
-      </div>
-    </div>
-  </div>
-
-  <p style="font-size:12px;color:var(--ink3);letter-spacing:.08em;margin-top:.4rem">
-    ジャンルを選んで検索してください
-  </p>
 </div>
-
-<div class="genre-row" style="display:none">
-    <span class="gl">ジャンル：</span>
-    <button class="gbtn active" onclick="setGenre('all',this)">すべて</button>
-    <button class="gbtn" onclick="setGenre('romance',this)">恋愛・青春</button>
-    <button class="gbtn" onclick="setGenre('fantasy',this)">異世界・ファンタジー</button>
-    <button class="gbtn" onclick="setGenre('horror',this)">ホラー・ミステリ</button>
-    <button class="gbtn" onclick="setGenre('historical',this)">歴史・時代</button>
-  </div>
-  <p style="font-size:12px;color:var(--ink3);letter-spacing:.08em;margin-top:.25rem">
-    ジャンルを選んで検索してください
-  </p>
-</div>
-
 <main>
-  <div class="loading" id="loading">
-    <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-    <div style="margin-top:.6rem;font-size:12px" id="lmsg">語彙の海を探索中</div>
-  </div>
   <div id="area"></div>
-  <div class="empty" id="empty">
-    <div class="empty-icon">鏡</div>
-    <div class="empty-text">
-      単語でも文章でも検索できます<br>
-      ジャンルを選ぶとそのシーン向けの例文のみ表示<br>
-          </div>
-  </div>
 </main>
-
-<!-- 広告① 検索結果の下 -->
-<div id="adSlot1" style="display:none;padding:1rem 1.25rem;text-align:center;max-width:760px;margin:0 auto">
-  <div style="font-size:10px;color:var(--ink3);margin-bottom:6px;letter-spacing:.06em">スポンサー</div>
-  <div style="background:var(--paper2);border:1px solid var(--paper3);border-radius:2px;min-height:90px;display:flex;align-items:center;justify-content:center;max-width:728px;margin:0 auto;padding:1rem">
-    <!-- AdSense広告をここに -->
-    <span style="font-size:11px;color:var(--ink3)">広告スペース（728×90）</span>
-  </div>
-</div>
-
-<!-- 広告① コンテンツをすべて読み終えた後・フッター直前 -->
-<!-- ボタンやリンクから最低48px離す / 誤タップ防止のため上下に余白 -->
-<div style="max-width:960px;margin:0 auto;padding:0 2rem">
-  <div style="height:40px"></div><!-- 上余白：直前コンテンツから離す -->
-  <div style="text-align:center;font-size:10px;color:var(--ink3);letter-spacing:.08em;margin-bottom:6px">スポンサー</div>
-  <div class="ad-slot ad-slot-horizontal" style="margin:0">
-    <!-- Google AdSense 審査通過後にコードをここに貼る -->
-    広告スペース（728×90）
-  </div>
-  <div style="height:40px"></div><!-- 下余白：フッターリンクから離す -->
-</div>
-
-
-
 <footer style="border-top:1px solid var(--paper3);padding:1.5rem 2rem;text-align:center;font-size:12px;color:var(--ink3)">
-  <div style="display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;margin-bottom:.75rem">
-    <a href="index.html"   style="color:var(--ink3);text-decoration:none">トップ</a>
-    <a href="ranking.html" style="color:var(--ink3);text-decoration:none">ランキング</a>
-    <a href="submit.html"  style="color:var(--ink3);text-decoration:none">表現を投稿</a>
-    <a href="privacy.html" style="color:var(--ink3);text-decoration:none">プライバシーポリシー</a>
-  </div>
-  <!-- 広告② フッター内・リンクの下・十分な余白あり -->
-  <div style="margin:1rem auto 0;max-width:320px">
-    <div style="font-size:10px;color:var(--ink3);letter-spacing:.08em;margin-bottom:5px">スポンサー</div>
-    <div class="ad-slot" style="min-height:50px;margin:0;font-size:11px">
-      <!-- Google AdSense 審査通過後にコードをここに貼る -->
-      広告スペース（320×50）
-    </div>
-  </div>
-  <div style="margin-top:1rem">© 2025 言葉の鏡 — なろう・カクヨム作家のための言い換え表現辞典</div>
+  © 2025 言葉の鏡 — なろう・カクヨム作家のための言い換え表現辞典
 </footer>
-
 <script src="js/const.js"></script>
 <script src="js/db.js"></script>
 <script src="js/ugc.js"></script>
 <script src="js/search.js"></script>
-<script>
-  document.getElementById('si').addEventListener('keydown', e => { if(e.key==='Enter') doSearch(); });
-</script>
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .catch(e => console.log('SW error:', e));
-  });
-}
-</script>
-
 </body>
 </html>
