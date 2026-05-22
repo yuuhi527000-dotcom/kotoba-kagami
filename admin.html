@@ -234,6 +234,45 @@ async function approveItem(id) {
   });
   loadPending();
 }
+  async function approveItem(id) {
+  await fetch('/api/ugc?action=approve', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id }),
+  });
+  loadPending();
+}
+
+// ↓ここから追加
+async function loadApproved() {
+  const list = document.getElementById('pendingList');
+  try {
+    const r = await fetch('/api/ugc?action=popular&limit=50');
+    const items = await r.json();
+    if (!items.length) {
+      list.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--ink3);font-size:13px">承認済みの投稿はありません</div>';
+      return;
+    }
+    list.innerHTML = items.map(item => {
+      const gc = (typeof GENREC !== 'undefined' ? GENREC[item.genre] : '') || 'gn';
+      const gl = (typeof GENRE !== 'undefined' ? GENRE[item.genre] : '') || item.genre || '';
+      return `
+        <div class="ugc-card">
+          <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem;flex-wrap:wrap">
+            <span style="font-family:'Noto Serif JP',serif;font-size:16px;font-weight:500">${item.word||''}</span>
+            <span class="tag ${gc}">${item.situation||gl}</span>
+            <span style="font-size:11px;color:var(--ink3)">— ${item.author_name||'匿名'}</span>
+          </div>
+          <div style="font-family:'Noto Serif JP',serif;font-size:13px;color:var(--ink2);font-style:italic;line-height:1.7;margin-bottom:.75rem">${item.scene||''}</div>
+          <div style="display:flex;gap:.5rem">
+            <button class="btn btn-danger" onclick="rejectItem('${item.id}')">非表示にする</button>
+          </div>
+        </div>`;
+    }).join('');
+  } catch(e) {
+    list.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--ink3);font-size:13px">読み込みエラー</div>';
+  }
+}
 
 async function rejectItem(id) {
   if (!confirm('この投稿を却下しますか？')) return;
