@@ -1,3 +1,7 @@
+// --- Supabaseの初期化 ---
+import { createClient } from '@supabase/supabase-js';
+const supabase = createClient('あなたのURL', 'あなたのANON_KEY');
+
 // ===== 検索・表示ロジック =====
 
 let genre   = 'all';
@@ -6,6 +10,7 @@ let allSyns = [];
 let selCard = null;
 
 function setGenre(g, btn) {
+
   genre = g;
   document.querySelectorAll('.gbtn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
