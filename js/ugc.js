@@ -19,7 +19,10 @@ async function submitUGC(formData) {
       link_twitter:  formData.linkTwitter  || '',
     }),
   });
-  if (!res.ok) throw new Error('投稿に失敗しました');
+  if (!res.ok) {
+  const errText = await res.text().catch(() => '');
+  throw new Error('投稿に失敗しました: ' + errText);
+}
   return await res.json();
 }
 
