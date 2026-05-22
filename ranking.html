@@ -85,40 +85,30 @@ const FALLBACK = [
 async function loadRanking() {
   const area = document.getElementById('rankingArea');
   let items = [];
-
-  // Supabaseから人気UGCを取得
   try {
-    const res = await fetch('/api/ugc?action=popular&limit=5');
+    const res = await fetch('/api/ranking');
     if (res.ok) {
       const data = await res.json();
       if (Array.isArray(data) && data.length > 0) items = data;
     }
   } catch(e) {}
-
-  // UGCがなければ仮データを使用
   if (items.length === 0) {
     renderFallback(area);
     return;
   }
-
-  // UGCデータを表示
   let html = '<div style="display:flex;flex-direction:column;gap:8px;">';
+  const maxCount = items[0].search_count || 1;
   items.slice(0,5).forEach((item, idx) => {
-    const gc = GENREC[item.genre] || 'gn';
-    const gl = GENRE[item.genre] || '';
+    const pct = Math.round((item.search_count / maxCount) * 100);
     html += `
-      <div style="background:#fff;border:0.5px solid var(--paper3);padding:1rem 1.25rem;border-radius:2px;">
-        <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.5rem;">
-          <span style="font-family:'Noto Serif JP',serif;font-size:22px;font-weight:${idx<3?'500':'300'};color:${idx<3?'var(--acc)':'var(--paper3)'};">${idx+1}</span>
-          <div>
-            <span style="font-size:17px;font-weight:500;color:var(--ink);">${item.word}</span>
-            <span class="tag ${gc}" style="margin-left:.5rem;">${item.situation||gl}</span>
-          </div>
+      <a class="rank-card" href="index.html" onclick="sessionStorage.setItem('autoSearch','${item.word}')">
+        <div class="rank-num ${idx<3?'top':''}">${idx+1}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-family:'Noto Serif JP',serif;font-size:17px;font-weight:500;color:var(--ink);margin-bottom:2px;">${item.word}</div>
+          <div style="font-size:12px;color:var(--ink3);">検索 ${item.search_count}回</div>
+          <div class="rank-bar"><div class="rank-fill" style="width:${pct}%;"></div></div>
         </div>
-        <div style="font-size:13px;color:var(--ink2);font-style:italic;line-height:1.7;">${item.scene}</div>
-        ${item.ba_after ? `<div style="font-size:12px;color:var(--ink3);margin-top:4px;">→ <span style="color:var(--ink);">${item.ba_after}</span></div>` : ''}
-        <div style="font-size:11px;color:var(--ink3);margin-top:6px;">— ${item.author_name||'匿名'}</div>
-      </div>`;
+      </a>`;
   });
   html += '</div>';
   area.innerHTML = html;

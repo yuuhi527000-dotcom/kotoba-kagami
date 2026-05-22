@@ -23,7 +23,21 @@ async function saveCache(word, genre, data) {
         'Content-Type': 'application/json',
         Prefer: 'resolution=merge-duplicates',
       },
-      body: JSON.stringify({ word, genre, data }),
+      body: JSON.stringify({ word, genre, data, search_count: 1 }),
+    });
+  } catch(e) {}
+}
+
+async function incrementCount(word, genre) {
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/rpc/increment_search_count`, {
+      method: 'POST',
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ p_word: word, p_genre: genre }),
     });
   } catch(e) {}
 }
