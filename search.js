@@ -75,7 +75,7 @@ async function doSearch() {
 
   // 回数制限チェック
   const count = getSearchCount();
-  if (count >= 3) {
+  if (count >= 10) {
     showLimitScreen();
     return;
   }
