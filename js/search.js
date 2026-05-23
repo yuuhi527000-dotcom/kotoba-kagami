@@ -87,7 +87,22 @@ async function doSearch() {
   if (!isPremiumUser()) {
     const count = getSearchCount();
     if (count >= 10) {
+      // AI検索は止めるが、UGC（他人の投稿）は表示する
+      const input = document.getElementById('si').value.trim();
+      if (!input) { showLimitScreen(); return; }
+      curWord = input;
+      document.getElementById('empty').style.display = 'none';
       showLimitScreen();
+      // UGCだけ追記表示
+      const ugcDiv = document.createElement('div');
+      ugcDiv.id = 'ugcContainer';
+      ugcDiv.style.maxWidth = '760px';
+      ugcDiv.style.margin = '0 auto';
+      const area = document.getElementById('area');
+      if (area) area.appendChild(ugcDiv);
+      if (typeof renderUGCSection === 'function') {
+        renderUGCSection(input, genre, ugcDiv);
+      }
       return;
     }
   }
