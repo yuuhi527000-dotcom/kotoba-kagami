@@ -70,6 +70,7 @@ function showLimitScreen() {
 }
 
 async function doSearch() {
+  console.log("検索処理が開始されました"); // これを一番上に追加
   const consent = document.getElementById('aiConsent');
   if (consent && !consent.checked) {
     document.getElementById('empty').style.display = 'none';
