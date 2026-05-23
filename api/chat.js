@@ -91,7 +91,11 @@ export default async function handler(req, res) {
       const raw = (data.content || []).map(x => x.text || '').join('');
       try {
         const parsed = JSON.parse(raw.replace(/```json/g,'').replace(/```/g,'').trim());
-        if (parsed.synonyms) await saveCache(word, genre, parsed);
+        if (parsed.synonyms) {
+          const beforeafter = (req.body.beforeafter) || [];
+          const fullData = { ...parsed, beforeafter };
+          await saveCache(word, genre, fullData);
+        }
       } catch(e) {}
     }
 

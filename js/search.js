@@ -421,7 +421,7 @@ async function aiWord(word) {
     const r2 = await fetch('/api/chat', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({max_tokens: 1800, word, genre: gk, messages: [{role:'user',content:prompt2}]})
+      body: JSON.stringify({max_tokens: 1800, word, genre: gk, beforeafter: phase1.beforeafter||[], messages: [{role:'user',content:prompt2}]})
     });
     const p2el = document.getElementById('phase2Loading');
     if (p2el) p2el.remove();
