@@ -425,6 +425,32 @@ function renderPhase1(word, data) {
 // ---- フェーズ2：ニュアンスカード＋情景表現を追加 ----
 // ---- フェーズ2：ニュアンスカード＋情景表現を追加 ----
 function renderPhase2(word, phase1, phase2) {
+  console.log("renderPhase2 実行");
+  const syns = (phase2.synonyms || []);
+  const exprs = (phase2.expressions || []);
+  
+  allSyns = syns;
+
+  let h = '';
+  if (exprs.length) {
+    h += `<div class="sh">情景表現フレーズ</div><div class="expr-list">`;
+    exprs.forEach(e => { h += `<div class="expr" style="animation:fi .3s ease">${e}</div>`; });
+    h += `</div>`;
+  }
+
+  if (syns.length) {
+    h += `<div class="sh">ニュアンス比較カード</div><div class="nc-grid">`;
+    syns.forEach((s, i) => {
+      h += `<div class="nc" id="c${i}" onclick="showDetail(${i})" style="animation:fi .3s ease">
+        <div class="nc-w">${s.word}</div>
+      </div>`;
+    });
+    h += `</div>`;
+  }
+
+  const p2 = document.getElementById('phase2Area');
+  if (p2) p2.innerHTML = h;
+}function renderPhase2(word, phase1, phase2) {
   console.log("renderPhase2が呼び出されました。データ:", phase2);
 
   // 1. データの取得
