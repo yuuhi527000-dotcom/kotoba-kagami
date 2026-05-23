@@ -299,33 +299,33 @@ async function aiWord(word) {
   // ===== キャッシュチェック =====
   try {
     setLoading(true, '検索中...');
-    console.log("キャッシュチェック開始"); // 2. ここが出るか確認
+    console.log("キャッシュチェック開始");
     const cacheRes = await fetch('/api/chat', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({word: word, genre: gk, max_tokens: 1, messages: [{role:'user',content:'ping'}]})
     });
     const cacheData = await cacheRes.json();
-    console.log("キャッシュAPI結果:", cacheData); // 3. ここが出るか確認
-    // aiWord内のキャッシュチェック部分を以下のように書き換えます
-if (cacheData.cached && cacheData.data) {
-  const cached = cacheData.data;
-  
-  // 【修正点】類語(synonyms)または情景表現(expressions)があるか確認
-  // もし空っぽなら、キャッシュは無視して再検索させる
-  if ((cached.synonyms && cached.synonyms.length > 0) || (cached.expressions && cached.expressions.length > 0)) {
-    console.log("完全なキャッシュを発見、表示します");
-    setLoading(false);
-    renderWord(word, cached);
-    renderMemoryBar();
-    const ad = document.getElementById('adSlot1'); if (ad) ad.style.display = 'block';
-    return;
-  } else {
-    console.log("キャッシュはありましたが、内容が不完全なため再検索します");
-    // ここでreturnせず、そのまま下の新規検索処理へ流す
-  }
-} catch(e) {
-    console.log("キャッシュチェックでエラー:", e); // 5. エラーならここに出る
+    console.log("キャッシュAPI結果:", cacheData);
+
+    if (cacheData.cached && cacheData.data) {
+      const cached = cacheData.data;
+      
+      // 類語(synonyms)または情景表現(expressions)があるか確認
+      if ((cached.synonyms && cached.synonyms.length > 0) || (cached.expressions && cached.expressions.length > 0)) {
+        console.log("完全なキャッシュを発見、表示します");
+        setLoading(false);
+        renderWord(word, cached);
+        renderMemoryBar();
+        const ad = document.getElementById('adSlot1'); if (ad) ad.style.display = 'block';
+        return;
+      } else {
+        console.log("キャッシュはありましたが、内容が不完全なため再検索します");
+        // ここでreturnせず、下の新規検索処理へ流す
+      }
+    } 
+   } catch(e) {
+    console.log("キャッシュチェックでエラー:", e);
   }
   console.log("キャッシュなし、新規検索へ"); // 6. ここが出るか確認
 
