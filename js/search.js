@@ -315,10 +315,10 @@ async function aiWord(word) {
       if ((cached.synonyms && cached.synonyms.length > 0) || (cached.expressions && cached.expressions.length > 0)) {
         console.log("完全なキャッシュを発見、表示します");
         setLoading(false);
-        renderWord(word, cached);
+        renderWord(word, cached); // ← ここが実行されています
         renderMemoryBar();
-        const ad = document.getElementById('adSlot1'); if (ad) ad.style.display = 'block';
-        return;
+        // ...
+        return; // ← ここで終了しています
       } else {
         console.log("キャッシュはありましたが、内容が不完全なため再検索します");
         // ここでreturnせず、下の新規検索処理へ流す
