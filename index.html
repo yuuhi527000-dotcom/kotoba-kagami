@@ -83,7 +83,26 @@ try {
   <div style="display:flex;align-items:center;justify-content:space-between;padding:.65rem 1.25rem;border-bottom:1px solid var(--paper3)">
     <div style="width:80px"></div>
     <a href="/index.html" class="logo">言葉の<span>鏡</span></a>
-    <div id="authArea" style="width:80px;display:flex;justify-content:flex-end"></div>
+    <div style="width:80px;display:flex;justify-content:flex-end;align-items:center;gap:.5rem">
+      <div id="bellBtn" onclick="toggleAnnouncements()" style="position:relative;cursor:pointer;width:32px;height:32px;display:flex;align-items:center;justify-content:center">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+        <span id="bellBadge" style="display:none;position:absolute;top:2px;right:2px;width:8px;height:8px;background:#c0392b;border-radius:50%"></span>
+      </div>
+      <div id="authArea" style="display:flex;justify-content:flex-end"></div>
+    </div>
+  </div>
+  <!-- お知らせパネル -->
+  <div id="announcementsPanel" style="display:none;position:fixed;top:56px;right:8px;width:320px;max-height:400px;background:#fff;border:1px solid var(--paper3);border-radius:4px;box-shadow:0 4px 12px rgba(0,0,0,.12);z-index:200;overflow-y:auto">
+    <div style="padding:.75rem 1rem;border-bottom:1px solid var(--paper3);display:flex;align-items:center;justify-content:space-between">
+      <span style="font-size:13px;font-weight:500;color:var(--ink)">お知らせ</span>
+      <button onclick="toggleAnnouncements()" style="background:none;border:none;cursor:pointer;font-size:16px;color:var(--ink3);line-height:1">✕</button>
+    </div>
+    <div id="announcementsList" style="padding:.5rem 0">
+      <div style="text-align:center;padding:1.5rem;color:var(--ink3);font-size:12px">読み込み中...</div>
+    </div>
   </div>
   <nav style="display:flex;align-items:center;border-bottom:1px solid var(--paper3);background:#fff">
     <a href="/index.html" class="tab-link">トップ</a>
@@ -233,5 +252,76 @@ if ('serviceWorker' in navigator) {
 }
 </script>
 
+<script>
+// ---- お知らせ機能 ----
+let announcementsLoaded = false;
+
+async function loadAnnouncements() {
+  const list = document.getElementById('announcementsList');
+  try {
+    const r = await fetch('/api/announcements');
+    const items = await r.json();
+    if (!items.length) {
+      list.innerHTML = '<div style="text-align:center;padding:1.5rem;color:var(--ink3);font-size:12px">お知らせはありません</div>';
+      return;
+    }
+    list.innerHTML = items.map(item => {
+      const date = new Date(item.created_at).toLocaleDateString('ja-JP', {month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
+      return `<div style="padding:.75rem 1rem;border-bottom:0.5px solid var(--paper3);font-size:13px;color:var(--ink2);line-height:1.7">
+        <div style="font-size:10px;color:var(--ink3);margin-bottom:3px">${date}</div>
+        ${item.message}
+      </div>`;
+    }).join('');
+
+    // 未読バッジ
+    const lastSeen = localStorage.getItem('lastSeenAnnouncement');
+    const latest = items[0].created_at;
+    if (!lastSeen || lastSeen < latest) {
+      document.getElementById('bellBadge').style.display = 'block';
+    }
+  } catch(e) {
+    list.innerHTML = '<div style="text-align:center;padding:1.5rem;color:var(--ink3);font-size:12px">読み込みに失敗しました</div>';
+  }
+}
+
+function toggleAnnouncements() {
+  const panel = document.getElementById('announcementsPanel');
+  const isOpen = panel.style.display !== 'none';
+  panel.style.display = isOpen ? 'none' : 'block';
+  if (!isOpen) {
+    if (!announcementsLoaded) {
+      loadAnnouncements();
+      announcementsLoaded = true;
+    }
+    // 既読にする
+    fetch('/api/announcements').then(r => r.json()).then(items => {
+      if (items.length) {
+        localStorage.setItem('lastSeenAnnouncement', items[0].created_at);
+        document.getElementById('bellBadge').style.display = 'none';
+      }
+    }).catch(()=>{});
+  }
+}
+
+// パネル外クリックで閉じる
+document.addEventListener('click', function(e) {
+  const panel = document.getElementById('announcementsPanel');
+  const bell = document.getElementById('bellBtn');
+  if (panel && bell && !panel.contains(e.target) && !bell.contains(e.target)) {
+    panel.style.display = 'none';
+  }
+});
+
+// 起動時に未読チェック
+document.addEventListener('DOMContentLoaded', function() {
+  fetch('/api/announcements').then(r => r.json()).then(items => {
+    if (!items.length) return;
+    const lastSeen = localStorage.getItem('lastSeenAnnouncement');
+    if (!lastSeen || lastSeen < items[0].created_at) {
+      document.getElementById('bellBadge').style.display = 'block';
+    }
+  }).catch(()=>{});
+});
+</script>
 </body>
 </html>
