@@ -14,13 +14,7 @@
       --border: #e0d8cc;
       --card: #ffffff;
     }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       background: var(--bg);
       color: var(--text);
@@ -28,7 +22,6 @@
       line-height: 1.8;
       min-height: 100vh;
     }
-
     header {
       border-bottom: 1px solid var(--border);
       padding: 16px 24px;
@@ -37,26 +30,9 @@
       gap: 12px;
       background: var(--card);
     }
-
-    header a {
-      text-decoration: none;
-      color: var(--accent);
-      font-size: 1.2rem;
-      font-weight: bold;
-      letter-spacing: 0.05em;
-    }
-
-    header span {
-      color: var(--muted);
-      font-size: 0.9rem;
-    }
-
-    .container {
-      max-width: 760px;
-      margin: 0 auto;
-      padding: 48px 24px 80px;
-    }
-
+    header a { text-decoration: none; color: var(--accent); font-size: 1.2rem; font-weight: bold; letter-spacing: 0.05em; }
+    header span { color: var(--muted); font-size: 0.9rem; }
+    .container { max-width: 760px; margin: 0 auto; padding: 48px 24px 80px; }
     h1 {
       font-size: 1.6rem;
       font-weight: normal;
@@ -66,27 +42,10 @@
       padding-bottom: 12px;
       margin-bottom: 40px;
     }
-
-    .table-wrapper {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      overflow: hidden;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    tr {
-      border-bottom: 1px solid var(--border);
-    }
-
-    tr:last-child {
-      border-bottom: none;
-    }
-
+    .table-wrapper { background: var(--card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; }
+    tr { border-bottom: 1px solid var(--border); }
+    tr:last-child { border-bottom: none; }
     th {
       background: #f5f0e8;
       color: var(--accent);
@@ -99,19 +58,8 @@
       text-align: left;
       border-right: 1px solid var(--border);
     }
-
-    td {
-      padding: 16px 20px;
-      font-size: 0.95rem;
-      color: var(--text);
-      vertical-align: top;
-    }
-
-    td a {
-      color: var(--accent);
-      text-decoration: underline;
-    }
-
+    td { padding: 16px 20px; font-size: 0.95rem; color: var(--text); vertical-align: top; }
+    td a { color: var(--accent); text-decoration: underline; }
     .note {
       margin-top: 32px;
       padding: 20px 24px;
@@ -122,49 +70,34 @@
       color: var(--muted);
       line-height: 1.9;
     }
-
     @media (max-width: 600px) {
-      h1 {
-        font-size: 1.3rem;
-      }
-
-      th {
-        width: 38%;
-        font-size: 0.82rem;
-        padding: 14px 12px;
-      }
-
-      td {
-        font-size: 0.88rem;
-        padding: 14px 12px;
-      }
+      h1 { font-size: 1.3rem; }
+      th { width: 38%; font-size: 0.82rem; padding: 14px 12px; }
+      td { font-size: 0.88rem; padding: 14px 12px; }
     }
   </style>
 </head>
 <body>
-
   <header>
     <a href="/">言葉の鏡</a>
     <span>／ 特定商取引法に基づく表記</span>
   </header>
-
   <div class="container">
     <h1>特定商取引法に基づく表記</h1>
-
     <div class="table-wrapper">
       <table>
         <tr>
           <th>販売者名</th>
-          <td>野田 美保</td>
+          <td>請求があった場合に遅滞なく開示いたします</td>
         </tr>
         <tr>
           <th>所在地</th>
-          <td>奈良県葛城市</td>
+          <td>請求があった場合に遅滞なく開示いたします</td>
         </tr>
         <tr>
           <th>電話番号</th>
-          <td>090-1597-3576<br>
-            <small style="color:var(--muted);">※お問い合わせはメールにてお願いいたします。電話での対応は行っておりません。</small>
+          <td>請求があった場合に遅滞なく開示いたします<br>
+            <small style="color:var(--muted);">※お問い合わせは下記メールアドレスにてお願いいたします。</small>
           </td>
         </tr>
         <tr>
@@ -205,13 +138,10 @@
         </tr>
       </table>
     </div>
-
     <div class="note">
       ※ 本サービスはデジタルコンテンツ（オンラインサービス）です。<br>
       ※ ご質問・ご不明点は <a href="mailto:yuuhi527000@gmail.com" style="color:var(--accent);">yuuhi527000@gmail.com</a> までお気軽にお問い合わせください。
     </div>
-
   </div>
-
 </body>
 </html>
