@@ -424,32 +424,31 @@ function renderPhase1(word, data) {
 function renderPhase2(word, phase1, phase2) {
   console.log("renderPhase2が呼び出されました。データ:", phase2);
 
-  // 1. データの取得
   const syns = (phase2.synonyms || []);
   const exprs = (phase2.expressions || []);
-  
   allSyns = syns;
 
   let h = '';
 
-  // 2. HTML構築
+  // 情景表現の構築
   if (exprs.length) {
     h += `<div class="sh">情景表現フレーズ</div><div class="expr-list">`;
     exprs.forEach(e => { h += `<div class="expr" style="animation:fi .3s ease">${e}</div>`; });
     h += `</div>`;
   }
 
+  // ニュアンス比較カードの構築
   if (syns.length) {
     h += `<div class="sh">ニュアンス比較カード（クリックで詳細）</div><div class="nc-grid">`;
     syns.forEach((s, i) => {
-      const uc = (s.usecases||[]).map(u => `<span class="uc">📌 ${u}</span>`).join(' ');
-      const gt = (s.genres||[]).slice(0,2).map(g => `<span class="tag ${GENREC[g]||'gn'}">${GENRE[g]||g}</span>`).join('');
+      const uc = (s.usecases || []).map(u => `<span class="uc">📌 ${u}</span>`).join(' ');
+      const gt = (s.genres || []).slice(0, 2).map(g => `<span class="tag ${GENREC[g] || 'gn'}">${GENRE[g] || g}</span>`).join('');
       h += `<div class="nc" id="c${i}" onclick="showDetail(${i})" style="animation:fi .3s ease">
         <div class="nc-w">${s.word}</div><div class="nc-k">${s.kana}</div>
-        <div class="brow"><span class="blabel">強度</span><div class="bbar"><div class="bfill" style="width:${s.intensity||50}%"></div></div></div>
-        <div class="brow"><span class="blabel">詩的さ</span><div class="bbar"><div class="bfill" style="width:${s.lyricism||50}%"></div></div></div>
+        <div class="brow"><span class="blabel">強度</span><div class="bbar"><div class="bfill" style="width:${s.intensity || 50}%"></div></div></div>
+        <div class="brow"><span class="blabel">詩的さ</span><div class="bbar"><div class="bfill" style="width:${s.lyricism || 50}%"></div></div></div>
         <div class="nc-n">${s.nuance}</div>
-        <div class="tags"><span class="tag ${TONEC[s.tone]||'tm'}">${TONE[s.tone]||s.tone}</span>${gt}</div>
+        <div class="tags"><span class="tag ${TONEC[s.tone] || 'tm'}">${TONE[s.tone] || s.tone}</span>${gt}</div>
         ${uc ? `<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:3px">${uc}</div>` : ''}
       </div>`;
     });
@@ -464,7 +463,18 @@ function renderPhase2(word, phase1, phase2) {
     </div>`;
   }
 
-  // 3. 表示処理
+  h += `<div id="ugcContainer"></div>`;
+  h += `<div style="text-align:center;padding:2rem 0 1rem;border-top:1px solid var(--paper3);margin-top:1.5rem">
+    <p style="font-size:13px;color:var(--ink3);margin-bottom:1rem">他の言葉も調べてみましょう</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:1rem">
+      ${getRelatedWords(word).map(w => `<span onclick="qs('${w}')" style="font-family:'Noto Serif JP',serif;font-size:14px;color:var(--ink2);padding:5px 14px;border:0.5px solid var(--paper3);border-radius:2px;cursor:pointer;background:#fff">${w}</span>`).join('')}
+    </div>
+    <button onclick="document.getElementById('si').focus();document.getElementById('si').select()" style="font-size:13px;padding:8px 24px;background:var(--acc);color:#fff;border:none;cursor:pointer;letter-spacing:.06em;font-family:'Zen Kaku Gothic New',sans-serif">
+      別の言葉を検索する
+    </button>
+  </div>`;
+
+  // 表示処理
   const p2 = document.getElementById('phase2Area');
   if (p2) {
     p2.innerHTML = h;
@@ -473,12 +483,12 @@ function renderPhase2(word, phase1, phase2) {
     if (area) area.innerHTML += h;
   }
 
-  // 4. 追加処理
+  // UGC追加処理
   if (typeof renderUGCSection === 'function') {
     const ugcEl = document.getElementById('ugcContainer');
     if (ugcEl) renderUGCSection(word, genre, ugcEl);
   }
-} // ← ここがrenderPhase2の閉じ括弧
+}
 
  
 
