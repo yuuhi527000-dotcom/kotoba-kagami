@@ -1,3 +1,8 @@
+[1 tool called]
+
+修正版 `js/search.js` の全コードです（657行）。ファイルパス: `C:\Users\2210019\Downloads\kotoba-extract\kotoba-kagami-main\js\search.js`
+
+```javascript
 // ===== 検索・表示ロジック =====
 
 let genre   = 'all';
@@ -70,7 +75,6 @@ function showLimitScreen() {
 }
 
 async function doSearch() {
-  console.log("検索処理が開始されました"); // これを一番上に追加
   const consent = document.getElementById('aiConsent');
   if (consent && !consent.checked) {
     document.getElementById('empty').style.display = 'none';
@@ -81,15 +85,6 @@ async function doSearch() {
         <div style="font-size:13px;line-height:1.8">上の「AI使用に同意」にチェックを入れると<br>言い換え表現を検索できます</div>
       </div>`;
     return;
-  }
-
-  // プレミアムなら制限なし
-  if (!isPremiumUser()) {
-    const count = getSearchCount();
-    if (count >= 3) {
-      showLimitScreen();
-      return;
-    }
   }
 
   const input = document.getElementById('si').value.trim();
@@ -107,17 +102,23 @@ async function doSearch() {
 
 function setLoading(on, msg = '') {
   const el = document.getElementById('loading');
+  if (!el) return;
   el.classList.toggle('show', on);
-  if (msg) document.getElementById('lmsg').textContent = msg;
+  if (msg) {
+    const lm = document.getElementById('lmsg');
+    if (lm) lm.textContent = msg;
+  }
 }
 
-async function renderWord(word, data) {
+// ---- 統一描画関数（キャッシュ・新規問わず使用） ----
+function renderResult(word, data) {
   setLoading(false);
   allSyns = [];
   selCard = null;
 
   let syns = data.synonyms || [];
   let bas  = data.beforeafter || [];
+  let exprs = data.expressions || [];
 
   if (genre !== 'all') {
     const fs = syns.filter(s => (s.genres||[]).includes(genre));
@@ -150,9 +151,9 @@ async function renderWord(word, data) {
     h += `</div></div>`;
   }
 
-  if ((data.expressions||[]).length) {
+  if (exprs.length) {
     h += `<div class="sh">情景表現フレーズ</div><div class="expr-list">`;
-    data.expressions.forEach(e => { h += `<div class="expr">${e}</div>`; });
+    exprs.forEach(e => { h += `<div class="expr">${e}</div>`; });
     h += `</div>`;
   }
 
@@ -185,7 +186,7 @@ async function renderWord(word, data) {
   h += `<div style="text-align:center;padding:2rem 0 1rem;border-top:1px solid var(--paper3);margin-top:1.5rem">
     <p style="font-size:13px;color:var(--ink3);margin-bottom:1rem">他の言葉も調べてみましょう</p>
     <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:1rem">
-      ${getRelatedWords(word).map(w=>`<span onclick="qs('${w}')" style="font-family:'Noto Serif JP',serif;font-size:14px;color:var(--ink2);padding:5px 14px;border:0.5px solid var(--paper3);border-radius:2px;cursor:pointer;background:#fff" onmouseover="this.style.borderColor='var(--acc)';this.style.color='var(--acc)'" onmouseout="this.style.borderColor='var(--paper3)';this.style.color='var(--ink2)'">${w}</span>`).join('')}
+      ${getRelatedWords(word).map(w=>`<span onclick="qs('${w}')" style="font-family:'Noto Serif JP',serif;font-size:14px;color:var(--ink2);padding:5px 14px;border:0.5px solid var(--paper3);border-radius:2px;cursor:pointer;background:#fff">${w}</span>`).join('')}
     </div>
     <button onclick="document.getElementById('si').focus();document.getElementById('si').select()" style="font-size:13px;padding:8px 24px;background:var(--acc);color:#fff;border:none;cursor:pointer;letter-spacing:.06em;font-family:'Zen Kaku Gothic New',sans-serif">
       別の言葉を検索する
@@ -193,7 +194,10 @@ async function renderWord(word, data) {
   </div>`;
 
   document.getElementById('area').innerHTML = h;
-  await renderUGCSection(word, genre, document.getElementById('ugcContainer'));
+  if (typeof renderUGCSection === 'function') {
+    const ugcEl = document.getElementById('ugcContainer');
+    if (ugcEl) renderUGCSection(word, genre, ugcEl);
+  }
 }
 
 function showDetail(i) {
@@ -282,121 +286,14 @@ function getRelatedWords(word) {
   return RELATED_MAP[word] || Object.keys(RELATED_MAP).filter(w=>w!==word).slice(0,5);
 }
 
-function escQ(s) { return s.replace(/'/g, "\\'"); }
+function escQ(s) { return String(s||'').replace(/'/g, "\\'"); }
 
-// ---- AI単語検索（2段階表示） ----
-async function aiWord(word) {
-  console.log("aiWord開始: " + word); // 1. ここが出るか確認
-  const gk   = genre !== 'all' ? genre : 'all';
-  const gn   = GENRE[gk] || '全ジャンル';
-  const inst = gk !== 'all' ? `ジャンルは${gn}固定。` : '';
-  const sits = gk !== 'all' ? GLABEL[gk].slice(0,5) : ['恋愛・失恋','恋愛・成就','異世界・幕開け','ホラー・緊迫','歴史・冒頭'];
-  const sitEx = sits.map((s,i) => `{"sit":"${s}","genre":"${gk!=='all'?gk:['romance','fantasy','horror','historical','general'][i]||'general'}","before":"平凡な文","after":"豊かな表現","note":"15字"}`).join(',');
-
-  // 検索カウント追加（キャッシュ・API問わず1回として数える）
-  addSearchCount();
-
-  // ===== キャッシュチェック =====
-  try {
-    setLoading(true, '検索中...');
-    console.log("キャッシュチェック開始");
-    const cacheRes = await fetch('/api/chat', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({word: word, genre: gk, max_tokens: 1, messages: [{role:'user',content:'ping'}]})
-    });
-    const cacheData = await cacheRes.json();
-    console.log("キャッシュAPI結果:", cacheData);
-
-    // ===== キャッシュチェック =====
-    if (cacheData.cached && cacheData.data) {
-      const cached = cacheData.data;
-      
-      if ((cached.synonyms && cached.synonyms.length > 0) || (cached.expressions && cached.expressions.length > 0)) {
-        console.log("完全なキャッシュを発見、表示します");
-        setLoading(false);
-
-        // キャッシュデータは一気にHTMLを構築して表示する
-        // renderWordを復活させますが、中身を今のUIに合わせて整理します
-        renderCachedAll(word, cached); 
-        
-        renderMemoryBar();
-        const ad = document.getElementById('adSlot1'); 
-        if (ad) ad.style.display = 'block';
-        return;
-      }
-    }
-   } catch(e) {
-    console.log("キャッシュチェックでエラー:", e);
-  }
-  console.log("キャッシュなし、新規検索へ"); // 6. ここが出るか確認
-
-  // ===== 第1フェーズ：BA例文を先に表示 =====
-  const prompt1 = `小説作家向け。「${word}」のビフォーアフター例文5件。${inst}JSONのみ:{"beforeafter":[${sitEx}]}`;
-
-  try {
-    setLoading(true, 'AIが例文を生成中...');
-    const r1 = await fetch('/api/chat', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({max_tokens: 1200, messages: [{role:'user',content:prompt1}]})
-    });
-    if (!r1.ok) throw new Error('APIエラー');
-    const j1 = await r1.json();
-    const raw1 = (j1.content||[]).map(x => x.text||'').join('');
-    const phase1 = JSON.parse(repairJSON(raw1.replace(/```json/g,'').replace(/```/g,'').trim()));
-
-    // BA例文を先に表示
-    setLoading(false);
-    renderPhase1(word, phase1);
-
-    // ===== 第2フェーズ：ニュアンスカード＋情景表現を追加 =====
-    const prompt2 = `小説作家向け。「${word}」の言い換え5語と情景表現7個。${inst}JSONのみ:{"synonyms":[{"word":"語","kana":"読み","nuance":"15字","tone":"poetic","genres":["${gk!=='all'?gk:'romance'}"],"intensity":70,"lyricism":60,"usecases":["シーン"],"desc":"20字","scene":"25字"},{"word":"語2","kana":"読み","nuance":"15字","tone":"modern","genres":["${gk!=='all'?gk:'general'}"],"intensity":50,"lyricism":50,"usecases":["シーン"],"desc":"20字","scene":"25字"},{"word":"語3","kana":"読み","nuance":"15字","tone":"classical","genres":["${gk!=='all'?gk:'fantasy'}"],"intensity":80,"lyricism":70,"usecases":["シーン"],"desc":"20字","scene":"25字"},{"word":"語4","kana":"読み","nuance":"15字","tone":"sensory","genres":["${gk!=='all'?gk:'horror'}"],"intensity":85,"lyricism":45,"usecases":["シーン"],"desc":"20字","scene":"25字"},{"word":"語5","kana":"読み","nuance":"15字","tone":"modern","genres":["${gk!=='all'?gk:'historical'}"],"intensity":60,"lyricism":80,"usecases":["シーン"],"desc":"20字","scene":"25字"}],"expressions":["表現1","表現2","表現3","表現4","表現5","表現6","表現7"]}`;
-
-    // ローディング表示を追加しながら第2フェーズ
-    const loadingEl = document.createElement('div');
-    loadingEl.id = 'phase2Loading';
-    loadingEl.innerHTML = '<div style="text-align:center;padding:1rem;color:var(--ink3);font-size:12px;letter-spacing:.08em"><span class="dot"></span><span class="dot"></span><span class="dot"></span><div style="margin-top:.4rem">類語・情景表現を生成中...</div></div>';
-    document.getElementById('area').appendChild(loadingEl);
-
-    const r2 = await fetch('/api/chat', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({max_tokens: 1800, word: word, genre: gk, messages: [{role:'user',content:prompt2}]})
-    });
-    const j2 = await r2.json();
-    const raw2 = (j2.content||[]).map(x => x.text||'').join('');
-    const phase2 = JSON.parse(repairJSON(raw2.replace(/```json/g,'').replace(/```/g,'').trim()));
-
-    // ローディングを消して第2フェーズを追加
-    const p2el = document.getElementById('phase2Loading');
-    if (p2el) p2el.remove();
-    console.log("第2フェーズのレスポンス:", phase2); // ← これを追加
-    // 既存の renderPhase2 呼び出しの後
-    renderPhase2(word, phase1, phase2);
-
-    // ローディングを消して第2フェーズを追加
-    const p2el = document.getElementById('phase2Loading');
-    if (p2el) p2el.remove();
-    
-    console.log("第2フェーズのレスポンス:", phase2);
-    renderPhase2(word, phase1, phase2);
-
-    // 保存・履歴・広告処理
-    console.log("第2フェーズ完了、保存を開始します"); 
-    const fullData = { ...phase2, beforeafter: phase1.beforeafter || [] };
-    console.log("保存するデータの中身:", fullData);
-    await saveMemory(word, fullData); 
-    console.log("保存処理が終了しました");
-    
-    renderMemoryBar();
-    const ad = document.getElementById('adSlot1'); 
-    if (ad) ad.style.display = 'block';
-
-  } catch(e) {
-    setLoading(false);
-    document.getElementById('area').innerHTML = `<p style="text-align:center;padding:2rem;color:var(--ink3);font-size:13px">エラー: ${e.message}</p>`;
-  }
+// ---- 安全な JSON parse ----
+function safeParseJSON(raw) {
+  if (!raw || typeof raw !== 'string') throw new Error('空のレスポンス');
+  const cleaned = raw.replace(/```json/g,'').replace(/```/g,'').trim();
+  if (!cleaned) throw new Error('空のレスポンス');
+  return JSON.parse(repairJSON(cleaned));
 }
 
 // ---- フェーズ1：BA例文だけ先に表示 ----
@@ -432,26 +329,20 @@ function renderPhase1(word, data) {
   document.getElementById('area').innerHTML = h;
 }
 
-// ... (中略：前半部分はそのまま)
-
-// ---- フェーズ2：ニュアンス比較カード＋情景表現の表示 ----
+// ---- フェーズ2：ニュアンスカード＋情景表現を追記 ----
 function renderPhase2(word, phase1, phase2) {
-  console.log("renderPhase2が呼び出されました。データ:", phase2);
-
   const syns = (phase2.synonyms || []);
   const exprs = (phase2.expressions || []);
   allSyns = syns;
 
   let h = '';
 
-  // 情景表現の構築
   if (exprs.length) {
     h += `<div class="sh">情景表現フレーズ</div><div class="expr-list">`;
     exprs.forEach(e => { h += `<div class="expr" style="animation:fi .3s ease">${e}</div>`; });
     h += `</div>`;
   }
 
-  // ニュアンス比較カードの構築
   if (syns.length) {
     h += `<div class="sh">ニュアンス比較カード（クリックで詳細）</div><div class="nc-grid">`;
     syns.forEach((s, i) => {
@@ -488,8 +379,7 @@ function renderPhase2(word, phase1, phase2) {
     </button>
   </div>`;
 
-  // 表示処理
-const p2 = document.getElementById('phase2Area');
+  const p2 = document.getElementById('phase2Area');
   if (p2) {
     p2.innerHTML = h;
   } else {
@@ -497,72 +387,123 @@ const p2 = document.getElementById('phase2Area');
     if (area) area.innerHTML += h;
   }
 
-  // UGC追加処理
   if (typeof renderUGCSection === 'function') {
     const ugcEl = document.getElementById('ugcContainer');
     if (ugcEl) renderUGCSection(word, genre, ugcEl);
   }
 }
 
-// ---- 文章検索 ----
-async function sentenceSearch(sentence) {
-// ... (以下、元のコードを継続)
- 
+// ---- AI単語検索（2段階表示） ----
+async function aiWord(word) {
+  const gk   = genre !== 'all' ? genre : 'all';
+  const gn   = GENRE[gk] || '全ジャンル';
+  const inst = gk !== 'all' ? `ジャンルは${gn}固定。` : '';
+  const sits = gk !== 'all' ? GLABEL[gk].slice(0,5) : ['恋愛・失恋','恋愛・成就','異世界・幕開け','ホラー・緊迫','歴史・冒頭'];
+  const sitEx = sits.map((s,i) => `{"sit":"${s}","genre":"${gk!=='all'?gk:['romance','fantasy','horror','historical','general'][i]||'general'}","before":"平凡な文","after":"豊かな表現","note":"15字"}`).join(',');
 
-  if (syns.length) {
-    h += `<div class="sh">ニュアンス比較カード（クリックで詳細）</div><div class="nc-grid">`;
-    syns.forEach((s, i) => {
-      const uc = (s.usecases||[]).map(u => `<span class="uc">📌 ${u}</span>`).join(' ');
-      const gt = (s.genres||[]).slice(0,2).map(g => `<span class="tag ${GENREC[g]||'gn'}">${GENRE[g]||g}</span>`).join('');
-      h += `<div class="nc" id="c${i}" onclick="showDetail(${i})" style="animation:fi .3s ease">
-        <div class="nc-w">${s.word}</div><div class="nc-k">${s.kana}</div>
-        <div class="brow"><span class="blabel">強度</span><div class="bbar"><div class="bfill" style="width:${s.intensity||50}%"></div></div></div>
-        <div class="brow"><span class="blabel">詩的さ</span><div class="bbar"><div class="bfill" style="width:${s.lyricism||50}%"></div></div></div>
-        <div class="nc-n">${s.nuance}</div>
-        <div class="tags"><span class="tag ${TONEC[s.tone]||'tm'}">${TONE[s.tone]||s.tone}</span>${gt}</div>
-        ${uc ? `<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:3px">${uc}</div>` : ''}
-      </div>`;
+  // ===== ローカルキャッシュチェック（API課金ゼロ） =====
+  const cacheKey = word + '|' + gk;
+  const localCached = await loadMemory(cacheKey);
+  if (localCached && (
+        (localCached.synonyms && localCached.synonyms.length) ||
+        (localCached.beforeafter && localCached.beforeafter.length)
+      )) {
+    console.log('ローカルキャッシュヒット:', cacheKey);
+    renderResult(word, localCached);
+    renderMemoryBar();
+    const ad = document.getElementById('adSlot1');
+    if (ad) ad.style.display = 'block';
+    return;
+  }
+
+  // プレミアムなら制限なし。新規API呼び出し前にカウント。
+  if (!isPremiumUser()) {
+    const count = getSearchCount();
+    if (count >= 3) {
+      showLimitScreen();
+      return;
+    }
+  }
+  addSearchCount();
+
+  // ===== 第1フェーズ：BA例文 =====
+  const prompt1 = `小説作家向け。「${word}」のビフォーアフター例文5件。${inst}JSONのみ:{"beforeafter":[${sitEx}]}`;
+
+  let phase1 = { beforeafter: [] };
+  let phase2 = { synonyms: [], expressions: [] };
+
+  try {
+    setLoading(true, 'AIが例文を生成中...');
+    const r1 = await fetch('/api/chat', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({max_tokens: 1200, messages: [{role:'user',content:prompt1}]})
     });
-    h += `</div>`;
-    h += `<div class="detail" id="detail">
-      <div class="dw" id="dw"></div><div class="dk" id="dk"></div>
-      <div class="dd" id="dd"></div><div class="ds" id="ds"></div>
-      <div class="dacts">
-        <button class="cbtn" id="cb1" onclick="cp('dw','cb1')">単語をコピー</button>
-        <button class="cbtn" id="cb2" onclick="cp('ds','cb2')">例文をコピー</button>
-      </div>
-    </div>`;
-  }
+    const j1 = await r1.json();
+    if (!r1.ok || j1.error) throw new Error((j1.error && j1.error.message) || 'API1エラー');
+    const raw1 = (j1.content||[]).map(x => x.text||'').join('');
+    try {
+      phase1 = safeParseJSON(raw1);
+    } catch(pe) {
+      console.warn('phase1 JSON解析失敗、空で続行:', pe.message);
+      phase1 = { beforeafter: [] };
+    }
 
-  h += `<div id="ugcContainer"></div>`;
-  h += `<div style="text-align:center;padding:2rem 0 1rem;border-top:1px solid var(--paper3);margin-top:1.5rem">
-    <p style="font-size:13px;color:var(--ink3);margin-bottom:1rem">他の言葉も調べてみましょう</p>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:1rem">
-      ${getRelatedWords(word).map(w=>`<span onclick="qs('${w}')" style="font-family:'Noto Serif JP',serif;font-size:14px;color:var(--ink2);padding:5px 14px;border:0.5px solid var(--paper3);border-radius:2px;cursor:pointer;background:#fff">${w}</span>`).join('')}
-    </div>
-    <button onclick="document.getElementById('si').focus();document.getElementById('si').select()" style="font-size:13px;padding:8px 24px;background:var(--acc);color:#fff;border:none;cursor:pointer;letter-spacing:.06em;font-family:'Zen Kaku Gothic New',sans-serif">
-      別の言葉を検索する
-    </button>
-  </div>`;
+    setLoading(false);
+    renderPhase1(word, phase1);
 
-  const p2 = document.getElementById('phase2Area');
-  if (p2) {
-    p2.innerHTML = h;
-  } else {
-    // phase2Areaがない場合はareaに追記
-    const area = document.getElementById('area');
-    if (area) area.innerHTML += h;
-  }
-  if (typeof renderUGCSection === 'function') {
-    const ugcEl = document.getElementById('ugcContainer');
-    if (ugcEl) renderUGCSection(word, genre, ugcEl);
+    // ===== 第2フェーズ：ニュアンスカード＋情景表現 =====
+    const prompt2 = `小説作家向け。「${word}」の言い換え5語と情景表現7個。${inst}JSONのみ:{"synonyms":[{"word":"語","kana":"読み","nuance":"15字","tone":"poetic","genres":["${gk!=='all'?gk:'romance'}"],"intensity":70,"lyricism":60,"usecases":["シーン"],"desc":"20字","scene":"25字"},{"word":"語2","kana":"読み","nuance":"15字","tone":"modern","genres":["${gk!=='all'?gk:'general'}"],"intensity":50,"lyricism":50,"usecases":["シーン"],"desc":"20字","scene":"25字"},{"word":"語3","kana":"読み","nuance":"15字","tone":"classical","genres":["${gk!=='all'?gk:'fantasy'}"],"intensity":80,"lyricism":70,"usecases":["シーン"],"desc":"20字","scene":"25字"},{"word":"語4","kana":"読み","nuance":"15字","tone":"sensory","genres":["${gk!=='all'?gk:'horror'}"],"intensity":85,"lyricism":45,"usecases":["シーン"],"desc":"20字","scene":"25字"},{"word":"語5","kana":"読み","nuance":"15字","tone":"modern","genres":["${gk!=='all'?gk:'historical'}"],"intensity":60,"lyricism":80,"usecases":["シーン"],"desc":"20字","scene":"25字"}],"expressions":["表現1","表現2","表現3","表現4","表現5","表現6","表現7"]}`;
+
+    const loadingEl = document.createElement('div');
+    loadingEl.id = 'phase2Loading';
+    loadingEl.innerHTML = '<div style="text-align:center;padding:1rem;color:var(--ink3);font-size:12px;letter-spacing:.08em"><span class="dot"></span><span class="dot"></span><span class="dot"></span><div style="margin-top:.4rem">類語・情景表現を生成中...</div></div>';
+    const areaEl = document.getElementById('area');
+    if (areaEl) areaEl.appendChild(loadingEl);
+
+    const r2 = await fetch('/api/chat', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({max_tokens: 1800, word: word, genre: gk, messages: [{role:'user',content:prompt2}]})
+    });
+    const j2 = await r2.json();
+
+    const p2el = document.getElementById('phase2Loading');
+    if (p2el) p2el.remove();
+
+    if (!r2.ok || j2.error) throw new Error((j2.error && j2.error.message) || 'API2エラー');
+    const raw2 = (j2.content||[]).map(x => x.text||'').join('');
+    try {
+      phase2 = safeParseJSON(raw2);
+    } catch(pe) {
+      console.warn('phase2 JSON解析失敗、空で続行:', pe.message);
+      phase2 = { synonyms: [], expressions: [] };
+    }
+
+    renderPhase2(word, phase1, phase2);
+
+    // ローカルキャッシュ保存（次回からAI叩かない）
+    const fullData = {
+      synonyms: phase2.synonyms || [],
+      expressions: phase2.expressions || [],
+      beforeafter: phase1.beforeafter || []
+    };
+    await saveMemory(cacheKey, fullData);
+
+    renderMemoryBar();
+    const ad = document.getElementById('adSlot1');
+    if (ad) ad.style.display = 'block';
+
+  } catch(e) {
+    setLoading(false);
+    document.getElementById('area').innerHTML = `<p style="text-align:center;padding:2rem;color:var(--ink3);font-size:13px">エラー: ${e.message}</p>`;
   }
 }
 
 // ---- 文章検索 ----
 async function sentenceSearch(sentence) {
   setLoading(true, 'AIが文章を解析中');
-  const dbHits = Object.keys(DB).filter(k => sentence.includes(k));
+  const dbHits = (typeof DB === 'object' && DB) ? Object.keys(DB).filter(k => sentence.includes(k)) : [];
   const gk  = genre !== 'all' ? genre : 'all';
   const gn  = GENRE[gk] || '全ジャンル';
   const sits = gk !== 'all' ? GLABEL[gk].slice(0,5) : ['恋愛・失恋','恋愛・成就','異世界・幕開け','ホラー・緊迫','歴史・冒頭'];
@@ -577,10 +518,9 @@ async function sentenceSearch(sentence) {
       body: JSON.stringify({max_tokens: 2500, messages: [{role:'user',content:prompt}]})
     });
     const j = await r.json();
-    if (j.error) throw new Error(j.error.message);
+    if (!r.ok || j.error) throw new Error((j.error && j.error.message) || 'APIエラー');
     const raw    = (j.content||[]).map(c => c.text||'').join('');
-    const clean  = raw.replace(/```json/g,'').replace(/```/g,'').trim();
-    const parsed = JSON.parse(repairJSON(clean));
+    const parsed = safeParseJSON(raw);
     renderSentence(sentence, parsed, dbHits);
   } catch(e) {
     setLoading(false);
@@ -683,23 +623,27 @@ function repairJSON(str) {
   return r;
 }
 
-async function saveMemory(word, data) {
-  try { localStorage.setItem('mem:'+word, JSON.stringify({word, data, savedAt:Date.now()}));
-      console.log("保存成功: mem:" + word); // これを追加
-      } catch(e){
-    console.error("保存失敗: ", e); // これを追加
-      }
+async function saveMemory(key, data) {
+  try {
+    localStorage.setItem('mem:'+key, JSON.stringify({key, data, savedAt:Date.now()}));
+  } catch(e) {
+    console.error('保存失敗:', e);
+  }
 }
 
-async function loadMemory(word) {
-  try { const v = localStorage.getItem('mem:'+word); return v ? JSON.parse(v).data : null; } catch(e){ return null; }
+async function loadMemory(key) {
+  try {
+    const v = localStorage.getItem('mem:'+key);
+    return v ? JSON.parse(v).data : null;
+  } catch(e) { return null; }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
   const si = document.getElementById('si');
   if (si) si.addEventListener('keydown', e => { if(e.key==='Enter') doSearch(); });
   const s = sessionStorage.getItem('autoSearch');
-  if (s) { sessionStorage.removeItem('autoSearch'); si.value = s; doSearch(); }
+  if (s) { sessionStorage.removeItem('autoSearch'); if (si) si.value = s; doSearch(); }
+  renderMemoryBar();
 });
 
 function renderMemoryBar() {
@@ -710,8 +654,11 @@ function renderMemoryBar() {
     if (keys.length === 0) { bar.style.display = 'none'; return; }
     bar.style.display = 'flex';
     bar.innerHTML = keys.slice(-6).reverse().map(function(k) {
-      const word = k.replace('mem:','');
-      return '<span class="mem-chip" onclick="qs(\'' + word + '\')">' + word + ' <span onclick="event.stopPropagation();localStorage.removeItem(\'' + k + '\');renderMemoryBar()" style="color:var(--ink3);font-size:10px">✕</span></span>';
+      const label = k.replace('mem:','').split('|')[0];
+      const fullKey = k.replace('mem:','');
+      return '<span class="mem-chip" onclick="qs(\'' + label + '\')">' + label + ' <span onclick="event.stopPropagation();localStorage.removeItem(\'mem:' + fullKey + '\');renderMemoryBar()" style="color:var(--ink3);font-size:10px">✕</span></span>';
     }).join('');
   } catch(e) {}
 }
+```
+
