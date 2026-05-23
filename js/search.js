@@ -405,18 +405,15 @@ function renderPhase1(word, data) {
 }
 
 // ---- フェーズ2：ニュアンスカード＋情景表現を追加 ----
+// ---- フェーズ2：ニュアンスカード＋情景表現を追加 ----
 function renderPhase2(word, phase1, phase2) {
+  console.log("renderPhase2が呼び出されました。データ:", phase2); // ここに追加
+  
   const syns = (phase2.synonyms || []);
   const exprs = (phase2.expressions || []);
-  const bas = (phase1.beforeafter || []).filter(b => genre === 'all' || b.genre === genre);
-  allSyns = syns;
-
-  let h = '';
-
-  if (exprs.length) {
-    h += `<div class="sh">情景表現フレーズ</div><div class="expr-list">`;
-    exprs.forEach(e => { h += `<div class="expr" style="animation:fi .3s ease">${e}</div>`; });
-    h += `</div>`;
+  
+  if (syns.length === 0) {
+    console.warn("警告: syns(類語)が空です！");
   }
 
   if (syns.length) {
