@@ -312,22 +312,18 @@ async function aiWord(word) {
     if (cacheData.cached && cacheData.data) {
       const cached = cacheData.data;
       
-      // 類語または情景表現があるか確認
       if ((cached.synonyms && cached.synonyms.length > 0) || (cached.expressions && cached.expressions.length > 0)) {
         console.log("完全なキャッシュを発見、表示します");
         setLoading(false);
 
-        // renderWord を廃止し、Phase1(例文)とPhase2(類語・情景)を呼び出す
-        renderPhase1(word, cached); 
-        renderPhase2(word, cached, cached); 
+        // キャッシュデータは一気にHTMLを構築して表示する
+        // renderWordを復活させますが、中身を今のUIに合わせて整理します
+        renderCachedAll(word, cached); 
         
         renderMemoryBar();
         const ad = document.getElementById('adSlot1'); 
         if (ad) ad.style.display = 'block';
-        return; // キャッシュ表示が成功したのでここで終了
-      } else {
-        console.log("キャッシュはありましたが、内容が不完全なため再検索します");
-        // returnせず、下の新規検索処理へ流す
+        return;
       }
     }
    } catch(e) {
