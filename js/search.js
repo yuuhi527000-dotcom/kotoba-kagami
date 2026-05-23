@@ -357,6 +357,7 @@ async function aiWord(word) {
 
     // 保存・履歴・広告
     const fullData = { ...phase2, beforeafter: phase1.beforeafter || [] };
+    console.log("保存するデータの中身:", fullData); // これを追加して確認
     await saveMemory(word, fullData);
     renderMemoryBar();
     const ad = document.getElementById('adSlot1'); if (ad) ad.style.display = 'block';
