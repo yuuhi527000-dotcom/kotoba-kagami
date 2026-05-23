@@ -308,22 +308,28 @@ async function aiWord(word) {
     const cacheData = await cacheRes.json();
     console.log("キャッシュAPI結果:", cacheData);
 
+    // ===== キャッシュチェック =====
     if (cacheData.cached && cacheData.data) {
       const cached = cacheData.data;
       
-      // 類語(synonyms)または情景表現(expressions)があるか確認
+      // 類語または情景表現があるか確認
       if ((cached.synonyms && cached.synonyms.length > 0) || (cached.expressions && cached.expressions.length > 0)) {
         console.log("完全なキャッシュを発見、表示します");
         setLoading(false);
-        renderWord(word, cached); // ← ここが実行されています
+
+        // renderWord を廃止し、Phase1(例文)とPhase2(類語・情景)を呼び出す
+        renderPhase1(word, cached); 
+        renderPhase2(word, cached, cached); 
+        
         renderMemoryBar();
-        // ...
-        return; // ← ここで終了しています
+        const ad = document.getElementById('adSlot1'); 
+        if (ad) ad.style.display = 'block';
+        return; // キャッシュ表示が成功したのでここで終了
       } else {
         console.log("キャッシュはありましたが、内容が不完全なため再検索します");
-        // ここでreturnせず、下の新規検索処理へ流す
+        // returnせず、下の新規検索処理へ流す
       }
-    } 
+    }
    } catch(e) {
     console.log("キャッシュチェックでエラー:", e);
   }
