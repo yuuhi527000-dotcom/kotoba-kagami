@@ -317,33 +317,18 @@ document.addEventListener('DOMContentLoaded', function() {
 <script>
 // ---- 解約申請機能 ----
 
-// プレミアムユーザーのとき解約ボタンを表示
-// auth.jsでプレミアム判定後に呼ぶ（auth.jsの既存処理と連携）
+// プレミアムユーザーのとき解約ボタンを表示（auth.jsから呼ばれる）
 function showCancelButton(isPremium) {
   const section = document.getElementById('cancelSection');
   if (section) section.style.display = isPremium ? 'block' : 'none';
 }
 
-// auth.jsのonAuthStateChange後にプレミアム判定で呼び出す
-// ※ auth.jsにすでにプレミアム判定がある場合はそちらに showCancelButton(isPremium) を追加
-document.addEventListener('DOMContentLoaded', function() {
-  // Supabaseの認証状態を監視してプレミアム判定
-  if (window._supabase) {
-    window._supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) return;
-      window._supabase.from('users').select('is_premium').eq('id', user.id).single()
-        .then(({ data }) => {
-          if (data && data.is_premium) showCancelButton(true);
-        });
-    });
-  }
-});
-
 async function requestCancel() {
   if (!confirm('有料プランの解約を申請しますか？\n申請後、当日中にプレミアムを解除いたします。')) return;
 
-  const { data: { user } } = await window._supabase.auth.getUser();
-  if (!user) return alert('ログインが必要です');
+  // getSession()はauth.jsで定義済み
+  const s = getSession();
+  if (!s || !s.user) return alert('ログインが必要です');
 
   const reason = prompt('解約理由をお聞かせください（任意・スキップ可）') || '';
 
@@ -351,7 +336,7 @@ async function requestCancel() {
     const res = await fetch('/api/cancel', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user_id: user.id, email: user.email, reason }),
+      body: JSON.stringify({ user_id: s.user.id, email: s.user.email, reason }),
     });
     const data = await res.json();
     alert('解約申請を受け付けました。\n当日中にご対応いたします。\nご利用ありがとうございました。');
