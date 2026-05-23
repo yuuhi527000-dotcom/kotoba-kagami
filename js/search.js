@@ -428,23 +428,17 @@ function renderPhase2(word, phase1, phase2) {
   const syns = (phase2.synonyms || []);
   const exprs = (phase2.expressions || []);
   
-  // 2. グローバル変数への代入
   allSyns = syns;
-
-  // 3. ログで確認
-  console.log("・言い換えの数(syns):", syns.length);
-  console.log("・情景表現の数(exprs):", exprs.length);
 
   let h = '';
 
-  // 4. HTML構築：情景表現
+  // 2. HTML構築
   if (exprs.length) {
     h += `<div class="sh">情景表現フレーズ</div><div class="expr-list">`;
     exprs.forEach(e => { h += `<div class="expr" style="animation:fi .3s ease">${e}</div>`; });
     h += `</div>`;
   }
 
-  // 4. HTML構築：ニュアンス比較カード
   if (syns.length) {
     h += `<div class="sh">ニュアンス比較カード（クリックで詳細）</div><div class="nc-grid">`;
     syns.forEach((s, i) => {
@@ -460,7 +454,6 @@ function renderPhase2(word, phase1, phase2) {
       </div>`;
     });
     h += `</div>`;
-    // 詳細表示用モーダル部分
     h += `<div class="detail" id="detail">
       <div class="dw" id="dw"></div><div class="dk" id="dk"></div>
       <div class="dd" id="dd"></div><div class="ds" id="ds"></div>
@@ -471,12 +464,28 @@ function renderPhase2(word, phase1, phase2) {
     </div>`;
   }
 
-  // 5. 表示処理
+  // 3. 表示処理
   const p2 = document.getElementById('phase2Area');
   if (p2) {
     p2.innerHTML = h;
   } else {
     const area = document.getElementById('area');
+    if (area) area.innerHTML += h;
+  }
+
+  // 4. 追加処理
+  if (typeof renderUGCSection === 'function') {
+    const ugcEl = document.getElementById('ugcContainer');
+    if (ugcEl) renderUGCSection(word, genre, ugcEl);
+  }
+} // ← ここで確実に閉じる（これ以上何も書かない）
+
+  // 5. 表示処理
+  const p2 = document.getElementById('phase2Area');
+  if (p2) {
+    p2.innerHTML = h;
+  } else {
+    ElementById('area');
     if (area) area.innerHTML += h;
   }
 }
