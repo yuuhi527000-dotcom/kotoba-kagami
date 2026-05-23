@@ -58,8 +58,14 @@ export default async function handler(req, res) {
     if (word && genre) {
       const cached = await getCached(word, genre);
       if (cached) {
+        incrementCount(word, genre);
         return res.status(200).json({ cached: true, data: cached });
       }
+    }
+
+    // messagesが空ならキャッシュミスを返すだけ（APIを叩かない）
+    if (!messages || messages.length === 0) {
+      return res.status(200).json({ cached: false });
     }
 
     // APIを叩く
