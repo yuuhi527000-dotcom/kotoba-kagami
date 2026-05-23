@@ -1,6 +1,6 @@
 // ===== 検索・表示ロジック =====
 // ★ Stripeの決済リンクができたらここを変更するだけでOK
-const STRIPE_URL = 'https://buy.stripe.com/XXXXXXXXXX'; // ← ここに貼り付け
+const STRIPE_URL = 'https://buy.stripe.com/eVqbJ1fpPfm1dm9fHtbV602';
 let genre   = 'all';
 let curWord = '';
 let allSyns = [];
