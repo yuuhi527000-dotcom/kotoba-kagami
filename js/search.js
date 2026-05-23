@@ -356,9 +356,12 @@ async function aiWord(word) {
     renderPhase2(word, phase1, phase2);
 
     // 保存・履歴・広告
+    // aiWord関数の最後の方
+    console.log("第2フェーズ完了、保存を開始します"); // ここを追加
     const fullData = { ...phase2, beforeafter: phase1.beforeafter || [] };
-    console.log("保存するデータの中身:", fullData); // これを追加して確認
+    console.log("保存するデータの中身:", fullData); // これが以前追加したもの
     await saveMemory(word, fullData);
+    console.log("保存処理が終了しました"); // ここを追加
     renderMemoryBar();
     const ad = document.getElementById('adSlot1'); if (ad) ad.style.display = 'block';
 
