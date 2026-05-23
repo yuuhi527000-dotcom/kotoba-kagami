@@ -420,6 +420,8 @@ function renderPhase1(word, data) {
   document.getElementById('area').innerHTML = h;
 }
 
+// ... (他のコードはそのまま)
+
 // ---- フェーズ2：ニュアンス比較カード＋情景表現の表示 ----
 function renderPhase2(word, phase1, phase2) {
   console.log("renderPhase2が呼び出されました。データ:", phase2);
@@ -430,14 +432,14 @@ function renderPhase2(word, phase1, phase2) {
 
   let h = '';
 
-  // 情景表現の構築
+  // 1. 情景表現の構築
   if (exprs.length) {
     h += `<div class="sh">情景表現フレーズ</div><div class="expr-list">`;
     exprs.forEach(e => { h += `<div class="expr" style="animation:fi .3s ease">${e}</div>`; });
     h += `</div>`;
   }
 
-  // ニュアンス比較カードの構築
+  // 2. ニュアンス比較カードの構築
   if (syns.length) {
     h += `<div class="sh">ニュアンス比較カード（クリックで詳細）</div><div class="nc-grid">`;
     syns.forEach((s, i) => {
@@ -463,6 +465,7 @@ function renderPhase2(word, phase1, phase2) {
     </div>`;
   }
 
+  // 3. その他パーツの構築
   h += `<div id="ugcContainer"></div>`;
   h += `<div style="text-align:center;padding:2rem 0 1rem;border-top:1px solid var(--paper3);margin-top:1.5rem">
     <p style="font-size:13px;color:var(--ink3);margin-bottom:1rem">他の言葉も調べてみましょう</p>
@@ -474,7 +477,7 @@ function renderPhase2(word, phase1, phase2) {
     </button>
   </div>`;
 
-  // 表示処理
+  // 4. 表示処理
   const p2 = document.getElementById('phase2Area');
   if (p2) {
     p2.innerHTML = h;
@@ -483,12 +486,16 @@ function renderPhase2(word, phase1, phase2) {
     if (area) area.innerHTML += h;
   }
 
-  // UGC追加処理
+  // 5. UGC追加処理
   if (typeof renderUGCSection === 'function') {
     const ugcEl = document.getElementById('ugcContainer');
     if (ugcEl) renderUGCSection(word, genre, ugcEl);
   }
-}
+} // ← ここで関数が終了
+
+// ---- 文章検索 ----
+async function sentenceSearch(sentence) {
+// ... (以下、元のファイルにある残りのコードをそのまま貼り付けてください)
 
  
 
