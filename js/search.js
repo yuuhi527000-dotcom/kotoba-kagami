@@ -21,6 +21,16 @@ function isSentence(t) {
   return false;
 }
 
+// ---- プレミアム判定 ----
+function isPremiumUser() {
+  try {
+    const s = JSON.parse(localStorage.getItem('sb_session') || '{}');
+    if (!s.access_token) return false;
+    if (s.expires_at && s.expires_at < Date.now()) return false;
+    return s.is_premium === true;
+  } catch(e) { return false; }
+}
+
 // ---- 検索回数チェック ----
 function getSearchCount() {
   try {
@@ -50,9 +60,10 @@ function showLimitScreen() {
         <div style="font-size:13px;font-weight:500;color:var(--ink);margin-bottom:.5rem">有料プラン</div>
         <div style="font-family:'Noto Serif JP',serif;font-size:28px;font-weight:500;color:var(--acc);margin-bottom:.5rem">月額300円</div>
         <div style="font-size:12px;color:var(--ink3);margin-bottom:1rem">検索無制限・全機能使い放題</div>
-        <button onclick="alert('準備中です。もうしばらくお待ちください。')" style="width:100%;padding:.75rem;background:var(--acc);color:#fff;border:none;font-size:14px;font-weight:500;cursor:pointer;border-radius:2px;font-family:'Zen Kaku Gothic New',sans-serif">
-          有料プランに登録する
+        <button onclick="window.location.href='login.html'" style="width:100%;padding:.75rem;background:var(--acc);color:#fff;border:none;font-size:14px;font-weight:500;cursor:pointer;border-radius:2px;font-family:'Zen Kaku Gothic New',sans-serif">
+          ログイン / 新規登録
         </button>
+        <div style="font-size:11px;color:var(--ink3);margin-top:.5rem">登録後、有料プランにお申し込みください</div>
       </div>
       <div style="font-size:11px;color:var(--ink3)">明日また3回無料で使えます</div>
     </div>`;
@@ -71,11 +82,13 @@ async function doSearch() {
     return;
   }
 
-  // 回数制限チェック
-  const count = getSearchCount();
-  if (count >= 3) {
-    showLimitScreen();
-    return;
+  // プレミアムなら制限なし
+  if (!isPremiumUser()) {
+    const count = getSearchCount();
+    if (count >= 3) {
+      showLimitScreen();
+      return;
+    }
   }
 
   const input = document.getElementById('si').value.trim();
