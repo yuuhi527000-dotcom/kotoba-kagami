@@ -369,6 +369,7 @@ async function aiWord(word) {
     // ローディングを消して第2フェーズを追加
     const p2el = document.getElementById('phase2Loading');
     if (p2el) p2el.remove();
+    console.log("第2フェーズのレスポンス:", phase2); // ← これを追加
     renderPhase2(word, phase1, phase2);
 
     // 保存・履歴・広告
@@ -477,7 +478,7 @@ function renderPhase2(word, phase1, phase2) {
   </div>`;
 
   // 表示処理
-  const p2 = document.getElementById('phase2Area');
+const p2 = document.getElementById('phase2Area');
   if (p2) {
     p2.innerHTML = h;
   } else {
