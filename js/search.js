@@ -305,10 +305,17 @@ async function aiWord(word) {
     const cacheData = await cacheRes.json();
     if (cacheData.cached && cacheData.data) {
       setLoading(false);
-      renderWord(word, cacheData.data);
+      const cached = cacheData.data;
+      if (cached.beforeafter && cached.synonyms) {
+        renderPhase1(word, cached);
+        renderPhase2(word, cached, cached);
+      } else {
+        renderWord(word, cached);
+      }
       renderMemoryBar();
       const ad = document.getElementById('adSlot1'); if (ad) ad.style.display = 'block';
       return;
+    }
     }
   } catch(e) {}
 
