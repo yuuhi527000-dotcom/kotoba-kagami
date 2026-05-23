@@ -423,6 +423,7 @@ function renderPhase1(word, data) {
 // ---- フェーズ2：ニュアンスカード＋情景表現を追加 ----
 // ---- フェーズ2：ニュアンスカード＋情景表現を追加 ----
 // ---- フェーズ2：ニュアンスカード＋情景表現を追加 ----
+// ---- フェーズ2：ニュアンスカード＋情景表現を追加 ----
 function renderPhase2(word, phase1, phase2) {
   console.log("renderPhase2が呼び出されました。データ:", phase2);
 
@@ -438,27 +439,39 @@ function renderPhase2(word, phase1, phase2) {
   console.log("・言い換えの数(syns):", syns.length);
   console.log("・情景表現の数(exprs):", exprs.length);
 
-  if (syns.length === 0) {
-    console.warn("警告: syns(類語)が空です！");
-  }
-
   let h = '';
 
-  // 4. HTML構築
+  // 4. HTML構築：情景表現
   if (exprs.length) {
     h += `<div class="sh">情景表現フレーズ</div><div class="expr-list">`;
     exprs.forEach(e => { h += `<div class="expr" style="animation:fi .3s ease">${e}</div>`; });
     h += `</div>`;
   }
 
+  // 4. HTML構築：ニュアンス比較カード（ここが関数の中に入っていなかった部分です）
   if (syns.length) {
     h += `<div class="sh">ニュアンス比較カード（クリックで詳細）</div><div class="nc-grid">`;
     syns.forEach((s, i) => {
-      // ... (既存のカード表示ロジックはそのまま)
-      h += `<div class="nc" id="c${i}" onclick="showDetail(${i})" style="animation:fi .3s ease">...</div>`;
+      const uc = (s.usecases||[]).map(u => `<span class="uc">📌 ${u}</span>`).join(' ');
+      const gt = (s.genres||[]).slice(0,2).map(g => `<span class="tag ${GENREC[g]||'gn'}">${GENRE[g]||g}</span>`).join('');
+      h += `<div class="nc" id="c${i}" onclick="showDetail(${i})" style="animation:fi .3s ease">
+        <div class="nc-w">${s.word}</div><div class="nc-k">${s.kana}</div>
+        <div class="brow"><span class="blabel">強度</span><div class="bbar"><div class="bfill" style="width:${s.intensity||50}%"></div></div></div>
+        <div class="brow"><span class="blabel">詩的さ</span><div class="bbar"><div class="bfill" style="width:${s.lyricism||50}%"></div></div></div>
+        <div class="nc-n">${s.nuance}</div>
+        <div class="tags"><span class="tag ${TONEC[s.tone]||'tm'}">${TONE[s.tone]||s.tone}</span>${gt}</div>
+        ${uc ? `<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:3px">${uc}</div>` : ''}
+      </div>`;
     });
     h += `</div>`;
-    // ... (詳細表示エリア等)
+    h += `<div class="detail" id="detail">
+      <div class="dw" id="dw"></div><div class="dk" id="dk"></div>
+      <div class="dd" id="dd"></div><div class="ds" id="ds"></div>
+      <div class="dacts">
+        <button class="cbtn" id="cb1" onclick="cp('dw','cb1')">単語をコピー</button>
+        <button class="cbtn" id="cb2" onclick="cp('ds','cb2')">例文をコピー</button>
+      </div>
+    </div>`;
   }
 
   // 5. 表示処理
@@ -469,7 +482,7 @@ function renderPhase2(word, phase1, phase2) {
     const area = document.getElementById('area');
     if (area) area.innerHTML += h;
   }
-}
+} // ← ここでしっかり閉じています
 
   if (syns.length) {
     h += `<div class="sh">ニュアンス比較カード（クリックで詳細）</div><div class="nc-grid">`;
