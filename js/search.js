@@ -286,6 +286,7 @@ function escQ(s) { return s.replace(/'/g, "\\'"); }
 
 // ---- AI単語検索（2段階表示） ----
 async function aiWord(word) {
+  console.log("aiWord開始: " + word); // 1. ここが出るか確認
   const gk   = genre !== 'all' ? genre : 'all';
   const gn   = GENRE[gk] || '全ジャンル';
   const inst = gk !== 'all' ? `ジャンルは${gn}固定。` : '';
@@ -298,13 +299,16 @@ async function aiWord(word) {
   // ===== キャッシュチェック =====
   try {
     setLoading(true, '検索中...');
+    console.log("キャッシュチェック開始"); // 2. ここが出るか確認
     const cacheRes = await fetch('/api/chat', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({word: word, genre: gk, max_tokens: 1, messages: [{role:'user',content:'ping'}]})
     });
     const cacheData = await cacheRes.json();
+    console.log("キャッシュAPI結果:", cacheData); // 3. ここが出るか確認
     if (cacheData.cached && cacheData.data) {
+      console.log("キャッシュヒット！"); // 4. これが出たらここが原因
       setLoading(false);
       const cached = cacheData.data;
       renderWord(word, cached);
@@ -312,7 +316,10 @@ async function aiWord(word) {
       const ad = document.getElementById('adSlot1'); if (ad) ad.style.display = 'block';
       return;
     }
-  } catch(e) {}
+  } catch(e) {
+    console.log("キャッシュチェックでエラー:", e); // 5. エラーならここに出る
+  }
+  console.log("キャッシュなし、新規検索へ"); // 6. ここが出るか確認
 
   // ===== 第1フェーズ：BA例文を先に表示 =====
   const prompt1 = `小説作家向け。「${word}」のビフォーアフター例文5件。${inst}JSONのみ:{"beforeafter":[${sitEx}]}`;
