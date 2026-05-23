@@ -368,8 +368,15 @@ async function aiWord(word) {
 
 // ---- フェーズ1：BA例文だけ先に表示 ----
 function renderPhase1(word, data) {
-  const bas = (data.beforeafter || []).filter(b => genre === 'all' || b.genre === genre);
-  if (!bas.length) return;
+  let bas = (data.beforeafter || []);
+  if (genre !== 'all') {
+    const filtered = bas.filter(b => b.genre === genre);
+    if (filtered.length) bas = filtered;
+  }
+  if (!bas.length) {
+    document.getElementById('area').innerHTML = '<div id="phase2Area"></div>';
+    return;
+  }
 
   let h = `<div class="rh"><span class="rw">「${word}」</span><span class="rm">の言い換え</span></div>`;
   h += `<div class="sh">ビフォー → アフター 例文集（${bas.length}件）</div><div class="ba-section"><div class="ba-grid">`;
