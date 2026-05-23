@@ -423,6 +423,18 @@ function renderPhase1(word, data) {
 // ---- フェーズ2：ニュアンスカード＋情景表現を追加 ----
 // ---- フェーズ2：ニュアンスカード＋情景表現を追加 ----
 function renderPhase2(word, phase1, phase2) {
+  console.log("【renderWord】読み込まれたデータの中身:", data);
+  
+  setLoading(false);
+  allSyns = [];
+  selCard = null;
+
+  let syns = data.synonyms || [];
+  let bas  = data.beforeafter || [];
+  let exprs = data.expressions || []; // これも確認
+
+  console.log("・言い換えの数(syns):", syns.length);
+  console.log("・情景表現の数(exprs):", exprs.length);
   console.log("renderPhase2が呼び出されました。データ:", phase2); // ここに追加
   
   const syns = (phase2.synonyms || []);
