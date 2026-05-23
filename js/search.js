@@ -1,5 +1,4 @@
 // ===== 検索・表示ロジック =====
-
 let genre   = 'all';
 let curWord = '';
 let allSyns = [];
@@ -17,9 +16,7 @@ function qs(w) {
   doSearch();
 }
 
-function isSentence(t) {
-  return false;
-}
+function isSentence(t) { return false; }
 
 // ---- プレミアム判定 ----
 function isPremiumUser() {
@@ -51,6 +48,7 @@ function addSearchCount() {
 
 function showLimitScreen() {
   document.getElementById('empty').style.display = 'none';
+  const loggedIn = isPremiumUser() !== null && !!JSON.parse(localStorage.getItem('sb_session') || '{}').access_token;
   document.getElementById('area').innerHTML = `
     <div style="text-align:center;padding:2.5rem 1rem">
       <div style="font-size:36px;margin-bottom:.75rem">🔒</div>
@@ -58,12 +56,13 @@ function showLimitScreen() {
       <div style="font-size:13px;color:var(--ink3);margin-bottom:1.5rem;line-height:1.8">明日0時にリセットされます<br>または有料プランで無制限に使えます</div>
       <div style="background:#fff;border:1px solid var(--paper3);border-radius:4px;padding:1.25rem;max-width:300px;margin:0 auto 1rem">
         <div style="font-size:13px;font-weight:500;color:var(--ink);margin-bottom:.5rem">有料プラン</div>
-        <div style="font-family:'Noto Serif JP',serif;font-size:28px;font-weight:500;color:var(--acc);margin-bottom:.5rem">月額300円</div>
+        <div style="font-family:'Noto Serif JP',serif;font-size:28px;font-weight:500;color:var(--acc);margin-bottom:.5rem">月額495円</div>
         <div style="font-size:12px;color:var(--ink3);margin-bottom:1rem">検索無制限・全機能使い放題</div>
-        <button onclick="window.location.href='login.html'" style="width:100%;padding:.75rem;background:var(--acc);color:#fff;border:none;font-size:14px;font-weight:500;cursor:pointer;border-radius:2px;font-family:'Zen Kaku Gothic New',sans-serif">
-          ログイン / 新規登録
-        </button>
-        <div style="font-size:11px;color:var(--ink3);margin-top:.5rem">登録後、有料プランにお申し込みください</div>
+        ${loggedIn
+          ? `<button onclick="alert('決済リンクは近日公開予定です。しばらくお待ちください。')" style="width:100%;padding:.75rem;background:var(--acc);color:#fff;border:none;font-size:14px;font-weight:500;cursor:pointer;border-radius:2px;font-family:'Zen Kaku Gothic New',sans-serif">有料プランに登録する（近日公開）</button>`
+          : `<button onclick="window.location.href='login.html'" style="width:100%;padding:.75rem;background:var(--acc);color:#fff;border:none;font-size:14px;font-weight:500;cursor:pointer;border-radius:2px;font-family:'Zen Kaku Gothic New',sans-serif">ログイン / 新規登録</button>
+             <div style="font-size:11px;color:var(--ink3);margin-top:.5rem">登録後、有料プランにお申し込みください</div>`
+        }
       </div>
       <div style="font-size:11px;color:var(--ink3)">明日また3回無料で使えます</div>
     </div>`;
@@ -82,17 +81,22 @@ async function doSearch() {
     return;
   }
 
+  // 回数制限チェック（プレミアムは除外）
+  if (!isPremiumUser()) {
+    const count = getSearchCount();
+    if (count >= 3) {
+      showLimitScreen();
+      return;
+    }
+  }
+
   const input = document.getElementById('si').value.trim();
   if (!input) return;
   curWord = input;
   document.getElementById('empty').style.display = 'none';
   document.getElementById('area').innerHTML = '';
   setLoading(true, '語彙の海を探索中');
-  if (isSentence(input)) {
-    await sentenceSearch(input);
-  } else {
-    await aiWord(input);
-  }
+  await aiWord(input);
 }
 
 function setLoading(on, msg = '') {
@@ -105,16 +109,14 @@ function setLoading(on, msg = '') {
   }
 }
 
-// ---- 統一描画関数（キャッシュ・新規問わず使用） ----
+// ---- 統一描画関数 ----
 function renderResult(word, data) {
   setLoading(false);
   allSyns = [];
   selCard = null;
-
-  let syns = data.synonyms || [];
-  let bas  = data.beforeafter || [];
+  let syns  = data.synonyms || [];
+  let bas   = data.beforeafter || [];
   let exprs = data.expressions || [];
-
   if (genre !== 'all') {
     const fs = syns.filter(s => (s.genres||[]).includes(genre));
     if (fs.length) syns = fs;
@@ -122,10 +124,8 @@ function renderResult(word, data) {
     if (fb.length) bas = fb;
   }
   allSyns = syns;
-
   const gb = genre !== 'all' ? `<span class="rbadge">${GENRE[genre]||genre}向けを優先</span>` : '';
   let h = `<div class="rh"><span class="rw">「${word}」</span><span class="rm">の言い換え ${syns.length}件</span>${gb}</div>`;
-
   if (bas.length) {
     h += `<div class="sh">ビフォー → アフター 例文集（${bas.length}件）</div><div class="ba-section"><div class="ba-grid">`;
     bas.forEach(b => {
@@ -145,13 +145,11 @@ function renderResult(word, data) {
     });
     h += `</div></div>`;
   }
-
   if (exprs.length) {
     h += `<div class="sh">情景表現フレーズ</div><div class="expr-list">`;
     exprs.forEach(e => { h += `<div class="expr">${e}</div>`; });
     h += `</div>`;
   }
-
   if (syns.length) {
     h += `<div class="sh">ニュアンス比較カード（クリックで詳細）</div><div class="nc-grid">`;
     syns.forEach((s, i) => {
@@ -176,7 +174,6 @@ function renderResult(word, data) {
       </div>
     </div>`;
   }
-
   h += `<div id="ugcContainer"></div>`;
   h += `<div style="text-align:center;padding:2rem 0 1rem;border-top:1px solid var(--paper3);margin-top:1.5rem">
     <p style="font-size:13px;color:var(--ink3);margin-bottom:1rem">他の言葉も調べてみましょう</p>
@@ -187,7 +184,6 @@ function renderResult(word, data) {
       別の言葉を検索する
     </button>
   </div>`;
-
   document.getElementById('area').innerHTML = h;
   if (typeof renderUGCSection === 'function') {
     const ugcEl = document.getElementById('ugcContainer');
@@ -215,14 +211,10 @@ function cp(id, bid) {
   navigator.clipboard.writeText(document.getElementById(id).textContent).then(() => {
     const b = document.getElementById(bid);
     b.textContent = '✓ コピー済み';
-    b.style.background = 'var(--acc)';
-    b.style.color = '#fff';
-    b.style.borderColor = 'var(--acc)';
+    b.style.background = 'var(--acc)'; b.style.color = '#fff'; b.style.borderColor = 'var(--acc)';
     setTimeout(() => {
       b.textContent = id==='dw'?'単語をコピー':'例文をコピー';
-      b.style.background = '';
-      b.style.color = '';
-      b.style.borderColor = '';
+      b.style.background = ''; b.style.color = ''; b.style.borderColor = '';
     }, 1800);
   });
 }
@@ -231,14 +223,10 @@ function cpText(text, btn) {
   navigator.clipboard.writeText(text).then(() => {
     const orig = btn.textContent;
     btn.textContent = '✓ コピー済み';
-    btn.style.background = 'var(--acc)';
-    btn.style.color = '#fff';
-    btn.style.borderColor = 'var(--acc)';
+    btn.style.background = 'var(--acc)'; btn.style.color = '#fff'; btn.style.borderColor = 'var(--acc)';
     setTimeout(() => {
       btn.textContent = orig;
-      btn.style.background = '';
-      btn.style.color = '';
-      btn.style.borderColor = '';
+      btn.style.background = ''; btn.style.color = ''; btn.style.borderColor = '';
     }, 1800);
   });
 }
@@ -256,24 +244,15 @@ function showToast(msg) {
 }
 
 const RELATED_MAP = {
-  '雨':['夜','風','雪','闇','沈黙'],
-  '夜':['雨','闇','風','沈黙','孤独'],
-  '風':['雨','雪','夜','儚い','揺れる'],
-  '雪':['雨','風','闇','儚い','静か'],
-  '闇':['夜','恐怖','孤独','沈黙','消える'],
-  '光':['輝く','明るい','嬉しい','憧れる','燃える'],
-  '悲しい':['切ない','寂しい','苦しい','泣く','孤独'],
-  '嬉しい':['笑う','輝く','明るい','好き','温かい'],
-  '切ない':['悲しい','寂しい','恋しい','儚い','迷う'],
-  '寂しい':['孤独','悲しい','切ない','一人','沈黙'],
-  '苦しい':['悲しい','怒り','恐怖','迷う','叫ぶ'],
-  '怒り':['叫ぶ','苦しい','憎い','震える','恐怖'],
-  '恐怖':['怖い','震える','逃げる','叫ぶ','闇'],
-  '孤独':['寂しい','一人','沈黙','切ない','儚い'],
-  '沈黙':['孤独','静か','一人','寂しい','夜'],
-  '走る':['逃げる','叫ぶ','震える','焦る','歩く'],
-  '泣く':['悲しい','切ない','苦しい','寂しい','孤独'],
-  '笑う':['嬉しい','明るい','好き','輝く','温かい'],
+  '雨':['夜','風','雪','闇','沈黙'], '夜':['雨','闇','風','沈黙','孤独'],
+  '風':['雨','雪','夜','儚い','揺れる'], '雪':['雨','風','闇','儚い','静か'],
+  '闇':['夜','恐怖','孤独','沈黙','消える'], '光':['輝く','明るい','嬉しい','憧れる','燃える'],
+  '悲しい':['切ない','寂しい','苦しい','泣く','孤独'], '嬉しい':['笑う','輝く','明るい','好き','温かい'],
+  '切ない':['悲しい','寂しい','恋しい','儚い','迷う'], '寂しい':['孤独','悲しい','切ない','一人','沈黙'],
+  '苦しい':['悲しい','怒り','恐怖','迷う','叫ぶ'], '怒り':['叫ぶ','苦しい','憎い','震える','恐怖'],
+  '恐怖':['怖い','震える','逃げる','叫ぶ','闇'], '孤独':['寂しい','一人','沈黙','切ない','儚い'],
+  '沈黙':['孤独','静か','一人','寂しい','夜'], '走る':['逃げる','叫ぶ','震える','焦る','歩く'],
+  '泣く':['悲しい','切ない','苦しい','寂しい','孤独'], '笑う':['嬉しい','明るい','好き','輝く','温かい'],
   '叫ぶ':['怒り','恐怖','苦しい','震える','走る'],
 };
 
@@ -283,7 +262,6 @@ function getRelatedWords(word) {
 
 function escQ(s) { return String(s||'').replace(/'/g, "\\'"); }
 
-// ---- 安全な JSON parse ----
 function safeParseJSON(raw) {
   if (!raw || typeof raw !== 'string') throw new Error('空のレスポンス');
   const cleaned = raw.replace(/```json/g,'').replace(/```/g,'').trim();
@@ -302,7 +280,6 @@ function renderPhase1(word, data) {
     document.getElementById('area').innerHTML = '<div id="phase2Area"></div>';
     return;
   }
-
   let h = `<div class="rh"><span class="rw">「${word}」</span><span class="rm">の言い換え</span></div>`;
   h += `<div class="sh">ビフォー → アフター 例文集（${bas.length}件）</div><div class="ba-section"><div class="ba-grid">`;
   bas.forEach(b => {
@@ -326,29 +303,26 @@ function renderPhase1(word, data) {
 
 // ---- フェーズ2：ニュアンスカード＋情景表現を追記 ----
 function renderPhase2(word, phase1, phase2) {
-  const syns = (phase2.synonyms || []);
+  const syns  = (phase2.synonyms || []);
   const exprs = (phase2.expressions || []);
   allSyns = syns;
-
   let h = '';
-
   if (exprs.length) {
     h += `<div class="sh">情景表現フレーズ</div><div class="expr-list">`;
     exprs.forEach(e => { h += `<div class="expr" style="animation:fi .3s ease">${e}</div>`; });
     h += `</div>`;
   }
-
   if (syns.length) {
     h += `<div class="sh">ニュアンス比較カード（クリックで詳細）</div><div class="nc-grid">`;
     syns.forEach((s, i) => {
-      const uc = (s.usecases || []).map(u => `<span class="uc">📌 ${u}</span>`).join(' ');
-      const gt = (s.genres || []).slice(0, 2).map(g => `<span class="tag ${GENREC[g] || 'gn'}">${GENRE[g] || g}</span>`).join('');
+      const uc = (s.usecases||[]).map(u => `<span class="uc">📌 ${u}</span>`).join(' ');
+      const gt = (s.genres||[]).slice(0,2).map(g => `<span class="tag ${GENREC[g]||'gn'}">${GENRE[g]||g}</span>`).join('');
       h += `<div class="nc" id="c${i}" onclick="showDetail(${i})" style="animation:fi .3s ease">
         <div class="nc-w">${s.word}</div><div class="nc-k">${s.kana}</div>
-        <div class="brow"><span class="blabel">強度</span><div class="bbar"><div class="bfill" style="width:${s.intensity || 50}%"></div></div></div>
-        <div class="brow"><span class="blabel">詩的さ</span><div class="bbar"><div class="bfill" style="width:${s.lyricism || 50}%"></div></div></div>
+        <div class="brow"><span class="blabel">強度</span><div class="bbar"><div class="bfill" style="width:${s.intensity||50}%"></div></div></div>
+        <div class="brow"><span class="blabel">詩的さ</span><div class="bbar"><div class="bfill" style="width:${s.lyricism||50}%"></div></div></div>
         <div class="nc-n">${s.nuance}</div>
-        <div class="tags"><span class="tag ${TONEC[s.tone] || 'tm'}">${TONE[s.tone] || s.tone}</span>${gt}</div>
+        <div class="tags"><span class="tag ${TONEC[s.tone]||'tm'}">${TONE[s.tone]||s.tone}</span>${gt}</div>
         ${uc ? `<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:3px">${uc}</div>` : ''}
       </div>`;
     });
@@ -362,18 +336,16 @@ function renderPhase2(word, phase1, phase2) {
       </div>
     </div>`;
   }
-
   h += `<div id="ugcContainer"></div>`;
   h += `<div style="text-align:center;padding:2rem 0 1rem;border-top:1px solid var(--paper3);margin-top:1.5rem">
     <p style="font-size:13px;color:var(--ink3);margin-bottom:1rem">他の言葉も調べてみましょう</p>
     <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:1rem">
-      ${getRelatedWords(word).map(w => `<span onclick="qs('${w}')" style="font-family:'Noto Serif JP',serif;font-size:14px;color:var(--ink2);padding:5px 14px;border:0.5px solid var(--paper3);border-radius:2px;cursor:pointer;background:#fff">${w}</span>`).join('')}
+      ${getRelatedWords(word).map(w=>`<span onclick="qs('${w}')" style="font-family:'Noto Serif JP',serif;font-size:14px;color:var(--ink2);padding:5px 14px;border:0.5px solid var(--paper3);border-radius:2px;cursor:pointer;background:#fff">${w}</span>`).join('')}
     </div>
     <button onclick="document.getElementById('si').focus();document.getElementById('si').select()" style="font-size:13px;padding:8px 24px;background:var(--acc);color:#fff;border:none;cursor:pointer;letter-spacing:.06em;font-family:'Zen Kaku Gothic New',sans-serif">
       別の言葉を検索する
     </button>
   </div>`;
-
   const p2 = document.getElementById('phase2Area');
   if (p2) {
     p2.innerHTML = h;
@@ -381,7 +353,6 @@ function renderPhase2(word, phase1, phase2) {
     const area = document.getElementById('area');
     if (area) area.innerHTML += h;
   }
-
   if (typeof renderUGCSection === 'function') {
     const ugcEl = document.getElementById('ugcContainer');
     if (ugcEl) renderUGCSection(word, genre, ugcEl);
@@ -396,34 +367,30 @@ async function aiWord(word) {
   const sits = gk !== 'all' ? GLABEL[gk].slice(0,5) : ['恋愛・失恋','恋愛・成就','異世界・幕開け','ホラー・緊迫','歴史・冒頭'];
   const sitEx = sits.map((s,i) => `{"sit":"${s}","genre":"${gk!=='all'?gk:['romance','fantasy','horror','historical','general'][i]||'general'}","before":"平凡な文","after":"豊かな表現","note":"15字"}`).join(',');
 
-  // ===== ローカルキャッシュチェック（API課金ゼロ） =====
-  const cacheKey = word + '|' + gk;
-  const localCached = await loadMemory(cacheKey);
-  if (localCached && (
-        (localCached.synonyms && localCached.synonyms.length) ||
-        (localCached.beforeafter && localCached.beforeafter.length)
-      )) {
-    console.log('ローカルキャッシュヒット:', cacheKey);
-    renderResult(word, localCached);
-    renderMemoryBar();
-    const ad = document.getElementById('adSlot1');
-    if (ad) ad.style.display = 'block';
-    return;
-  }
-
-  // プレミアムなら制限なし。新規API呼び出し前にカウント。
-  if (!isPremiumUser()) {
-    const count = getSearchCount();
-    if (count >= 3) {
-      showLimitScreen();
-      return;
+  // ===== Supabaseキャッシュチェック =====
+  try {
+    setLoading(true, '検索中...');
+    const cacheRes = await fetch('/api/chat', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({word, genre: gk, max_tokens: 1, messages: [{role:'user',content:'ping'}]})
+    });
+    if (cacheRes.ok) {
+      const cacheData = await cacheRes.json();
+      if (cacheData.cached && cacheData.data) {
+        addSearchCount();
+        setLoading(false);
+        renderResult(word, cacheData.data);
+        renderMemoryBar();
+        const ad = document.getElementById('adSlot1'); if (ad) ad.style.display = 'block';
+        return;
+      }
     }
-  }
-  addSearchCount();
+  } catch(e) {}
 
   // ===== 第1フェーズ：BA例文 =====
+  addSearchCount();
   const prompt1 = `小説作家向け。「${word}」のビフォーアフター例文5件。${inst}JSONのみ:{"beforeafter":[${sitEx}]}`;
-
   let phase1 = { beforeafter: [] };
   let phase2 = { synonyms: [], expressions: [] };
 
@@ -437,12 +404,7 @@ async function aiWord(word) {
     const j1 = await r1.json();
     if (!r1.ok || j1.error) throw new Error((j1.error && j1.error.message) || 'API1エラー');
     const raw1 = (j1.content||[]).map(x => x.text||'').join('');
-    try {
-      phase1 = safeParseJSON(raw1);
-    } catch(pe) {
-      console.warn('phase1 JSON解析失敗、空で続行:', pe.message);
-      phase1 = { beforeafter: [] };
-    }
+    try { phase1 = safeParseJSON(raw1); } catch(pe) { phase1 = { beforeafter: [] }; }
 
     setLoading(false);
     renderPhase1(word, phase1);
@@ -459,142 +421,25 @@ async function aiWord(word) {
     const r2 = await fetch('/api/chat', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({max_tokens: 1800, word: word, genre: gk, messages: [{role:'user',content:prompt2}]})
+      body: JSON.stringify({max_tokens: 1800, word, genre: gk, messages: [{role:'user',content:prompt2}]})
     });
-    const j2 = await r2.json();
-
     const p2el = document.getElementById('phase2Loading');
     if (p2el) p2el.remove();
 
+    const j2 = await r2.json();
     if (!r2.ok || j2.error) throw new Error((j2.error && j2.error.message) || 'API2エラー');
     const raw2 = (j2.content||[]).map(x => x.text||'').join('');
-    try {
-      phase2 = safeParseJSON(raw2);
-    } catch(pe) {
-      console.warn('phase2 JSON解析失敗、空で続行:', pe.message);
-      phase2 = { synonyms: [], expressions: [] };
-    }
+    try { phase2 = safeParseJSON(raw2); } catch(pe) { phase2 = { synonyms: [], expressions: [] }; }
 
     renderPhase2(word, phase1, phase2);
 
-    // ローカルキャッシュ保存（次回からAI叩かない）
-    const fullData = {
-      synonyms: phase2.synonyms || [],
-      expressions: phase2.expressions || [],
-      beforeafter: phase1.beforeafter || []
-    };
-    await saveMemory(cacheKey, fullData);
-
+    await saveMemory(word, { synonyms: phase2.synonyms||[], expressions: phase2.expressions||[], beforeafter: phase1.beforeafter||[] });
     renderMemoryBar();
-    const ad = document.getElementById('adSlot1');
-    if (ad) ad.style.display = 'block';
+    const ad = document.getElementById('adSlot1'); if (ad) ad.style.display = 'block';
 
   } catch(e) {
     setLoading(false);
     document.getElementById('area').innerHTML = `<p style="text-align:center;padding:2rem;color:var(--ink3);font-size:13px">エラー: ${e.message}</p>`;
-  }
-}
-
-// ---- 文章検索 ----
-async function sentenceSearch(sentence) {
-  setLoading(true, 'AIが文章を解析中');
-  const dbHits = (typeof DB === 'object' && DB) ? Object.keys(DB).filter(k => sentence.includes(k)) : [];
-  const gk  = genre !== 'all' ? genre : 'all';
-  const gn  = GENRE[gk] || '全ジャンル';
-  const sits = gk !== 'all' ? GLABEL[gk].slice(0,5) : ['恋愛・失恋','恋愛・成就','異世界・幕開け','ホラー・緊迫','歴史・冒頭'];
-  const inst = gk !== 'all' ? `ジャンルは${gn}固定。` : '';
-  const sitEx = sits.map((s,i) => `{"sit":"${s}","genre":"${gk!=='all'?gk:['romance','fantasy'][i]||'general'}","before":"元の文","after":"言い換え文","note":"15字"}`).join(',');
-  const prompt = `小説作家が「${sentence}」の言い換えを探しています。${inst}核となる語を特定し言い換え3語とBA2件を提案。JSONのみ:{"detected":"解釈15字","elements":[{"original":"元の語","synonyms":[{"word":"語","kana":"読み","nuance":"15字","tone":"modern","genres":["${gk!=='all'?gk:'general'}"],"intensity":50,"lyricism":50,"usecases":["シーン"],"desc":"20字","scene":"25字"}],"beforeafter":[${sitEx}]}]}`;
-
-  try {
-    const r = await fetch('/api/chat', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({max_tokens: 2500, messages: [{role:'user',content:prompt}]})
-    });
-    const j = await r.json();
-    if (!r.ok || j.error) throw new Error((j.error && j.error.message) || 'APIエラー');
-    const raw    = (j.content||[]).map(c => c.text||'').join('');
-    const parsed = safeParseJSON(raw);
-    renderSentence(sentence, parsed, dbHits);
-  } catch(e) {
-    setLoading(false);
-    document.getElementById('area').innerHTML = `<p style="text-align:center;padding:2rem;color:var(--ink3);font-size:13px">解析エラー: ${e.message}</p>`;
-  }
-}
-
-async function renderSentence(sentence, parsed, dbHits) {
-  setLoading(false);
-  allSyns = []; selCard = null;
-
-  let h = `<div class="rh"><span class="rw" style="font-size:19px">「${sentence}」</span></div>
-    <div class="ai-bar"><small>AIの解釈</small>${parsed.detected||'文章を解析しました'}</div>`;
-
-  if (dbHits.length) {
-    h += `<div class="sh">登録済み語録から一致</div>`;
-    dbHits.forEach(k => {
-      h += `<div class="db-match" onclick="qs('${k}')">
-        <span class="dm-w">「${k}」</span>
-        <span class="dm-m">言い換えを見る →</span>
-      </div>`;
-    });
-    h += `<div style="height:1.25rem"></div>`;
-  }
-
-  (parsed.elements||[]).forEach((el, ei) => {
-    const offset = allSyns.length;
-    (el.synonyms||[]).forEach(s => allSyns.push(s));
-
-    if ((el.beforeafter||[]).length) {
-      h += `<div class="sh">「${el.original}」のビフォー→アフター（${el.beforeafter.length}件）</div><div class="ba-section"><div class="ba-grid">`;
-      el.beforeafter.forEach(b => {
-        const gc = GENREC[b.genre] || 'gn';
-        h += `<div class="ba-card">
-          <div class="ba-head"><span class="sit-tag tag ${gc}">${b.sit||''}</span>
-            <button class="ba-copy" onclick="cpText('${escQ(b.after)}',this)">コピー</button></div>
-          <div class="ba-body">
-            <div class="ba-b">${b.before}</div>
-            <div class="ba-arrow">→</div>
-            <div class="ba-a" oncontextmenu="longCopy(event,'${escQ(b.after)}')">${b.after}</div>
-          </div>
-          ${b.note ? `<div class="ba-note">${b.note}</div>` : ''}
-        </div>`;
-      });
-      h += `</div></div>`;
-    }
-
-    if ((el.synonyms||[]).length) {
-      h += `<div class="sh">「${el.original}」のニュアンス比較</div><div class="nc-grid">`;
-      (el.synonyms||[]).forEach((s, si) => {
-        const idx = offset + si;
-        const uc  = (s.usecases||[]).map(u => `<span class="uc">📌 ${u}</span>`).join(' ');
-        const gt  = (s.genres||[]).slice(0,2).map(g => `<span class="tag ${GENREC[g]||'gn'}">${GENRE[g]||g}</span>`).join('');
-        h += `<div class="nc" id="c${idx}" onclick="showDetailSent(${idx},${ei})">
-          <div class="nc-w">${s.word}</div><div class="nc-k">${s.kana}</div>
-          <div class="brow"><span class="blabel">強度</span><div class="bbar"><div class="bfill" style="width:${s.intensity||50}%"></div></div></div>
-          <div class="brow"><span class="blabel">詩的さ</span><div class="bbar"><div class="bfill" style="width:${s.lyricism||50}%"></div></div></div>
-          <div class="nc-n">${s.nuance}</div>
-          <div class="tags"><span class="tag ${TONEC[s.tone]||'tm'}">${TONE[s.tone]||s.tone}</span>${gt}</div>
-          ${uc ? `<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:3px">${uc}</div>` : ''}
-        </div>`;
-      });
-      h += `</div><div class="detail" id="det${ei}"></div>`;
-    }
-  });
-
-  document.getElementById('area').innerHTML = h;
-  window._sEls = parsed.elements || [];
-}
-
-function showDetailSent(idx, ei) {
-  const s = allSyns[idx]; if (!s) return;
-  if (selCard !== null) document.getElementById(`c${selCard}`)?.classList.remove('sel');
-  selCard = idx;
-  document.getElementById(`c${idx}`)?.classList.add('sel');
-  const d = document.getElementById(`det${ei}`);
-  if (d) {
-    d.innerHTML = `<div class="dw">${s.word}</div><div class="dk">${s.kana}</div><div class="dd">${s.desc||''}</div><div class="ds">${s.scene||''}</div>`;
-    d.classList.add('show');
   }
 }
 
@@ -618,19 +463,12 @@ function repairJSON(str) {
   return r;
 }
 
-async function saveMemory(key, data) {
-  try {
-    localStorage.setItem('mem:'+key, JSON.stringify({key, data, savedAt:Date.now()}));
-  } catch(e) {
-    console.error('保存失敗:', e);
-  }
+async function saveMemory(word, data) {
+  try { localStorage.setItem('mem:'+word, JSON.stringify({word, data, savedAt:Date.now()})); } catch(e){}
 }
 
-async function loadMemory(key) {
-  try {
-    const v = localStorage.getItem('mem:'+key);
-    return v ? JSON.parse(v).data : null;
-  } catch(e) { return null; }
+async function loadMemory(word) {
+  try { const v = localStorage.getItem('mem:'+word); return v ? JSON.parse(v).data : null; } catch(e){ return null; }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -649,9 +487,8 @@ function renderMemoryBar() {
     if (keys.length === 0) { bar.style.display = 'none'; return; }
     bar.style.display = 'flex';
     bar.innerHTML = keys.slice(-6).reverse().map(function(k) {
-      const label = k.replace('mem:','').split('|')[0];
-      const fullKey = k.replace('mem:','');
-      return '<span class="mem-chip" onclick="qs(\'' + label + '\')">' + label + ' <span onclick="event.stopPropagation();localStorage.removeItem(\'mem:' + fullKey + '\');renderMemoryBar()" style="color:var(--ink3);font-size:10px">✕</span></span>';
+      const word = k.replace('mem:','');
+      return '<span class="mem-chip" onclick="qs(\'' + word + '\')">' + word + ' <span onclick="event.stopPropagation();localStorage.removeItem(\'' + k + '\');renderMemoryBar()" style="color:var(--ink3);font-size:10px">✕</span></span>';
     }).join('');
   } catch(e) {}
 }
