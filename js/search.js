@@ -307,16 +307,24 @@ async function aiWord(word) {
     });
     const cacheData = await cacheRes.json();
     console.log("キャッシュAPI結果:", cacheData); // 3. ここが出るか確認
-    if (cacheData.cached && cacheData.data) {
-      console.log("キャッシュヒット！"); // 4. これが出たらここが原因
-      setLoading(false);
-      const cached = cacheData.data;
-      renderWord(word, cached);
-      renderMemoryBar();
-      const ad = document.getElementById('adSlot1'); if (ad) ad.style.display = 'block';
-      return;
-    }
-  } catch(e) {
+    // aiWord内のキャッシュチェック部分を以下のように書き換えます
+if (cacheData.cached && cacheData.data) {
+  const cached = cacheData.data;
+  
+  // 【修正点】類語(synonyms)または情景表現(expressions)があるか確認
+  // もし空っぽなら、キャッシュは無視して再検索させる
+  if ((cached.synonyms && cached.synonyms.length > 0) || (cached.expressions && cached.expressions.length > 0)) {
+    console.log("完全なキャッシュを発見、表示します");
+    setLoading(false);
+    renderWord(word, cached);
+    renderMemoryBar();
+    const ad = document.getElementById('adSlot1'); if (ad) ad.style.display = 'block';
+    return;
+  } else {
+    console.log("キャッシュはありましたが、内容が不完全なため再検索します");
+    // ここでreturnせず、そのまま下の新規検索処理へ流す
+  }
+} catch(e) {
     console.log("キャッシュチェックでエラー:", e); // 5. エラーならここに出る
   }
   console.log("キャッシュなし、新規検索へ"); // 6. ここが出るか確認
