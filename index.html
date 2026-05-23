@@ -6,7 +6,6 @@
 <title>言葉の鏡 — 小説・ラノベの言い換え表現辞典【なろう・カクヨム作家向け】</title>
 <meta name="description" content="なろう・カクヨムで執筆中の作家向け。「悲しい」「走る」など言い換え表現をジャンル別に即検索。ビフォー→アフター例文付き。恋愛・異世界・ホラー・歴史に対応。">
 
-<!-- OGP（XにURLを貼ったときに表示される情報） -->
 <meta property="og:title"       content="言葉の鏡 — 小説・ラノベの言い換え表現辞典【なろう・カクヨム作家向け】">
 <meta property="og:description" content="なろう・カクヨム作家向け。「悲しい」「雨」など言い換え表現をジャンル別に即検索。ビフォー→アフター例文・類語比較付き。">
 <meta property="og:type"        content="website">
@@ -18,7 +17,6 @@
 <meta name="twitter:description" content="なろう・カクヨム作家向け。「悲しい」「雨」など言い換え表現をジャンル別に即検索。ビフォー→アフター例文・類語比較付き。">
 <meta name="twitter:image"      content="https://kotoba-kagami.com/ogp.png">
 
-<!-- ファビコン -->
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#8b4513">
@@ -29,7 +27,6 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500;700&family=Zen+Kaku+Gothic+New:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=5">
-<!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -44,7 +41,6 @@
 .tab-link.active{color:var(--acc);border-bottom:2px solid var(--acc);background:var(--paper)}
 </style>
 <script>
-// タブアクティブ（即時実行）
 document.addEventListener('DOMContentLoaded', function() {
   var path = location.pathname;
   document.querySelectorAll('.tab-link, .tab-nav a').forEach(function(a) {
@@ -69,7 +65,6 @@ if ('serviceWorker' in navigator) {
     for (let name of names) caches.delete(name);
   });
 }
-// searchLimitの初期化（dateがない古いデータはリセット）
 try {
   var limit = JSON.parse(localStorage.getItem('searchLimit') || '{}');
   if (!limit.date) localStorage.removeItem('searchLimit');
@@ -165,6 +160,13 @@ try {
   <p style="font-size:12px;color:var(--ink3);letter-spacing:.08em;margin-top:.4rem">
     ジャンルを選んで検索してください
   </p>
+
+  <!-- 解約申請ボタン（プレミアムユーザーのみ表示） -->
+  <div id="cancelSection" style="display:none;text-align:center;margin-top:16px;padding-top:12px;border-top:1px solid var(--paper3)">
+    <button onclick="requestCancel()" style="background:none;border:none;color:#aaa;font-size:11px;text-decoration:underline;cursor:pointer;font-family:'Zen Kaku Gothic New',sans-serif;">
+      有料プランを解約する
+    </button>
+  </div>
 </div>
 
 <div class="genre-row" style="display:none">
@@ -191,7 +193,7 @@ try {
     <div class="empty-text">
       単語でも文章でも検索できます<br>
       ジャンルを選ぶとそのシーン向けの例文のみ表示<br>
-          </div>
+    </div>
   </div>
 </main>
 
@@ -199,24 +201,18 @@ try {
 <div id="adSlot1" style="display:none;padding:1rem 1.25rem;text-align:center;max-width:760px;margin:0 auto">
   <div style="font-size:10px;color:var(--ink3);margin-bottom:6px;letter-spacing:.06em">スポンサー</div>
   <div style="background:var(--paper2);border:1px solid var(--paper3);border-radius:2px;min-height:90px;display:flex;align-items:center;justify-content:center;max-width:728px;margin:0 auto;padding:1rem">
-    <!-- AdSense広告をここに -->
     <span style="font-size:11px;color:var(--ink3)">広告スペース（728×90）</span>
   </div>
 </div>
 
-<!-- 広告① コンテンツをすべて読み終えた後・フッター直前 -->
-<!-- ボタンやリンクから最低48px離す / 誤タップ防止のため上下に余白 -->
 <div style="max-width:960px;margin:0 auto;padding:0 2rem">
-  <div style="height:40px"></div><!-- 上余白：直前コンテンツから離す -->
+  <div style="height:40px"></div>
   <div style="text-align:center;font-size:10px;color:var(--ink3);letter-spacing:.08em;margin-bottom:6px">スポンサー</div>
   <div class="ad-slot ad-slot-horizontal" style="margin:0">
-    <!-- Google AdSense 審査通過後にコードをここに貼る -->
     広告スペース（728×90）
   </div>
-  <div style="height:40px"></div><!-- 下余白：フッターリンクから離す -->
+  <div style="height:40px"></div>
 </div>
-
-
 
 <footer style="border-top:1px solid var(--paper3);padding:1.5rem 2rem;text-align:center;font-size:12px;color:var(--ink3)">
   <div style="display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;margin-bottom:.75rem">
@@ -224,13 +220,11 @@ try {
     <a href="ranking.html" style="color:var(--ink3);text-decoration:none">ランキング</a>
     <a href="submit.html"  style="color:var(--ink3);text-decoration:none">表現を投稿</a>
     <a href="privacy.html" style="color:var(--ink3);text-decoration:none">プライバシーポリシー</a>
-    <a href="/tokutei.html" style="color:inherit; text-decoration:none;">特定商取引法に基づく表記</a>
+    <a href="/tokutei.html" style="color:inherit;text-decoration:none;">特定商取引法に基づく表記</a>
   </div>
-  <!-- 広告② フッター内・リンクの下・十分な余白あり -->
   <div style="margin:1rem auto 0;max-width:320px">
     <div style="font-size:10px;color:var(--ink3);letter-spacing:.08em;margin-bottom:5px">スポンサー</div>
     <div class="ad-slot" style="min-height:50px;margin:0;font-size:11px">
-      <!-- Google AdSense 審査通過後にコードをここに貼る -->
       広告スペース（320×50）
     </div>
   </div>
@@ -273,8 +267,6 @@ async function loadAnnouncements() {
         ${item.message}
       </div>`;
     }).join('');
-
-    // 未読バッジ
     const lastSeen = localStorage.getItem('lastSeenAnnouncement');
     const latest = items[0].created_at;
     if (!lastSeen || lastSeen < latest) {
@@ -294,7 +286,6 @@ function toggleAnnouncements() {
       loadAnnouncements();
       announcementsLoaded = true;
     }
-    // 既読にする
     fetch('/api/announcements').then(r => r.json()).then(items => {
       if (items.length) {
         localStorage.setItem('lastSeenAnnouncement', items[0].created_at);
@@ -304,7 +295,6 @@ function toggleAnnouncements() {
   }
 }
 
-// パネル外クリックで閉じる
 document.addEventListener('click', function(e) {
   const panel = document.getElementById('announcementsPanel');
   const bell = document.getElementById('bellBtn');
@@ -313,7 +303,6 @@ document.addEventListener('click', function(e) {
   }
 });
 
-// 起動時に未読チェック
 document.addEventListener('DOMContentLoaded', function() {
   fetch('/api/announcements').then(r => r.json()).then(items => {
     if (!items.length) return;
@@ -324,5 +313,53 @@ document.addEventListener('DOMContentLoaded', function() {
   }).catch(()=>{});
 });
 </script>
+
+<script>
+// ---- 解約申請機能 ----
+
+// プレミアムユーザーのとき解約ボタンを表示
+// auth.jsでプレミアム判定後に呼ぶ（auth.jsの既存処理と連携）
+function showCancelButton(isPremium) {
+  const section = document.getElementById('cancelSection');
+  if (section) section.style.display = isPremium ? 'block' : 'none';
+}
+
+// auth.jsのonAuthStateChange後にプレミアム判定で呼び出す
+// ※ auth.jsにすでにプレミアム判定がある場合はそちらに showCancelButton(isPremium) を追加
+document.addEventListener('DOMContentLoaded', function() {
+  // Supabaseの認証状態を監視してプレミアム判定
+  if (window._supabase) {
+    window._supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) return;
+      window._supabase.from('users').select('is_premium').eq('id', user.id).single()
+        .then(({ data }) => {
+          if (data && data.is_premium) showCancelButton(true);
+        });
+    });
+  }
+});
+
+async function requestCancel() {
+  if (!confirm('有料プランの解約を申請しますか？\n申請後、当日中にプレミアムを解除いたします。')) return;
+
+  const { data: { user } } = await window._supabase.auth.getUser();
+  if (!user) return alert('ログインが必要です');
+
+  const reason = prompt('解約理由をお聞かせください（任意・スキップ可）') || '';
+
+  try {
+    const res = await fetch('/api/cancel', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user_id: user.id, email: user.email, reason }),
+    });
+    const data = await res.json();
+    alert('解約申請を受け付けました。\n当日中にご対応いたします。\nご利用ありがとうございました。');
+  } catch(e) {
+    alert('エラーが発生しました。\nメール(yuuhi527000@gmail.com)でもご連絡いただけます。');
+  }
+}
+</script>
+
 </body>
 </html>
