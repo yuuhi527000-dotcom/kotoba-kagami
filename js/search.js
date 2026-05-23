@@ -373,7 +373,7 @@ async function aiWord(word) {
     const cacheRes = await fetch('/api/chat', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({word, genre: gk, max_tokens: 1, messages: [{role:'user',content:'ping'}]})
+      body: JSON.stringify({word, genre: gk, max_tokens: 1, messages: []})
     });
     if (cacheRes.ok) {
       const cacheData = await cacheRes.json();
