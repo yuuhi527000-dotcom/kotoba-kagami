@@ -673,7 +673,11 @@ function repairJSON(str) {
 }
 
 async function saveMemory(word, data) {
-  try { localStorage.setItem('mem:'+word, JSON.stringify({word, data, savedAt:Date.now()})); } catch(e){}
+  try { localStorage.setItem('mem:'+word, JSON.stringify({word, data, savedAt:Date.now()}));
+      console.log("保存成功: mem:" + word); // これを追加
+      } catch(e){
+    console.error("保存失敗: ", e); // これを追加
+      }
 }
 
 async function loadMemory(word) {
