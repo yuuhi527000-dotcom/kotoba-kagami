@@ -422,27 +422,54 @@ function renderPhase1(word, data) {
 
 // ---- フェーズ2：ニュアンスカード＋情景表現を追加 ----
 // ---- フェーズ2：ニュアンスカード＋情景表現を追加 ----
+// ---- フェーズ2：ニュアンスカード＋情景表現を追加 ----
 function renderPhase2(word, phase1, phase2) {
-  console.log("【renderWord】読み込まれたデータの中身:", data);
-  
-  setLoading(false);
-  allSyns = [];
-  selCard = null;
+  console.log("renderPhase2が呼び出されました。データ:", phase2);
 
-  let syns = data.synonyms || [];
-  let bas  = data.beforeafter || [];
-  let exprs = data.expressions || []; // これも確認
-
-  console.log("・言い換えの数(syns):", syns.length);
-  console.log("・情景表現の数(exprs):", exprs.length);
-  console.log("renderPhase2が呼び出されました。データ:", phase2); // ここに追加
-  
+  // 1. データの取得
   const syns = (phase2.synonyms || []);
   const exprs = (phase2.expressions || []);
+  const bas = (phase1.beforeafter || []).filter(b => genre === 'all' || b.genre === genre);
   
+  // 2. グローバル変数への代入
+  allSyns = syns;
+
+  // 3. ログで確認
+  console.log("・言い換えの数(syns):", syns.length);
+  console.log("・情景表現の数(exprs):", exprs.length);
+
   if (syns.length === 0) {
     console.warn("警告: syns(類語)が空です！");
   }
+
+  let h = '';
+
+  // 4. HTML構築
+  if (exprs.length) {
+    h += `<div class="sh">情景表現フレーズ</div><div class="expr-list">`;
+    exprs.forEach(e => { h += `<div class="expr" style="animation:fi .3s ease">${e}</div>`; });
+    h += `</div>`;
+  }
+
+  if (syns.length) {
+    h += `<div class="sh">ニュアンス比較カード（クリックで詳細）</div><div class="nc-grid">`;
+    syns.forEach((s, i) => {
+      // ... (既存のカード表示ロジックはそのまま)
+      h += `<div class="nc" id="c${i}" onclick="showDetail(${i})" style="animation:fi .3s ease">...</div>`;
+    });
+    h += `</div>`;
+    // ... (詳細表示エリア等)
+  }
+
+  // 5. 表示処理
+  const p2 = document.getElementById('phase2Area');
+  if (p2) {
+    p2.innerHTML = h;
+  } else {
+    const area = document.getElementById('area');
+    if (area) area.innerHTML += h;
+  }
+}
 
   if (syns.length) {
     h += `<div class="sh">ニュアンス比較カード（クリックで詳細）</div><div class="nc-grid">`;
