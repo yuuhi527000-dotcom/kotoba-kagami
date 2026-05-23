@@ -372,17 +372,26 @@ async function aiWord(word) {
     const p2el = document.getElementById('phase2Loading');
     if (p2el) p2el.remove();
     console.log("第2フェーズのレスポンス:", phase2); // ← これを追加
+    // 既存の renderPhase2 呼び出しの後
     renderPhase2(word, phase1, phase2);
 
-    // 保存・履歴・広告
-    // aiWord関数の最後の方
-    console.log("第2フェーズ完了、保存を開始します"); // ここを追加
+    // ローディングを消して第2フェーズを追加
+    const p2el = document.getElementById('phase2Loading');
+    if (p2el) p2el.remove();
+    
+    console.log("第2フェーズのレスポンス:", phase2);
+    renderPhase2(word, phase1, phase2);
+
+    // 保存・履歴・広告処理
+    console.log("第2フェーズ完了、保存を開始します"); 
     const fullData = { ...phase2, beforeafter: phase1.beforeafter || [] };
-    console.log("保存するデータの中身:", fullData); // これが以前追加したもの
-    await saveMemory(word, fullData);
-    console.log("保存処理が終了しました"); // ここを追加
+    console.log("保存するデータの中身:", fullData);
+    await saveMemory(word, fullData); 
+    console.log("保存処理が終了しました");
+    
     renderMemoryBar();
-    const ad = document.getElementById('adSlot1'); if (ad) ad.style.display = 'block';
+    const ad = document.getElementById('adSlot1'); 
+    if (ad) ad.style.display = 'block';
 
   } catch(e) {
     setLoading(false);
