@@ -315,7 +315,6 @@ async function aiWord(word) {
       renderMemoryBar();
       const ad = document.getElementById('adSlot1'); if (ad) ad.style.display = 'block';
       return;
-    
     }
   } catch(e) {}
 
