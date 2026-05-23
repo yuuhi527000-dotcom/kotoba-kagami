@@ -1,6 +1,4 @@
 // api/cancel.js
-// 解約申請を受け付けるAPI
-
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
@@ -10,18 +8,16 @@ const supabase = createClient(
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
-  // 解約申請を登録（ユーザーから）
   if (req.method === 'POST') {
     const { user_id, email, reason } = req.body;
     if (!user_id || !email) return res.status(400).json({ error: 'パラメータ不足' });
 
-    // 重複申請チェック
     const { data: existing } = await supabase
       .from('cancel_requests')
       .select('id')
@@ -39,13 +35,11 @@ export default async function handler(req, res) {
     return res.status(200).json({ message: '解約申請を受け付けました' });
   }
 
-  // 解約申請一覧取得（管理者用）
   if (req.method === 'GET') {
     const auth = req.headers.authorization;
     if (!auth || auth !== 'Bearer ' + ADMIN_PASSWORD) {
       return res.status(401).json({ error: '認証エラー' });
     }
-
     const { data, error } = await supabase
       .from('cancel_requests')
       .select('*')
@@ -55,13 +49,11 @@ export default async function handler(req, res) {
     return res.status(200).json(data);
   }
 
-  // 解約申請を処理済みにする（管理者用）
   if (req.method === 'PATCH') {
     const auth = req.headers.authorization;
     if (!auth || auth !== 'Bearer ' + ADMIN_PASSWORD) {
       return res.status(401).json({ error: '認証エラー' });
     }
-
     const { id } = req.body;
     if (!id) return res.status(400).json({ error: 'idが必要です' });
 
