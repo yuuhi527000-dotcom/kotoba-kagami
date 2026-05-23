@@ -1,9 +1,5 @@
 // ===== 認証ユーティリティ =====
-
 const SUPABASE_URL = 'https://qkwfdguuvvsedhvwlgwz.supabase.co';
-
-// Supabase Anon Key（Vercel環境変数から取得できないためフロントに直接記述）
-// Settings > API > anon public key をここに貼る
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFrd2ZkZ3V1dnZzZWRodndsZ3d6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkyNzg3MDcsImV4cCI6MjA5NDg1NDcwN30.KUMd0GH02vBuJbuC8SYsZOXT6llicjECUMBOoehMikc';
 
 // ---- セッション取得 ----
@@ -49,6 +45,11 @@ function renderAuthHeader() {
         <span style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${email}</span>
         <button onclick="logout()" style="font-size:11px;padding:2px 8px;border:0.5px solid var(--paper3);background:#fff;color:var(--ink3);cursor:pointer;border-radius:2px">ログアウト</button>
       </div>`;
+
+    // プレミアムユーザーのみ解約ボタンを表示
+    if (typeof showCancelButton === 'function') {
+      showCancelButton(premium);
+    }
   } else {
     area.innerHTML = `<a href="login.html" style="font-size:12px;padding:4px 12px;border:1px solid var(--acc);color:var(--acc);border-radius:2px;text-decoration:none;font-weight:500">ログイン</a>`;
   }
