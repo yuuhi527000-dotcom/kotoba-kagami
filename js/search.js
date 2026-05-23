@@ -420,43 +420,13 @@ function renderPhase1(word, data) {
   document.getElementById('area').innerHTML = h;
 }
 
-// ---- フェーズ2：ニュアンスカード＋情景表現を追加 ----
-// ---- フェーズ2：ニュアンスカード＋情景表現を追加 ----
-// ---- フェーズ2：ニュアンスカード＋情景表現を追加 ----
-// ---- フェーズ2：ニュアンスカード＋情景表現を追加 ----
+// ---- フェーズ2：ニュアンス比較カード＋情景表現の表示 ----
 function renderPhase2(word, phase1, phase2) {
-  console.log("renderPhase2 実行");
-  const syns = (phase2.synonyms || []);
-  const exprs = (phase2.expressions || []);
-  
-  allSyns = syns;
-
-  let h = '';
-  if (exprs.length) {
-    h += `<div class="sh">情景表現フレーズ</div><div class="expr-list">`;
-    exprs.forEach(e => { h += `<div class="expr" style="animation:fi .3s ease">${e}</div>`; });
-    h += `</div>`;
-  }
-
-  if (syns.length) {
-    h += `<div class="sh">ニュアンス比較カード</div><div class="nc-grid">`;
-    syns.forEach((s, i) => {
-      h += `<div class="nc" id="c${i}" onclick="showDetail(${i})" style="animation:fi .3s ease">
-        <div class="nc-w">${s.word}</div>
-      </div>`;
-    });
-    h += `</div>`;
-  }
-
-  const p2 = document.getElementById('phase2Area');
-  if (p2) p2.innerHTML = h;
-}function renderPhase2(word, phase1, phase2) {
   console.log("renderPhase2が呼び出されました。データ:", phase2);
 
   // 1. データの取得
   const syns = (phase2.synonyms || []);
   const exprs = (phase2.expressions || []);
-  const bas = (phase1.beforeafter || []).filter(b => genre === 'all' || b.genre === genre);
   
   // 2. グローバル変数への代入
   allSyns = syns;
@@ -474,7 +444,7 @@ function renderPhase2(word, phase1, phase2) {
     h += `</div>`;
   }
 
-  // 4. HTML構築：ニュアンス比較カード（ここが関数の中に入っていなかった部分です）
+  // 4. HTML構築：ニュアンス比較カード
   if (syns.length) {
     h += `<div class="sh">ニュアンス比較カード（クリックで詳細）</div><div class="nc-grid">`;
     syns.forEach((s, i) => {
@@ -490,6 +460,7 @@ function renderPhase2(word, phase1, phase2) {
       </div>`;
     });
     h += `</div>`;
+    // 詳細表示用モーダル部分
     h += `<div class="detail" id="detail">
       <div class="dw" id="dw"></div><div class="dk" id="dk"></div>
       <div class="dd" id="dd"></div><div class="ds" id="ds"></div>
@@ -508,7 +479,7 @@ function renderPhase2(word, phase1, phase2) {
     const area = document.getElementById('area');
     if (area) area.innerHTML += h;
   }
-} // ← ここでしっかり閉じています
+}
 
   if (syns.length) {
     h += `<div class="sh">ニュアンス比較カード（クリックで詳細）</div><div class="nc-grid">`;
