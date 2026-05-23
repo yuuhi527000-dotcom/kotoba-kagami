@@ -1,6 +1,6 @@
 // ===== 検索・表示ロジック =====
 // ★ Stripeの決済リンクができたらここを変更するだけでOK
-const STRIPE_URL = 'https://buy.stripe.com/eVqbJ1fpPfm1dm9fHtbV602';
+const STRIPE_URL = 'https://buy.stripe.com/3cI00j4Lb2zfdm98f1bV603';
 let genre   = 'all';
 let curWord = '';
 let allSyns = [];
@@ -58,10 +58,10 @@ function showLimitScreen() {
       <div style="font-size:13px;color:var(--ink3);margin-bottom:1.5rem;line-height:1.8">明日0時にリセットされます<br>または有料プランで無制限に使えます</div>
       <div style="background:#fff;border:1px solid var(--paper3);border-radius:4px;padding:1.25rem;max-width:300px;margin:0 auto 1rem">
         <div style="font-size:13px;font-weight:500;color:var(--ink);margin-bottom:.5rem">有料プラン</div>
-        <div style="font-family:'Noto Serif JP',serif;font-size:28px;font-weight:500;color:var(--acc);margin-bottom:.5rem">月額495円</div>
+        <div style="font-family:'Noto Serif JP',serif;font-size:28px;font-weight:500;color:var(--acc);margin-bottom:.5rem">月額298円</div>
         <div style="font-size:12px;color:var(--ink3);margin-bottom:1rem">検索無制限・全機能使い放題</div>
         ${loggedIn
-          ? `<a href="${STRIPE_URL}" target="_blank" rel="noopener" style="display:block;width:100%;padding:.75rem;background:var(--acc);color:#fff;border:none;font-size:14px;font-weight:500;cursor:pointer;border-radius:2px;font-family:'Zen Kaku Gothic New',sans-serif;text-align:center;text-decoration:none;box-sizing:border-box">有料プランに登録する — 月額495円</a>`
+          ? `<a href="${STRIPE_URL}" target="_blank" rel="noopener" style="display:block;width:100%;padding:.75rem;background:var(--acc);color:#fff;border:none;font-size:14px;font-weight:500;cursor:pointer;border-radius:2px;font-family:'Zen Kaku Gothic New',sans-serif;text-align:center;text-decoration:none;box-sizing:border-box">有料プランに登録する — 月額298円</a>`
           : `<button onclick="window.location.href='login.html'" style="width:100%;padding:.75rem;background:var(--acc);color:#fff;border:none;font-size:14px;font-weight:500;cursor:pointer;border-radius:2px;font-family:'Zen Kaku Gothic New',sans-serif">ログイン / 新規登録</button>
              <div style="font-size:11px;color:var(--ink3);margin-top:.5rem">登録後、有料プランにお申し込みください</div>`
         }
