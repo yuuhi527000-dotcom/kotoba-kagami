@@ -478,17 +478,9 @@ function renderPhase2(word, phase1, phase2) {
     const ugcEl = document.getElementById('ugcContainer');
     if (ugcEl) renderUGCSection(word, genre, ugcEl);
   }
-} // ← ここで確実に閉じる（これ以上何も書かない）
+} // ← ここがrenderPhase2の閉じ括弧
 
-  // 5. 表示処理
-  const p2 = document.getElementById('phase2Area');
-  if (p2) {
-    p2.innerHTML = h;
-  } else {
-    ElementById('area');
-    if (area) area.innerHTML += h;
-  }
-}
+ 
 
   if (syns.length) {
     h += `<div class="sh">ニュアンス比較カード（クリックで詳細）</div><div class="nc-grid">`;
