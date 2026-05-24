@@ -254,6 +254,21 @@ document.addEventListener('DOMContentLoaded', async function() {
 
   document.getElementById('demoSection').style.display = 'block';
 
+  // 検索欄を無効化
+  const si = document.getElementById('si');
+  if (si) {
+    si.disabled = true;
+    si.placeholder = '登録後に自由に検索できます';
+    si.style.opacity = '0.5';
+    si.style.cursor = 'not-allowed';
+  }
+  const sbtn = document.querySelector('.sbtn');
+  if (sbtn) {
+    sbtn.disabled = true;
+    sbtn.style.opacity = '0.5';
+    sbtn.style.cursor = 'not-allowed';
+  }
+
   const words = ['感動','悲しい','雨','笑う','震える','嬉しい','好き','悔しい','雪','走る'];
   const demoWords = document.getElementById('demoWords');
   words.forEach(word => {
@@ -290,19 +305,27 @@ async function loadDemo(word, btn) {
     const bas = (json.data.beforeafter || []).slice(0, 5);
     const exprs = (json.data.expressions || []).slice(0, 7);
 
-    let h = '<div style="font-size:11px;font-weight:500;color:var(--acc);margin-bottom:.75rem;letter-spacing:.06em">「' + word + '」の言い換え例</div>';
+    const gc = {romance:'ro',fantasy:'fa',horror:'ho',historical:'hi',general:'gn',all:'gn'};
+    const gl = {romance:'恋愛・青春',fantasy:'異世界・ファンタジー',horror:'ホラー・ミステリ',historical:'歴史・時代',general:'一般',all:'すべて'};
+
+    let h = '<div class="rh"><span class="rw">「' + word + '」</span><span class="rm">の言い換え例</span></div>';
 
     if (bas.length) {
+      h += '<div class="sh">ビフォー → アフター 例文集（' + bas.length + '件）</div><div class="ba-section"><div class="ba-grid">';
       bas.forEach(b => {
-        h += "<div style=\"font-family:'Noto Serif JP',serif;font-size:13px;color:var(--ink);margin-bottom:.4rem\"><span style=\"color:var(--ink3);font-size:11px\">" + (b.before||"") + " → </span>" + (b.after||"") + "</div>";
+        const g = b.genre || 'general';
+        h += '<div class="ba-card">'
+          + '<div class="ba-head"><span class="sit-tag tag ' + (gc[g]||'gn') + '">' + (b.sit || gl[g] || '') + '</span><button class="ba-copy" onclick="navigator.clipboard.writeText('' + (b.after||'').replace(/'/g,"\'") + '');this.textContent='✓';setTimeout(()=>this.textContent='コピー',1500)">コピー</button></div>'
+          + '<div class="ba-body"><div class="ba-b">' + (b.before||'') + '</div><div class="ba-arrow">→</div><div class="ba-a">' + (b.after||'') + '</div></div>'
+          + (b.note ? '<div class="ba-note">' + b.note + '</div>' : '')
+          + '</div>';
       });
+      h += '</div></div>';
     }
 
     if (exprs.length) {
-      h += '<div style="border-top:0.5px solid var(--paper3);padding-top:.75rem;margin-top:.5rem">';
-      exprs.forEach(e => {
-        h += "<div style=\"font-family:'Noto Serif JP',serif;font-size:12px;color:var(--ink2);margin-bottom:.3rem\">• " + e + "</div>";
-      });
+      h += '<div class="sh">情景表現フレーズ</div><div class="expr-list">';
+      exprs.forEach(e => { h += '<div class="expr">' + e + '</div>'; });
       h += '</div>';
     }
 
