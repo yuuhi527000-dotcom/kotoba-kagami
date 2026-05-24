@@ -4,25 +4,12 @@ const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 
 async function getCached(word, genre) {
   try {
-    // まず指定ジャンルで検索
     const res = await fetch(
       `${SUPABASE_URL}/rest/v1/word_cache?word=eq.${encodeURIComponent(word)}&genre=eq.${encodeURIComponent(genre)}&select=data&limit=1`,
       { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } }
     );
     const rows = await res.json();
-    if (rows && rows[0]) return rows[0].data;
-
-    // 指定ジャンルになければ「all」で検索（キャッシュ使い回し）
-    if (genre !== 'all') {
-      const res2 = await fetch(
-        `${SUPABASE_URL}/rest/v1/word_cache?word=eq.${encodeURIComponent(word)}&genre=eq.all&select=data&limit=1`,
-        { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } }
-      );
-      const rows2 = await res2.json();
-      if (rows2 && rows2[0]) return rows2[0].data;
-    }
-
-    return null;
+    return rows && rows[0] ? rows[0].data : null;
   } catch(e) { return null; }
 }
 
@@ -67,7 +54,7 @@ export default async function handler(req, res) {
   try {
     const { messages, max_tokens = 1500, word, genre } = req.body;
 
-    // キャッシュチェック（指定ジャンル → allの順で検索）
+    // キャッシュチェック
     if (word && genre) {
       const cached = await getCached(word, genre);
       if (cached) {
