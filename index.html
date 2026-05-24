@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>言葉の鏡 — 小説・ラノベの言い換え表現辞典【なろう・カクヨム作家向け】</title>
 <meta name="description" content="なろう・カクヨムで執筆中の作家向け。「悲しい」「走る」など言い換え表現をジャンル別に即検索。ビフォー→アフター例文付き。恋愛・異世界・ホラー・歴史に対応。">
-
 <meta property="og:title"       content="言葉の鏡 — 小説・ラノベの言い換え表現辞典【なろう・カクヨム作家向け】">
 <meta property="og:description" content="なろう・カクヨム作家向け。「悲しい」「雨」など言い換え表現をジャンル別に即検索。ビフォー→アフター例文・類語比較付き。">
 <meta property="og:type"        content="website">
@@ -16,7 +15,6 @@
 <meta name="twitter:title"      content="言葉の鏡 — 小説・ラノベの言い換え表現辞典【なろう・カクヨム作家向け】">
 <meta name="twitter:description" content="なろう・カクヨム作家向け。「悲しい」「雨」など言い換え表現をジャンル別に即検索。ビフォー→アフター例文・類語比較付き。">
 <meta name="twitter:image"      content="https://kotoba-kagami.com/ogp.png">
-
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#8b4513">
@@ -24,7 +22,6 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="言葉の鏡">
 <link rel="apple-touch-icon" href="/icon.svg">
-
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500;700&family=Zen+Kaku+Gothic+New:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=5">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-HQTEQ7JFB6"></script>
@@ -54,8 +51,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 </script>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2159458769076187"
-     crossorigin="anonymous"></script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2159458769076187" crossorigin="anonymous"></script>
 <script>
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.getRegistrations().then(function(r) {
@@ -89,7 +85,6 @@ try {
       <div id="authArea" style="display:flex;justify-content:flex-end"></div>
     </div>
   </div>
-  <!-- お知らせパネル -->
   <div id="announcementsPanel" style="display:none;position:fixed;top:56px;right:8px;width:320px;max-height:400px;background:#fff;border:1px solid var(--paper3);border-radius:4px;box-shadow:0 4px 12px rgba(0,0,0,.12);z-index:200;overflow-y:auto">
     <div style="padding:.75rem 1rem;border-bottom:1px solid var(--paper3);display:flex;align-items:center;justify-content:space-between">
       <span style="font-size:13px;font-weight:500;color:var(--ink)">お知らせ</span>
@@ -108,7 +103,6 @@ try {
 
 <div class="hero">
   <p class="hero-eye">小説・ラノベ作家のための言い換えサイト</p>
-
   <div style="display:inline-flex;align-items:center;gap:.5rem;font-size:11px;color:var(--ink3);background:#fff;border:0.5px solid var(--paper3);border-radius:2px;padding:.3rem .65rem;margin-bottom:.6rem">
     <span>他者の投稿以外はAIで生成しています</span>
     <span style="color:var(--paper3)">｜</span>
@@ -117,12 +111,10 @@ try {
       <span>AI使用に同意</span>
     </label>
   </div>
-
   <div style="font-size:13px;color:var(--ink2);margin-bottom:.85rem;line-height:1.9;text-align:left;padding:.5rem .75rem;background:#fff;border-left:2px solid var(--acc);border-radius:0;max-width:480px;margin-left:auto;margin-right:auto">
     「悲しかった」→ <strong style="color:var(--ink);font-weight:500">断腸の思いで唇をかんだ</strong><br>
     「雨が降った」→ <strong style="color:var(--ink);font-weight:500">氷雨がひとりぼっちの背中を濡らした</strong>
   </div>
-
   <div style="display:flex;gap:1.25rem;justify-content:center;margin-bottom:.85rem">
     <div style="display:flex;align-items:center;gap:.35rem;font-size:11px;color:var(--ink3)">
       <span style="background:var(--acc);color:#fff;border-radius:50%;width:16px;height:16px;display:inline-flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0">1</span>入力
@@ -134,14 +126,11 @@ try {
       <span style="background:var(--acc);color:#fff;border-radius:50%;width:16px;height:16px;display:inline-flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0">3</span>検索
     </div>
   </div>
-
   <div class="sw">
     <input class="si" id="si" type="text" placeholder="雨、悲しい、「雨が降った」など文章もOK" autocomplete="off">
     <button class="sbtn" onclick="doSearch()">検索</button>
   </div>
-
   <div id="memoryBar" style="display:flex;gap:5px;flex-wrap:wrap;justify-content:center;margin:.5rem 0;min-height:0"></div>
-
   <div class="genre-row">
     <span class="gl">ジャンル：</span>
     <div style="display:flex;flex-direction:column;gap:4px;align-items:center">
@@ -156,7 +145,6 @@ try {
       </div>
     </div>
   </div>
-
   <p style="font-size:12px;color:var(--ink3);letter-spacing:.08em;margin-top:.4rem">
     ジャンルを選んで検索してください
   </p>
@@ -165,8 +153,8 @@ try {
   <div id="demoSection" style="display:none;margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--paper3)">
     <p style="font-size:12px;color:var(--ink3);margin-bottom:.75rem;letter-spacing:.06em">▼ タップして言い換え例を見てみよう（何度でも無料）</p>
     <div id="demoWords" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:1rem"></div>
-    <div id="demoResult" style="display:none;background:#fff;border:0.5px solid var(--paper3);border-radius:4px;padding:1rem;max-width:480px;margin:0 auto 1rem;text-align:left"></div>
-    <div style="border-top:0.5px solid var(--paper3);padding-top:1rem;text-align:center">
+    <div id="demoResult" style="display:none;max-width:760px;margin:0 auto 1rem;text-align:left"></div>
+    <div style="border-top:0.5px solid var(--paper3);padding-top:1rem;text-align:center;margin-top:1rem">
       <p style="font-size:12px;color:var(--ink3);margin-bottom:.6rem">自分の言葉で検索するには登録が必要です</p>
       <a href="login.html" style="display:inline-block;padding:.65rem 2rem;background:var(--acc);color:#fff;text-decoration:none;font-size:13px;font-weight:500;border-radius:2px;font-family:'Zen Kaku Gothic New',sans-serif">無料登録して検索する</a>
       <div style="font-size:11px;color:var(--ink3);margin-top:.4rem">登録で1日3回まで無料</div>
@@ -209,7 +197,6 @@ try {
   </div>
 </main>
 
-<!-- 広告① 検索結果の下 -->
 <div id="adSlot1" style="display:none;padding:1rem 1.25rem;text-align:center;max-width:760px;margin:0 auto">
   <div style="font-size:10px;color:var(--ink3);margin-bottom:6px;letter-spacing:.06em">スポンサー</div>
   <div style="background:var(--paper2);border:1px solid var(--paper3);border-radius:2px;min-height:90px;display:flex;align-items:center;justify-content:center;max-width:728px;margin:0 auto;padding:1rem">
@@ -220,9 +207,7 @@ try {
 <div style="max-width:960px;margin:0 auto;padding:0 2rem">
   <div style="height:40px"></div>
   <div style="text-align:center;font-size:10px;color:var(--ink3);letter-spacing:.08em;margin-bottom:6px">スポンサー</div>
-  <div class="ad-slot ad-slot-horizontal" style="margin:0">
-    広告スペース（728×90）
-  </div>
+  <div class="ad-slot ad-slot-horizontal" style="margin:0">広告スペース（728×90）</div>
   <div style="height:40px"></div>
 </div>
 
@@ -238,53 +223,51 @@ try {
   </div>
   <div style="margin:1rem auto 0;max-width:320px">
     <div style="font-size:10px;color:var(--ink3);letter-spacing:.08em;margin-bottom:5px">スポンサー</div>
-    <div class="ad-slot" style="min-height:50px;margin:0;font-size:11px">
-      広告スペース（320×50）
-    </div>
+    <div class="ad-slot" style="min-height:50px;margin:0;font-size:11px">広告スペース（320×50）</div>
   </div>
   <div style="margin-top:1rem">© 2025 言葉の鏡 — なろう・カクヨム作家のための言い換え表現辞典</div>
 </footer>
 
 <script src="js/const.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', async function() {
-  const s = JSON.parse(localStorage.getItem('sb_session') || '{}');
-  const loggedIn = !!(s.access_token && s.expires_at > Date.now());
+// ---- デモ機能 ----
+document.addEventListener('DOMContentLoaded', function() {
+  var s = JSON.parse(localStorage.getItem('sb_session') || '{}');
+  var loggedIn = !!(s.access_token && s.expires_at > Date.now());
   if (loggedIn) return;
 
   document.getElementById('demoSection').style.display = 'block';
 
-  // 検索欄を無効化
-  const si = document.getElementById('si');
+  var si = document.getElementById('si');
   if (si) {
     si.disabled = true;
     si.placeholder = '登録後に自由に検索できます';
     si.style.opacity = '0.5';
     si.style.cursor = 'not-allowed';
   }
-  const sbtn = document.querySelector('.sbtn');
+  var sbtn = document.querySelector('.sbtn');
   if (sbtn) {
     sbtn.disabled = true;
     sbtn.style.opacity = '0.5';
     sbtn.style.cursor = 'not-allowed';
   }
 
-  const words = ['感動','悲しい','雨','笑う','震える','嬉しい','好き','悔しい','雪','走る'];
-  const demoWords = document.getElementById('demoWords');
-  words.forEach(word => {
-    const btn = document.createElement('span');
+  var words = ['感動','悲しい','雨','笑う','震える','嬉しい','好き','悔しい','雪','走る'];
+  var demoWords = document.getElementById('demoWords');
+  words.forEach(function(word) {
+    var btn = document.createElement('span');
     btn.textContent = word;
     btn.style.cssText = "font-family:'Noto Serif JP',serif;font-size:13px;padding:5px 14px;border:0.5px solid var(--paper3);border-radius:2px;cursor:pointer;background:#fff;color:var(--ink2);transition:all .15s";
-    btn.addEventListener('click', () => loadDemo(word, btn));
+    btn.addEventListener('click', function() { loadDemo(word, btn); });
     demoWords.appendChild(btn);
   });
 });
 
-let demoLoading = false;
-async function loadDemo(word, btn) {
+var demoLoading = false;
+function loadDemo(word, btn) {
   if (demoLoading) return;
   demoLoading = true;
-  document.querySelectorAll('#demoWords span').forEach(b => {
+  document.querySelectorAll('#demoWords span').forEach(function(b) {
     b.style.borderColor = 'var(--paper3)';
     b.style.color = 'var(--ink2)';
     b.style.background = '#fff';
@@ -293,162 +276,123 @@ async function loadDemo(word, btn) {
   btn.style.color = 'var(--acc)';
   btn.style.background = 'var(--accf)';
 
-  const result = document.getElementById('demoResult');
+  var result = document.getElementById('demoResult');
   result.style.display = 'block';
   result.innerHTML = '<div style="text-align:center;padding:1rem;color:var(--ink3);font-size:12px">読み込み中...</div>';
 
-  try {
-    const r = await fetch('/api/demo?word=' + encodeURIComponent(word));
-    const json = await r.json();
-    if (!json.data) throw new Error('データなし');
-
-    const bas = (json.data.beforeafter || []).slice(0, 5);
-    const exprs = (json.data.expressions || []).slice(0, 7);
-
-    const gc = {romance:'ro',fantasy:'fa',horror:'ho',historical:'hi',general:'gn',all:'gn'};
-    const gl = {romance:'恋愛・青春',fantasy:'異世界・ファンタジー',horror:'ホラー・ミステリ',historical:'歴史・時代',general:'一般',all:'すべて'};
-
-    let h = '<div class="rh"><span class="rw">「' + word + '」</span><span class="rm">の言い換え例</span></div>';
-
-    if (bas.length) {
-      h += '<div class="sh">ビフォー → アフター 例文集（' + bas.length + '件）</div><div class="ba-section"><div class="ba-grid">';
-      bas.forEach(b => {
-        const g = b.genre || 'general';
-        h += '<div class="ba-card">'
-          + '<div class="ba-head"><span class="sit-tag tag ' + (gc[g]||'gn') + '">' + (b.sit || gl[g] || '') + '</span><button class="ba-copy" onclick="navigator.clipboard.writeText('' + (b.after||'').replace(/'/g,"\'") + '');this.textContent='✓';setTimeout(()=>this.textContent='コピー',1500)">コピー</button></div>'
-          + '<div class="ba-body"><div class="ba-b">' + (b.before||'') + '</div><div class="ba-arrow">→</div><div class="ba-a">' + (b.after||'') + '</div></div>'
-          + (b.note ? '<div class="ba-note">' + b.note + '</div>' : '')
-          + '</div>';
-      });
-      h += '</div></div>';
-    }
-
-    if (exprs.length) {
-      h += '<div class="sh">情景表現フレーズ</div><div class="expr-list">';
-      exprs.forEach(e => { h += '<div class="expr">' + e + '</div>'; });
-      h += '</div>';
-    }
-
-    result.innerHTML = h;
-  } catch(e) {
-    result.innerHTML = '<div style="text-align:center;padding:1rem;color:var(--ink3);font-size:12px">データを読み込めませんでした</div>';
-  }
-  demoLoading = false;
+  fetch('/api/demo?word=' + encodeURIComponent(word))
+    .then(function(r) { return r.json(); })
+    .then(function(json) {
+      if (!json.data) throw new Error('データなし');
+      var bas = (json.data.beforeafter || []).slice(0, 5);
+      var exprs = (json.data.expressions || []).slice(0, 7);
+      var gc = {romance:'ro',fantasy:'fa',horror:'ho',historical:'hi',general:'gn',all:'gn'};
+      var gl = {romance:'恋愛・青春',fantasy:'異世界・ファンタジー',horror:'ホラー・ミステリ',historical:'歴史・時代',general:'一般',all:'すべて'};
+      var h = '<div class="rh"><span class="rw">「' + word + '」</span><span class="rm">の言い換え例</span></div>';
+      if (bas.length) {
+        h += '<div class="sh">ビフォー → アフター 例文集（' + bas.length + '件）</div><div class="ba-section"><div class="ba-grid">';
+        bas.forEach(function(b) {
+          var g = b.genre || 'general';
+          var after = (b.after || '').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+          h += '<div class="ba-card">'
+            + '<div class="ba-head"><span class="sit-tag tag ' + (gc[g]||'gn') + '">' + (b.sit || gl[g] || '') + '</span>'
+            + '<button class="ba-copy" onclick="navigator.clipboard.writeText(\'' + after + '\');this.textContent=\'✓\';var t=this;setTimeout(function(){t.textContent=\'コピー\'},1500)">コピー</button></div>'
+            + '<div class="ba-body"><div class="ba-b">' + (b.before||'') + '</div><div class="ba-arrow">→</div><div class="ba-a">' + (b.after||'') + '</div></div>'
+            + (b.note ? '<div class="ba-note">' + b.note + '</div>' : '')
+            + '</div>';
+        });
+        h += '</div></div>';
+      }
+      if (exprs.length) {
+        h += '<div class="sh">情景表現フレーズ</div><div class="expr-list">';
+        exprs.forEach(function(e) { h += '<div class="expr">' + e + '</div>'; });
+        h += '</div>';
+      }
+      result.innerHTML = h;
+      demoLoading = false;
+    })
+    .catch(function() {
+      result.innerHTML = '<div style="text-align:center;padding:1rem;color:var(--ink3);font-size:12px">データを読み込めませんでした</div>';
+      demoLoading = false;
+    });
 }
 </script>
 <script src="js/db.js"></script>
 <script src="js/ugc.js"></script>
 <script src="js/search.js"></script>
 <script>
-  document.getElementById('si').addEventListener('keydown', e => { if(e.key==='Enter') doSearch(); });
+  document.getElementById('si').addEventListener('keydown', function(e) { if(e.key==='Enter') doSearch(); });
 </script>
 <script>
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .catch(e => console.log('SW error:', e));
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/sw.js').catch(function(e) { console.log('SW error:', e); });
   });
 }
 </script>
-
 <script>
-// ---- お知らせ機能 ----
-let announcementsLoaded = false;
-
-async function loadAnnouncements() {
-  const list = document.getElementById('announcementsList');
-  try {
-    const r = await fetch('/api/announcements');
-    const items = await r.json();
-    if (!items.length) {
-      list.innerHTML = '<div style="text-align:center;padding:1.5rem;color:var(--ink3);font-size:12px">お知らせはありません</div>';
-      return;
-    }
-    list.innerHTML = items.map(item => {
-      const date = new Date(item.created_at).toLocaleDateString('ja-JP', {month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
-      return `<div style="padding:.75rem 1rem;border-bottom:0.5px solid var(--paper3);font-size:13px;color:var(--ink2);line-height:1.7">
-        <div style="font-size:10px;color:var(--ink3);margin-bottom:3px">${date}</div>
-        ${item.message}
-      </div>`;
+var announcementsLoaded = false;
+function loadAnnouncements() {
+  var list = document.getElementById('announcementsList');
+  fetch('/api/announcements').then(function(r) { return r.json(); }).then(function(items) {
+    if (!items.length) { list.innerHTML = '<div style="text-align:center;padding:1.5rem;color:var(--ink3);font-size:12px">お知らせはありません</div>'; return; }
+    list.innerHTML = items.map(function(item) {
+      var date = new Date(item.created_at).toLocaleDateString('ja-JP', {month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
+      return '<div style="padding:.75rem 1rem;border-bottom:0.5px solid var(--paper3);font-size:13px;color:var(--ink2);line-height:1.7"><div style="font-size:10px;color:var(--ink3);margin-bottom:3px">' + date + '</div>' + item.message + '</div>';
     }).join('');
-    const lastSeen = localStorage.getItem('lastSeenAnnouncement');
-    const latest = items[0].created_at;
-    if (!lastSeen || lastSeen < latest) {
-      document.getElementById('bellBadge').style.display = 'block';
-    }
-  } catch(e) {
-    list.innerHTML = '<div style="text-align:center;padding:1.5rem;color:var(--ink3);font-size:12px">読み込みに失敗しました</div>';
-  }
-}
-
-function toggleAnnouncements() {
-  const panel = document.getElementById('announcementsPanel');
-  const isOpen = panel.style.display !== 'none';
-  panel.style.display = isOpen ? 'none' : 'block';
-  if (!isOpen) {
-    if (!announcementsLoaded) {
-      loadAnnouncements();
-      announcementsLoaded = true;
-    }
-    fetch('/api/announcements').then(r => r.json()).then(items => {
-      if (items.length) {
-        localStorage.setItem('lastSeenAnnouncement', items[0].created_at);
-        document.getElementById('bellBadge').style.display = 'none';
-      }
-    }).catch(()=>{});
-  }
-}
-
-document.addEventListener('click', function(e) {
-  const panel = document.getElementById('announcementsPanel');
-  const bell = document.getElementById('bellBtn');
-  if (panel && bell && !panel.contains(e.target) && !bell.contains(e.target)) {
-    panel.style.display = 'none';
-  }
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-  fetch('/api/announcements').then(r => r.json()).then(items => {
-    if (!items.length) return;
-    const lastSeen = localStorage.getItem('lastSeenAnnouncement');
+    var lastSeen = localStorage.getItem('lastSeenAnnouncement');
     if (!lastSeen || lastSeen < items[0].created_at) {
       document.getElementById('bellBadge').style.display = 'block';
     }
-  }).catch(()=>{});
+  }).catch(function() {
+    list.innerHTML = '<div style="text-align:center;padding:1.5rem;color:var(--ink3);font-size:12px">読み込みに失敗しました</div>';
+  });
+}
+function toggleAnnouncements() {
+  var panel = document.getElementById('announcementsPanel');
+  var isOpen = panel.style.display !== 'none';
+  panel.style.display = isOpen ? 'none' : 'block';
+  if (!isOpen) {
+    if (!announcementsLoaded) { loadAnnouncements(); announcementsLoaded = true; }
+    fetch('/api/announcements').then(function(r) { return r.json(); }).then(function(items) {
+      if (items.length) { localStorage.setItem('lastSeenAnnouncement', items[0].created_at); document.getElementById('bellBadge').style.display = 'none'; }
+    }).catch(function(){});
+  }
+}
+document.addEventListener('click', function(e) {
+  var panel = document.getElementById('announcementsPanel');
+  var bell = document.getElementById('bellBtn');
+  if (panel && bell && !panel.contains(e.target) && !bell.contains(e.target)) panel.style.display = 'none';
+});
+document.addEventListener('DOMContentLoaded', function() {
+  fetch('/api/announcements').then(function(r) { return r.json(); }).then(function(items) {
+    if (!items.length) return;
+    var lastSeen = localStorage.getItem('lastSeenAnnouncement');
+    if (!lastSeen || lastSeen < items[0].created_at) document.getElementById('bellBadge').style.display = 'block';
+  }).catch(function(){});
 });
 </script>
-
 <script>
-// ---- 解約申請機能 ----
-
-// プレミアムユーザーのとき解約ボタンを表示（auth.jsから呼ばれる）
 function showCancelButton(isPremium) {
-  const section = document.getElementById('cancelSection');
+  var section = document.getElementById('cancelSection');
   if (section) section.style.display = isPremium ? 'block' : 'none';
 }
-
 async function requestCancel() {
   if (!confirm('有料プランの解約を申請しますか？\n申請後、当日中にプレミアムを解除いたします。')) return;
-
-  // getSession()はauth.jsで定義済み
-  const s = getSession();
+  var s = getSession();
   if (!s || !s.user) return alert('ログインが必要です');
-
-  const reason = prompt('解約理由をお聞かせください（任意・スキップ可）') || '';
-
+  var reason = prompt('解約理由をお聞かせください（任意・スキップ可）') || '';
   try {
-    const res = await fetch('/api/cancel', {
+    await fetch('/api/cancel', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ user_id: s.user.id, email: s.user.email, reason }),
     });
-    const data = await res.json();
     alert('解約申請を受け付けました。\n当日中にご対応いたします。\nご利用ありがとうございました。');
   } catch(e) {
     alert('エラーが発生しました。\nメール(yuuhi527000@gmail.com)でもご連絡いただけます。');
   }
 }
 </script>
-
 </body>
 </html>
