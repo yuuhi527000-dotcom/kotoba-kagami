@@ -52,18 +52,33 @@ function showLimitScreen() {
   document.getElementById('empty').style.display = 'none';
   const loggedIn = isPremiumUser() !== null && !!JSON.parse(localStorage.getItem('sb_session') || '{}').access_token;
   document.getElementById('area').innerHTML = `
-    <div style="text-align:center;padding:2.5rem 1rem">
+    <div style="text-align:center;padding:2.5rem 1rem;max-width:400px;margin:0 auto">
       <div style="font-size:36px;margin-bottom:.75rem">🔒</div>
       <div style="font-family:'Noto Serif JP',serif;font-size:18px;font-weight:500;color:var(--ink);margin-bottom:.5rem">本日の無料検索回数（5回）に達しました</div>
       <div style="font-size:13px;color:var(--ink3);margin-bottom:1.5rem;line-height:1.8">明日0時にリセットされます<br>または有料プランで無制限に使えます</div>
-      <div style="background:#fff;border:1px solid var(--paper3);border-radius:4px;padding:1.25rem;max-width:300px;margin:0 auto 1rem">
-        <div style="font-size:13px;font-weight:500;color:var(--ink);margin-bottom:.5rem">有料プラン</div>
-        <div style="font-family:'Noto Serif JP',serif;font-size:28px;font-weight:500;color:var(--acc);margin-bottom:.5rem">月額298円</div>
-        <div style="font-size:12px;color:var(--ink3);margin-bottom:1rem">検索無制限・全機能使い放題</div>
+
+      <div style="background:#fff;border:1px solid var(--paper3);border-top:3px solid var(--acc);border-radius:4px;padding:1.5rem;max-width:320px;margin:0 auto 1rem">
+        <div style="font-size:11px;font-weight:500;color:var(--acc);letter-spacing:.08em;margin-bottom:.5rem">PRO プラン</div>
+        <div style="font-family:'Noto Serif JP',serif;font-size:32px;font-weight:500;color:var(--acc);margin-bottom:.25rem">月額298円</div>
+        <div style="font-size:11px;color:var(--ink3);margin-bottom:1.25rem">税込 / いつでも解約可能</div>
+
+        <div style="text-align:left;margin-bottom:1.25rem">
+          <div style="font-size:12px;color:var(--ink2);margin-bottom:.4rem;display:flex;align-items:center;gap:.4rem">
+            <span style="color:var(--acc)">✓</span> 検索回数が無制限
+          </div>
+          <div style="font-size:12px;color:var(--ink2);margin-bottom:.4rem;display:flex;align-items:center;gap:.4rem">
+            <span style="color:var(--acc)">✓</span> 全ジャンル使い放題
+          </div>
+
+          <div style="font-size:12px;color:var(--ink2);display:flex;align-items:center;gap:.4rem">
+            <span style="color:var(--acc)">✓</span> コーヒー1杯分で執筆クオリティUP
+          </div>
+        </div>
+
         ${loggedIn
-          ? `<a href="${STRIPE_URL}" target="_blank" rel="noopener" style="display:block;width:100%;padding:.75rem;background:var(--acc);color:#fff;border:none;font-size:14px;font-weight:500;cursor:pointer;border-radius:2px;font-family:'Zen Kaku Gothic New',sans-serif;text-align:center;text-decoration:none;box-sizing:border-box">有料プランに登録する — 月額298円</a>`
-          : `<button onclick="window.location.href='login.html'" style="width:100%;padding:.75rem;background:var(--acc);color:#fff;border:none;font-size:14px;font-weight:500;cursor:pointer;border-radius:2px;font-family:'Zen Kaku Gothic New',sans-serif">ログイン / 新規登録</button>
-             <div style="font-size:11px;color:var(--ink3);margin-top:.5rem">登録後、有料プランにお申し込みください</div>`
+          ? `<a href="${STRIPE_URL}" target="_blank" rel="noopener" style="display:block;width:100%;padding:.85rem;background:var(--acc);color:#fff;border:none;font-size:14px;font-weight:500;cursor:pointer;border-radius:2px;font-family:'Zen Kaku Gothic New',sans-serif;text-align:center;text-decoration:none;box-sizing:border-box">有料プランに登録する — 月額298円</a>`
+          : `<button onclick="window.location.href='login.html'" style="width:100%;padding:.85rem;background:var(--acc);color:#fff;border:none;font-size:14px;font-weight:500;cursor:pointer;border-radius:2px;font-family:'Zen Kaku Gothic New',sans-serif">無料登録して続ける</button>
+             <div style="font-size:11px;color:var(--ink3);margin-top:.5rem">登録無料・有料プランは任意です</div>`
         }
       </div>
       <div style="font-size:11px;color:var(--ink3)">明日また5回無料で使えます</div>
