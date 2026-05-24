@@ -74,6 +74,22 @@ export default async function handler(req, res) {
     return res.status(r.status).json(r.data);
   }
 
+  // ---- 非表示 ----
+  if (action === 'hide' && req.method === 'POST') {
+    const { id } = req.body;
+    const r = await sb(`/ugc_expressions?id=eq.${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status: 'rejected' }),
+    });
+    return res.status(r.status).json(r.data);
+  }
+
+  // ---- 承認済み一覧（管理者用） ----
+  if (action === 'approved' && req.method === 'GET') {
+    const r = await sb('/ugc_expressions?select=*&status=eq.approved&order=approved_at.desc&limit=100');
+    return res.status(200).json(Array.isArray(r.data) ? r.data : []);
+  }
+
   // ---- 関連UGC取得 ----
   if (action === 'related') {
     const word  = url.searchParams.get('word') || '';

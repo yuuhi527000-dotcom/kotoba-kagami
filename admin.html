@@ -75,9 +75,10 @@
 
     <!-- 投稿承認パネル -->
     <div id="panel-ugc" class="panel">
-      <div style="display:flex;gap:.5rem;margin-bottom:1rem">
-        <button class="btn btn-acc" onclick="loadPending()">更新</button>
-        <span id="pendingCount" style="font-size:13px;color:var(--ink3);padding:6px 0"></span>
+      <div style="display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap;border-bottom:1px solid var(--paper3);padding-bottom:.75rem">
+        <button class="btn btn-acc" id="ugcTabPending" onclick="switchUgcTab('pending')">承認待ち</button>
+        <button class="btn btn-outline" id="ugcTabApproved" onclick="switchUgcTab('approved')">承認済み</button>
+        <span id="pendingCount" style="font-size:13px;color:var(--ink3);padding:6px 0;margin-left:.5rem"></span>
       </div>
       <div id="pendingList">
         <div style="text-align:center;padding:2rem;color:var(--ink3);font-size:13px">読み込み中...</div>
@@ -233,6 +234,16 @@ async function revokePremium(id, email) {
   loadUsers();
 }
 
+// ---- 投稿承認タブ切替 ----
+let ugcTab = 'pending';
+function switchUgcTab(tab) {
+  ugcTab = tab;
+  document.getElementById('ugcTabPending').className = tab === 'pending' ? 'btn btn-acc' : 'btn btn-outline';
+  document.getElementById('ugcTabApproved').className = tab === 'approved' ? 'btn btn-acc' : 'btn btn-outline';
+  if (tab === 'pending') loadPending();
+  else loadApproved();
+}
+
 // ---- 投稿承認 ----
 async function loadPending() {
   const list = document.getElementById('pendingList');
@@ -268,6 +279,53 @@ async function loadPending() {
   } catch(e) {
     list.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--ink3);font-size:13px">読み込みエラー</div>';
   }
+}
+
+// ---- 承認済み一覧 ----
+async function loadApproved() {
+  const list = document.getElementById('pendingList');
+  document.getElementById('pendingCount').textContent = '';
+  list.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--ink3);font-size:13px">読み込み中...</div>';
+  try {
+    const r = await fetch('/api/ugc?action=approved', {
+      headers: { 'Authorization': 'Bearer ' + ADMIN_PASS }
+    });
+    const items = await r.json();
+    document.getElementById('pendingCount').textContent = items.length + '件の承認済み';
+    if (!items.length) {
+      list.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--ink3);font-size:13px">承認済みの投稿はありません</div>';
+      return;
+    }
+    list.innerHTML = items.map(item => {
+      const gc = (typeof GENREC !== 'undefined' ? GENREC[item.genre] : '') || 'gn';
+      const gl = (typeof GENRE !== 'undefined' ? GENRE[item.genre] : '') || item.genre || '';
+      return `
+        <div class="ugc-card" style="border-left-color:var(--acc)">
+          <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem;flex-wrap:wrap">
+            <span style="font-family:'Noto Serif JP',serif;font-size:16px;font-weight:500">${item.word||''}</span>
+            <span class="tag ${gc}">${item.situation||gl}</span>
+            <span style="font-size:11px;color:var(--ink3)">— ${item.author_name||'匿名'}</span>
+            <span style="font-size:11px;color:var(--ink3);margin-left:auto">${item.approved_at ? new Date(item.approved_at).toLocaleDateString('ja-JP') : ''}</span>
+          </div>
+          <div style="font-family:'Noto Serif JP',serif;font-size:13px;color:var(--ink2);font-style:italic;line-height:1.7;margin-bottom:.75rem">${item.scene||''}</div>
+          <div style="display:flex;gap:.5rem">
+            <button class="btn btn-danger" onclick="hideUGC('${item.id}')">非表示にする</button>
+          </div>
+        </div>`;
+    }).join('');
+  } catch(e) {
+    list.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--ink3);font-size:13px">読み込みエラー</div>';
+  }
+}
+
+async function hideUGC(id) {
+  if (!confirm('この投稿を非表示にしますか？')) return;
+  await fetch('/api/ugc?action=hide', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id }),
+  });
+  loadApproved();
 }
 
 async function approveUGC(id) {
