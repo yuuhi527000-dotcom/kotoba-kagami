@@ -87,6 +87,12 @@ function showLimitScreen() {
         }
       </div>
       <div style="font-size:11px;color:var(--ink3)">明日また3回無料で使えます</div>
+
+      <div style="margin-top:1.5rem;padding:1.25rem;background:#fff;border:1px solid var(--paper3);border-radius:4px;max-width:320px;margin-left:auto;margin-right:auto;margin-top:1rem">
+        <div style="font-size:12px;font-weight:500;color:var(--ink);margin-bottom:.5rem">✍️ 表現を投稿してみませんか？</div>
+        <div style="font-size:11px;color:var(--ink3);line-height:1.8;margin-bottom:.75rem">投稿は完全無料。なろう・カクヨム・Xのリンクも一緒に掲載できます。あなたの表現が他の作家の力になります。</div>
+        <a href="/submit.html" style="display:block;width:100%;padding:.6rem;background:var(--paper2);color:var(--acc);border:1px solid var(--acc);font-size:13px;font-weight:500;text-align:center;text-decoration:none;border-radius:2px;box-sizing:border-box;font-family:'Zen Kaku Gothic New',sans-serif">表現を投稿する（無料）</a>
+      </div>
     </div>`;
 }
 
