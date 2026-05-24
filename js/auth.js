@@ -51,7 +51,11 @@ function renderAuthHeader() {
       showCancelButton(premium);
     }
   } else {
-    area.innerHTML = `<a href="login.html" style="font-size:12px;padding:4px 12px;border:1px solid var(--acc);color:var(--acc);border-radius:2px;text-decoration:none;font-weight:500">ログイン</a>`;
+    area.innerHTML = `
+      <div style="text-align:center">
+        <a href="login.html" style="font-size:12px;padding:4px 12px;border:1px solid var(--acc);color:var(--acc);border-radius:2px;text-decoration:none;font-weight:500;display:inline-block">ログイン</a>
+        <div style="font-size:10px;color:var(--acc);margin-top:2px;white-space:nowrap">登録で3回無料</div>
+      </div>`;
   }
 }
 
