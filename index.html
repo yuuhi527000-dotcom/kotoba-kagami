@@ -246,6 +246,73 @@ try {
 </footer>
 
 <script src="js/const.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async function() {
+  const s = JSON.parse(localStorage.getItem('sb_session') || '{}');
+  const loggedIn = !!(s.access_token && s.expires_at > Date.now());
+  if (loggedIn) return;
+
+  document.getElementById('demoSection').style.display = 'block';
+
+  const words = ['感動','悲しい','雨','笑う','震える','嬉しい','好き','悔しい','雪','走る'];
+  const demoWords = document.getElementById('demoWords');
+  words.forEach(word => {
+    const btn = document.createElement('span');
+    btn.textContent = word;
+    btn.style.cssText = "font-family:'Noto Serif JP',serif;font-size:13px;padding:5px 14px;border:0.5px solid var(--paper3);border-radius:2px;cursor:pointer;background:#fff;color:var(--ink2);transition:all .15s";
+    btn.addEventListener('click', () => loadDemo(word, btn));
+    demoWords.appendChild(btn);
+  });
+});
+
+let demoLoading = false;
+async function loadDemo(word, btn) {
+  if (demoLoading) return;
+  demoLoading = true;
+  document.querySelectorAll('#demoWords span').forEach(b => {
+    b.style.borderColor = 'var(--paper3)';
+    b.style.color = 'var(--ink2)';
+    b.style.background = '#fff';
+  });
+  btn.style.borderColor = 'var(--acc)';
+  btn.style.color = 'var(--acc)';
+  btn.style.background = 'var(--accf)';
+
+  const result = document.getElementById('demoResult');
+  result.style.display = 'block';
+  result.innerHTML = '<div style="text-align:center;padding:1rem;color:var(--ink3);font-size:12px">読み込み中...</div>';
+
+  try {
+    const r = await fetch('/api/demo?word=' + encodeURIComponent(word));
+    const json = await r.json();
+    if (!json.data) throw new Error('データなし');
+
+    const bas = (json.data.beforeafter || []).slice(0, 5);
+    const exprs = (json.data.expressions || []).slice(0, 7);
+
+    let h = '<div style="font-size:11px;font-weight:500;color:var(--acc);margin-bottom:.75rem;letter-spacing:.06em">「' + word + '」の言い換え例</div>';
+
+    if (bas.length) {
+      bas.forEach(b => {
+        h += '<div style="font-family:'Noto Serif JP',serif;font-size:13px;color:var(--ink);margin-bottom:.4rem"><span style="color:var(--ink3);font-size:11px">' + (b.before||'') + ' → </span>' + (b.after||'') + '</div>';
+      });
+    }
+
+    if (exprs.length) {
+      h += '<div style="border-top:0.5px solid var(--paper3);padding-top:.75rem;margin-top:.5rem">';
+      exprs.forEach(e => {
+        h += '<div style="font-family:'Noto Serif JP',serif;font-size:12px;color:var(--ink2);margin-bottom:.3rem">• ' + e + '</div>';
+      });
+      h += '</div>';
+    }
+
+    result.innerHTML = h;
+  } catch(e) {
+    result.innerHTML = '<div style="text-align:center;padding:1rem;color:var(--ink3);font-size:12px">データを読み込めませんでした</div>';
+  }
+  demoLoading = false;
+}
+</script>
 <script src="js/db.js"></script>
 <script src="js/ugc.js"></script>
 <script src="js/search.js"></script>
