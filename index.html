@@ -377,22 +377,63 @@ function showCancelButton(isPremium) {
   var section = document.getElementById('cancelSection');
   if (section) section.style.display = isPremium ? 'block' : 'none';
 }
-async function requestCancel() {
-  if (!confirm('有料プランの解約を申請しますか？\n申請後、当日中にプレミアムを解除いたします。')) return;
+function requestCancel() {
   var s = getSession();
-  if (!s || !s.user) return alert('ログインが必要です');
-  var reason = prompt('解約理由をお聞かせください（任意・スキップ可）') || '';
-  try {
-    await fetch('/api/cancel', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user_id: s.user.id, email: s.user.email, reason }),
-    });
-    alert('解約申請を受け付けました。\n当日中にご対応いたします。\nご利用ありがとうございました。');
-  } catch(e) {
-    alert('エラーが発生しました。\nメール(yuuhi527000@gmail.com)でもご連絡いただけます。');
+  if (!s || !s.user) {
+    showCancelModal('error', 'ログインが必要です');
+    return;
   }
+  // モーダルを表示
+  var modal = document.getElementById('cancelModal');
+  if (modal) modal.style.display = 'flex';
+}
+
+function closeCancelModal() {
+  var modal = document.getElementById('cancelModal');
+  if (modal) modal.style.display = 'none';
+}
+
+function submitCancel() {
+  var s = getSession();
+  if (!s || !s.user) return;
+  var reason = document.getElementById('cancelReason') ? document.getElementById('cancelReason').value : '';
+  var btn = document.getElementById('cancelSubmitBtn');
+  if (btn) { btn.disabled = true; btn.textContent = '送信中...'; }
+
+  fetch('/api/cancel', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ user_id: s.user.id, email: s.user.email, reason: reason }),
+  }).then(function() {
+    closeCancelModal();
+    showCancelModal('success', '解約申請を受け付けました。当日中にご対応いたします。');
+  }).catch(function() {
+    closeCancelModal();
+    showCancelModal('error', 'エラーが発生しました。メール(yuuhi527000@gmail.com)でご連絡ください。');
+  });
+}
+
+function showCancelModal(type, msg) {
+  var modal = document.getElementById('cancelModal');
+  if (!modal) return;
+  modal.innerHTML = '<div style="background:#fff;border-radius:8px;padding:1.5rem;max-width:320px;width:90%;text-align:center">'
+    + '<div style="font-size:14px;color:var(--ink);margin-bottom:1rem">' + msg + '</div>'
+    + '<button onclick="closeCancelModal()" style="padding:.6rem 2rem;background:var(--acc);color:#fff;border:none;border-radius:4px;font-size:13px;cursor:pointer">閉じる</button>'
+    + '</div>';
+  modal.style.display = 'flex';
 }
 </script>
+<!-- 解約確認モーダル -->
+<div id="cancelModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:8px;padding:1.5rem;max-width:320px;width:90%">
+    <div style="font-size:15px;font-weight:500;color:var(--ink);margin-bottom:.5rem">有料プランの解約</div>
+    <div style="font-size:12px;color:var(--ink3);margin-bottom:1rem;line-height:1.7">申請後、当日中にプレミアムを解除いたします。</div>
+    <textarea id="cancelReason" placeholder="解約理由（任意）" style="width:100%;height:80px;padding:.5rem;border:1px solid var(--paper3);border-radius:4px;font-size:13px;margin-bottom:1rem;box-sizing:border-box;resize:none;font-family:'Zen Kaku Gothic New',sans-serif"></textarea>
+    <div style="display:flex;gap:.5rem">
+      <button onclick="closeCancelModal()" style="flex:1;padding:.7rem;background:#fff;color:var(--ink3);border:1px solid var(--paper3);border-radius:4px;font-size:13px;cursor:pointer">キャンセル</button>
+      <button id="cancelSubmitBtn" onclick="submitCancel()" style="flex:1;padding:.7rem;background:#791F1F;color:#fff;border:none;border-radius:4px;font-size:13px;cursor:pointer">解約申請する</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
