@@ -54,7 +54,7 @@ function showLimitScreen() {
   document.getElementById('area').innerHTML = `
     <div style="text-align:center;padding:2.5rem 1rem;max-width:400px;margin:0 auto">
       <div style="font-size:36px;margin-bottom:.75rem">🔒</div>
-      <div style="font-family:'Noto Serif JP',serif;font-size:18px;font-weight:500;color:var(--ink);margin-bottom:.5rem">本日の無料検索回数（5回）に達しました</div>
+      <div style="font-family:'Noto Serif JP',serif;font-size:18px;font-weight:500;color:var(--ink);margin-bottom:.5rem">本日の無料検索回数（3回）に達しました</div>
       <div style="font-size:13px;color:var(--ink3);margin-bottom:1.5rem;line-height:1.8">明日0時にリセットされます<br>または有料プランで無制限に使えます</div>
       <div style="background:#fff;border:1px solid var(--paper3);border-top:3px solid var(--acc);border-radius:4px;padding:1.5rem;max-width:320px;margin:0 auto 1rem">
         <div style="font-size:11px;font-weight:500;color:var(--acc);letter-spacing:.08em;margin-bottom:.5rem">PRO プラン</div>
@@ -80,7 +80,7 @@ function showLimitScreen() {
              <div style="font-size:11px;color:var(--ink3);margin-top:.5rem">登録無料・有料プランは任意です</div>`
         }
       </div>
-      <div style="font-size:11px;color:var(--ink3)">明日また5回無料で使えます</div>
+      <div style="font-size:11px;color:var(--ink3)">明日また3回無料で使えます</div>
     </div>`;
 }
 
@@ -100,7 +100,7 @@ async function doSearch() {
   // 回数制限チェック（プレミアムは除外）
   if (!isPremiumUser()) {
     const count = getSearchCount();
-    if (count >= 5) {
+    if (count >= 3) {
       // AI検索は止めるが、UGC（他人の投稿）は表示する
       const input = document.getElementById('si').value.trim();
       if (!input) { showLimitScreen(); return; }
