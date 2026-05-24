@@ -55,11 +55,17 @@ function isPremiumUser() {
 function showLimitScreen() {
   document.getElementById('empty').style.display = 'none';
   const loggedIn = !!JSON.parse(localStorage.getItem('sb_session') || '{}').access_token;
+  const titleMsg = loggedIn
+    ? '本日の無料検索回数（3回）に達しました'
+    : '無料検索回数（1回）に達しました';
+  const subMsg = loggedIn
+    ? '明日0時にリセットされます<br>または有料プランで無制限に使えます'
+    : 'ログインすると1日3回まで無料で検索できます<br>さらに有料プランで無制限に使えます';
   document.getElementById('area').innerHTML = `
     <div style="text-align:center;padding:2.5rem 1rem;max-width:400px;margin:0 auto">
       <div style="font-size:36px;margin-bottom:.75rem">🔒</div>
-      <div style="font-family:'Noto Serif JP',serif;font-size:18px;font-weight:500;color:var(--ink);margin-bottom:.5rem">本日の無料検索回数（3回）に達しました</div>
-      <div style="font-size:13px;color:var(--ink3);margin-bottom:1.5rem;line-height:1.8">明日0時にリセットされます<br>または有料プランで無制限に使えます</div>
+      <div style="font-family:'Noto Serif JP',serif;font-size:18px;font-weight:500;color:var(--ink);margin-bottom:.5rem">${titleMsg}</div>
+      <div style="font-size:13px;color:var(--ink3);margin-bottom:1.5rem;line-height:1.8">${subMsg}</div>
       <div style="background:#fff;border:1px solid var(--paper3);border-top:3px solid var(--acc);border-radius:4px;padding:1.5rem;max-width:320px;margin:0 auto 1rem">
         <div style="font-size:11px;font-weight:500;color:var(--acc);letter-spacing:.08em;margin-bottom:.5rem">PRO プラン</div>
         <div style="font-family:'Noto Serif JP',serif;font-size:32px;font-weight:500;color:var(--acc);margin-bottom:.25rem">月額298円</div>
@@ -94,8 +100,10 @@ async function doSearch() {
   }
 
   // 回数制限チェック
+  const loggedIn = !!JSON.parse(localStorage.getItem('sb_session') || '{}').access_token;
+  const limit = loggedIn ? 3 : 1;
   const count = getSearchCount();
-  if (count >= 3) {
+  if (count >= limit) {
     showLimitScreen();
     return;
   }
