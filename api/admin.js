@@ -35,10 +35,29 @@ export default async function handler(req, res) {
   // ---- ユーザー一覧 ----
   if (action === 'users') {
     const search = url.searchParams.get('search') || '';
-    let path = '/users?select=*&order=created_at.desc&limit=50';
-    if (search) path += `&email=ilike.*${encodeURIComponent(search)}*`;
+    const limit = parseInt(url.searchParams.get('limit') || '20');
+    const offset = parseInt(url.searchParams.get('offset') || '0');
+    let base = '/users?select=*&order=created_at.desc';
+    if (search) base += `&email=ilike.*${encodeURIComponent(search)}*`;
+    // 合計件数取得
+    const countPath = base.replace('select=*', 'select=id') + '&limit=1000';
+    const countR = await sb(countPath);
+    const allUsers = Array.isArray(countR.data) ? countR.data : [];
+    const total = allUsers.length;
+    const premiumCount = allUsers.filter ? 0 : 0; // 後でpremium取得
+
+    // ページ分のユーザー取得
+    const path = base + `&limit=${limit}&offset=${offset}`;
     const r = await sb(path);
-    return res.status(200).json(Array.isArray(r.data) ? r.data : []);
+    const users = Array.isArray(r.data) ? r.data : [];
+    const premiumTotal = users.filter(u => u.is_premium).length;
+
+    // 全体のプレミアム数を取得
+    const premPath = '/users?select=id&is_premium=eq.true&limit=1000';
+    const premR = await sb(premPath);
+    const premiumCountTotal = Array.isArray(premR.data) ? premR.data.length : 0;
+
+    return res.status(200).json({ users, total, premiumCount: premiumCountTotal });
   }
 
   // ---- プレミアム付与 ----
