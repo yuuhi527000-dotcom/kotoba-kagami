@@ -10,7 +10,7 @@ function setGenre(g, btn) {
   genre = g;
   document.querySelectorAll('.gbtn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  if (curWord) doSearch();
+  if (curWord) doSearchNoCount();
 }
 
 function qs(w) {
@@ -94,6 +94,14 @@ function showLimitScreen() {
         <a href="/submit.html" style="display:block;width:100%;padding:.6rem;background:var(--paper2);color:var(--acc);border:1px solid var(--acc);font-size:13px;font-weight:500;text-align:center;text-decoration:none;border-radius:2px;box-sizing:border-box;font-family:'Zen Kaku Gothic New',sans-serif">表現を投稿する（無料）</a>
       </div>
     </div>`;
+}
+
+// ジャンル切り替え・関連ワードクリック時はカウントしない
+async function doSearchNoCount() {
+  const _addCount = addSearchCount;
+  window.addSearchCount = function(){};
+  await doSearch();
+  window.addSearchCount = _addCount;
 }
 
 async function doSearch() {
