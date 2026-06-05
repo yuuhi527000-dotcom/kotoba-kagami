@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <main style="padding-top:1.5rem;">
   <div style="max-width:600px;margin:0 auto;padding:0 1rem;">
-    <h1 style="font-family:'Noto Serif JP',serif;font-size:20px;font-weight:500;color:var(--ink);margin-bottom:.5rem;text-align:center;">よく使われる言い換え TOP5</h1>
+    <h1 style="font-family:'Noto Serif JP',serif;font-size:20px;font-weight:500;color:var(--ink);margin-bottom:.5rem;text-align:center;">よく使われる言い換え TOP10</h1>
     <p style="font-size:12px;color:var(--ink3);text-align:center;margin-bottom:1.5rem;">なろう・カクヨム作家に人気の表現ランキング</p>
     <div id="rankingArea"></div>
   </div>
@@ -101,19 +101,26 @@ async function loadRanking() {
   }
   let html = '<div style="display:flex;flex-direction:column;gap:8px;">';
   const maxCount = items[0].search_count || 1;
-  items.slice(0,5).forEach((item, idx) => {
+  items.slice(0,10).forEach((item, idx) => {
     const pct = Math.round((item.search_count / maxCount) * 100);
+    const gc = (typeof GENREC !== 'undefined' ? GENREC[item.genre] : '') || 'gn';
+    const gl = (typeof GENRE !== 'undefined' ? GENRE[item.genre] : '') || item.genre || '';
     html += `
       <a class="rank-card" href="index.html" onclick="sessionStorage.setItem('autoSearch','${item.word}')">
         <div class="rank-num ${idx<3?'top':''}">${idx+1}</div>
         <div style="flex:1;min-width:0;">
-          <div style="font-family:'Noto Serif JP',serif;font-size:17px;font-weight:500;color:var(--ink);margin-bottom:2px;">${item.word}</div>
-          <div style="font-size:12px;color:var(--ink3);">検索 ${item.search_count}回</div>
-          <div class="rank-bar"><div class="rank-fill" style="width:${pct}%;"></div></div>
+          <div style="font-family:'Noto Serif JP',serif;font-size:17px;font-weight:500;color:var(--ink);margin-bottom:4px;">${item.word}</div>
+          ${item.example ? `<div style="font-size:12px;color:var(--ink2);font-family:'Noto Serif JP',serif;margin-bottom:4px;line-height:1.6;">${item.example}</div>` : ''}
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span class="tag ${gc}" style="font-size:10px;">${gl}</span>
+            <span style="font-size:11px;color:var(--ink3);">検索 ${item.search_count}回</span>
+          </div>
+          <div class="rank-bar" style="margin-top:4px;"><div class="rank-fill" style="width:${pct}%;"></div></div>
         </div>
       </a>`;
   });
   html += '</div>';
+  html += '<p style="text-align:center;font-size:12px;color:var(--ink3);margin-top:1.5rem;line-height:1.8;">なろう・カクヨム作家向けの言い換え表現辞典<br>無料登録で1日3回まで検索できます</p>';
   area.innerHTML = html;
 }
 

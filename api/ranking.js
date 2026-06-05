@@ -6,9 +6,9 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   try {
-    // word_cacheのsearch_countで降順ソートしてTOP20を取得
+    // word_cacheのsearch_countで降順ソートしてTOP10を取得（dataも含む）
     const r = await fetch(
-      `${SUPABASE_URL}/rest/v1/word_cache?select=word,genre,search_count&order=search_count.desc&limit=20`,
+      `${SUPABASE_URL}/rest/v1/word_cache?select=word,genre,search_count,data&order=search_count.desc&limit=10`,
       {
         headers: {
           apikey: SUPABASE_ANON_KEY,
@@ -20,7 +20,23 @@ export default async function handler(req, res) {
     if (!Array.isArray(data) || data.length === 0) {
       return res.status(200).json([]);
     }
-    return res.status(200).json(data);
+    // 例文を1件だけ抽出して返す
+    const result = data.map(item => {
+      let example = '';
+      try {
+        const d = typeof item.data === 'string' ? JSON.parse(item.data) : item.data;
+        if (d && d.beforeafter && d.beforeafter.length > 0) {
+          example = d.beforeafter[0].after || '';
+        }
+      } catch(e) {}
+      return {
+        word: item.word,
+        genre: item.genre,
+        search_count: item.search_count,
+        example,
+      };
+    });
+    return res.status(200).json(result);
   } catch(e) {
     return res.status(200).json([]);
   }
